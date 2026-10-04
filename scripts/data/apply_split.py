@@ -370,8 +370,31 @@ def _consume_yaml(buckets: dict[str, list[Any]], rel: str, payload: bytes) -> No
 def _facility_row(rel: str, value: dict[str, Any]) -> dict[str, Any]:
     row = dict(value)
     row["source_relpath"] = rel
-    row["content_hash"] = content_hash({key: row[key] for key in row if key not in {"content_hash", "source_relpath"}})
+    row["content_hash"] = _facility_content_hash(row)
     return row
+
+
+def _facility_content_hash(row: dict[str, Any]) -> str:
+    return content_hash({key: row[key] for key in row if key not in {"content_hash", "source_relpath"}})
+
+
+# Facility B's figures were invented so a lookup for A cannot return B.
+# They are isolation data, not a measured sheet, so the worked-example label is replaced.
+_ISOLATION_FACILITY_ID = "B"
+_ISOLATION_SOURCE = "facility B is isolation data, not a measured example"
+
+
+def _relabel_isolation_facility(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    relabeled: list[dict[str, Any]] = []
+    for row in rows:
+        if row.get("facility_id") != _ISOLATION_FACILITY_ID:
+            relabeled.append(row)
+            continue
+        updated = dict(row)
+        updated["source"] = _ISOLATION_SOURCE
+        updated["content_hash"] = _facility_content_hash(updated)
+        relabeled.append(updated)
+    return relabeled
 
 
 def _consume_json(buckets: dict[str, list[Any]], rel: str, payload: bytes) -> None:
@@ -565,6 +588,7 @@ def apply_split(zip_path: Path, out_root: Path) -> dict[str, Any]:
     clauses.sort(key=lambda row: (str(row.get("code_name")), str(row.get("clause_number")), row.get("page") or 0, row["content_hash"]))
 
     facilities = _dedupe_by_hash(buckets["facilities"])
+    facilities = _relabel_isolation_facility(facilities)
     facilities.sort(key=lambda row: (str(row.get("facility_id")), str(row.get("parameter")), row["content_hash"]))
 
     registry = _formula_registry(buckets["formulas"], buckets["indexes"])

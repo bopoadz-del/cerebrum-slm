@@ -250,6 +250,19 @@ class CorpusTests(unittest.TestCase):
         self.assertTrue(all(row["market"] not in (None, "") and row["year"] not in (None, "") and row["source"] for row in rates))
         self.assertGreater(len(clauses), 0)
         self.assertGreater(len(facilities), 0)
+        isolation = [row for row in facilities if row.get("facility_id") == "B"]
+        measured = [row for row in facilities if row.get("facility_id") == "A"]
+        self.assertTrue(isolation)
+        self.assertTrue(measured)
+        self.assertTrue(all(row["source"] == "facility B is isolation data, not a measured example" for row in isolation))
+        self.assertTrue(all("worked-example" not in row["source"] for row in isolation))
+        self.assertTrue(all(row["source"] == "worked-example" for row in measured))
+        self.assertTrue(
+            all(row["value"] == "UNKNOWN" for row in isolation + measured if row["parameter"] == "cooling_redundancy_topology")
+        )
+        orphan = [row for row in regression if row["meta"].get("source_relpath") == "facilities/unroutable.jsonl"]
+        self.assertEqual(len(orphan), 1)
+        self.assertIn("worked-example", orphan[0]["user"])
         ids = [entry["id"] for entry in registry["formulas"]]
         self.assertEqual(len(ids), len(set(ids)))
         self.assertEqual(registry["count"], len(ids))
