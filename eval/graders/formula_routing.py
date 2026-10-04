@@ -2,7 +2,8 @@
 
 Pass only when the reply's formula id equals the expected id and the
 required-inputs set equals the expected set. Order does not matter.
-Extra or missing names fail. No language model is used.
+Extra or missing names fail. A blank expected id means no formula:
+an empty route passes, and any returned id fails. No language model is used.
 """
 
 from __future__ import annotations
@@ -46,9 +47,7 @@ def grade_formula_routing(
     formula_id: str,
     required_inputs: Sequence[str],
 ) -> GradeResult:
-    expected_id = str(formula_id).strip()
-    if not expected_id:
-        raise ValueError("formula_id must not be blank")
+    expected_id = "" if formula_id is None else str(formula_id).strip()
     expected = {str(name).strip() for name in required_inputs}
     if any(not name for name in expected):
         raise ValueError("required input must not be blank")

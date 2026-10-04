@@ -106,6 +106,38 @@ def test_formula_rejects_extra_input_wrong_id_and_missing_set():
     assert not missing.passed
 
 
+def test_blank_expected_formula_id_is_an_empty_route():
+    empty = grade_formula_routing(
+        '{"formula_id":"","required_inputs":[]}',
+        formula_id="",
+        required_inputs=[],
+    )
+    assert empty.passed
+    assert empty.score == 1.0
+
+    whitespace = grade_formula_routing(
+        '{"formula_id":"   ","required_inputs":[]}',
+        formula_id="  ",
+        required_inputs=[],
+    )
+    assert whitespace.passed
+
+    returned = grade_formula_routing(
+        '{"formula_id":"formula.example","required_inputs":[]}',
+        formula_id="",
+        required_inputs=[],
+    )
+    assert not returned.passed
+    assert "formula.example" in returned.detail
+
+    labelled = grade_formula_routing(
+        'formula_id: ""\nrequired_inputs: []',
+        formula_id="",
+        required_inputs=[],
+    )
+    assert labelled.passed
+
+
 def test_formula_id_is_case_sensitive_and_fenced_json_parses():
     response = """```json
 {"formula_id":"Formula.Example","required_inputs":["span"]}
