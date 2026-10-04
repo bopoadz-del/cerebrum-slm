@@ -7,11 +7,10 @@ return values. No language model is called.
 
 from __future__ import annotations
 
-import json
 import logging
 import re
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Mapping
 
 from src.retrieval.context import AttachedContext
 
@@ -65,13 +64,21 @@ def _support_keys(text: str) -> set[str]:
     return {_canonical(token) for token in figures_in(text)}
 
 
-def _formula_text(formula_result: Any) -> str:
-    if formula_result is None:
-        return ""
-    try:
-        return json.dumps(formula_result, default=str, sort_keys=True)
-    except TypeError:
-        return str(formula_result)
+def _result_token(value: Any) -> str | None:
+    """The formula result is one figure. Sibling numbers are not."""
+
+    if isinstance(value, bool) or value is None:
+        return None
+    if isinstance(value, (int, float)):
+        return _canonical(str(value))
+    if isinstance(value, str):
+        tokens = figures_in(value)
+        if len(tokens) == 1 and _scan_text(value).strip() == tokens[0]:
+            return _canonical(tokens[0])
+        return None
+    if isinstance(value, Mapping) and "result" in value:
+        return _result_token(value.get("result"))
+    return None
 
 
 def blocked(reason: str) -> GroundingVerdict:
@@ -91,9 +98,10 @@ def grounding_gate(
 ) -> GroundingVerdict:
     """Accept ``proposed`` only when every figure is supported.
 
-    Support is a figure whose numeric value occurs in the attached context
-    text or in the value returned by a formula call. A figure also needs a
-    source id that the decoder already allowed.
+    Support is a figure whose numeric value occurs in chunk text, or the
+    single formula result. A filename, a project id, and every other number
+    in a formula return are not support. A figure citation is a chunk id or
+    a document id.
     """
 
     if proposed is None:
@@ -102,7 +110,9 @@ def grounding_gate(
         return verdict
 
     supported = _support_keys(context.support_text)
-    supported.update(_support_keys(_formula_text(formula_result)))
+    result_token = _result_token(formula_result)
+    if result_token is not None:
+        supported.add(result_token)
     unsupported = [
         token for token in figures_in(proposed) if _canonical(token) not in supported
     ]
@@ -116,12 +126,16 @@ def grounding_gate(
         _log(verdict)
         return verdict
 
-    if figures_in(proposed) and not cited_source_ids:
-        verdict = GroundingVerdict(
-            "BLOCKED",
-            None,
-            "figure requires a source id from the attached context",
+    if figures_in(proposed) and not context.cites_figure(cited_source_ids):
+        project_only = bool(cited_source_ids) and all(
+            item in context.project_ids for item in cited_source_ids
         )
+        reason = (
+            "project_id is not a citation for a figure"
+            if project_only
+            else "figure requires a source id from the attached context"
+        )
+        verdict = GroundingVerdict("BLOCKED", None, reason)
         _log(verdict)
         return verdict
 

@@ -43,42 +43,34 @@ def answer(
     """Accept a proposed answer only with context-backed citations and figures."""
 
     context = attach_context(query, project_id, k=k, intent=intent)
+    policy = decide(confidence, task_type, context.present)
+    if not context.present:
+        verdict = blocked("empty context: no answer is possible")
+        return _finish(
+            verdict,
+            policy,
+            citations=(),
+            formula_called=None,
+        )
+
     formula_result: Any = None
     formula_called: str | None = None
-    formula_reason: str | None = None
-    if formula_id and formula_id in context.allowed_ids:
+    if formula_id and context.text_contains(formula_id):
         try:
             formula_result = call_formula(formula_id, formula_params)
             formula_called = formula_id
         except Exception as exc:
-            formula_reason = f"formula call failed: {type(exc).__name__}"
-
+            verdict = blocked(f"formula call failed: {type(exc).__name__}")
+            return _finish(verdict, policy, citations=(), formula_called=None)
     tokens = _tokens(citations, clauses, sources, formula_called)
+    allowed = frozenset(
+        token.identifier for token in tokens if context.allows(token.kind, token.identifier)
+    )
 
-    policy = decide(confidence, task_type, context.present)
-    if formula_reason is not None:
-        verdict = blocked(formula_reason)
-        return _finish(
-            answer_text=None,
-            citations=(),
-            reason=verdict.reason,
-            grounding_status=verdict.status,
-            policy_escalate=policy.escalate,
-            policy_reasons=policy.reasons,
-            formula_called=None,
-        )
-
-    decoded = decode(proposed_text, tokens, context.allowed_ids)
+    decoded = decode(proposed_text, tokens, allowed)
     if decoded.refused:
-        return _finish(
-            answer_text=None,
-            citations=(),
-            reason=decoded.reason,
-            grounding_status="BLOCKED",
-            policy_escalate=policy.escalate,
-            policy_reasons=policy.reasons,
-            formula_called=formula_called,
-        )
+        verdict = blocked(decoded.reason or "identifier is not in the attached context")
+        return _finish(verdict, policy, citations=(), formula_called=formula_called)
 
     verdict = grounding_gate(
         decoded.text,
@@ -86,24 +78,10 @@ def answer(
         formula_result,
         cited_source_ids=decoded.emitted,
     )
-    if verdict.blocked:
-        return _finish(
-            answer_text=None,
-            citations=(),
-            reason=verdict.reason,
-            grounding_status=verdict.status,
-            policy_escalate=policy.escalate,
-            policy_reasons=policy.reasons,
-            formula_called=formula_called,
-        )
-
     return _finish(
-        answer_text=verdict.answer,
+        verdict,
+        policy,
         citations=decoded.emitted,
-        reason=None,
-        grounding_status=verdict.status,
-        policy_escalate=policy.escalate,
-        policy_reasons=policy.reasons,
         formula_called=formula_called,
     )
 
@@ -132,21 +110,21 @@ def _tokens(
 
 
 def _finish(
+    verdict,
+    policy,
     *,
-    answer_text: str | None,
     citations: tuple[str, ...],
-    reason: str | None,
-    grounding_status: str,
-    policy_escalate: bool,
-    policy_reasons: tuple[str, ...],
     formula_called: str | None,
 ) -> TurnResult:
+    """Escalation records a decision. It does not restore a blocked answer."""
+
+    withheld = verdict.blocked or verdict.status != "PASS"
     return TurnResult(
-        answer=answer_text,
-        citations=citations if answer_text is not None else (),
-        reason=reason,
-        grounding_status=grounding_status,
-        escalated=policy_escalate,
-        escalation_reasons=policy_reasons,
-        formula_called=formula_called,
+        answer=None if withheld else verdict.answer,
+        citations=() if withheld else citations,
+        reason=verdict.reason,
+        grounding_status=verdict.status,
+        escalated=policy.escalate,
+        escalation_reasons=policy.reasons,
+        formula_called=None if withheld else formula_called,
     )

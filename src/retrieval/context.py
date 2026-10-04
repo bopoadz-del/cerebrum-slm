@@ -1,7 +1,8 @@
-"""Normalize context attached by The Fork's retriever.
+"""Normalize a context attached by The Fork's retriever.
 
-Source, clause, and formula identifiers are taken from the retriever's
-payload. Nothing here searches or ranks.
+A chunk contributes the fields ``retrieve`` returns: ``chunk_id``,
+``project_id``, ``doc_id``, ``text``, and ``filename``. Other keys are
+ignored. ``filename`` is not evidence for a figure.
 """
 
 from __future__ import annotations
@@ -9,13 +10,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Iterable, Mapping
 
-_ROLE_KEYS = frozenset({"citation", "clause", "source", "formula"})
-_TEXT_KEYS = frozenset({"text", "chunk_text"})
-
-
-def _is_identifier_key(key: str) -> bool:
-    lowered = key.lower()
-    return lowered == "id" or lowered.endswith("_id") or lowered in _ROLE_KEYS
+_CHUNK_ID = "chunk_id"
+_PROJECT_ID = "project_id"
+_DOC_ID = "doc_id"
+_TEXT = "text"
+_FILENAME = "filename"
 
 
 def _as_mapping(value: Any) -> Mapping[str, Any] | None:
@@ -26,49 +25,21 @@ def _as_mapping(value: Any) -> Mapping[str, Any] | None:
         dumped = dump()
         if isinstance(dumped, Mapping):
             return dumped
-    if hasattr(value, "__dict__"):
-        return {key: item for key, item in vars(value).items() if not key.startswith("_")}
     return None
 
 
-def _stringify(value: Any) -> str | None:
-    if isinstance(value, str):
-        text = value.strip()
-        return text or None
-    if isinstance(value, bool):
+def _read(chunk: Any, name: str) -> Any:
+    mapping = _as_mapping(chunk)
+    if mapping is not None:
+        return mapping.get(name)
+    return getattr(chunk, name, None)
+
+
+def _text(value: Any) -> str | None:
+    if not isinstance(value, str):
         return None
-    if isinstance(value, int):
-        return str(value)
-    return None
-
-
-def _collect(value: Any, ids: set[str], texts: list[str], depth: int) -> None:
-    mapping = _as_mapping(value)
-    if mapping is None:
-        if depth == 0 and isinstance(value, str) and value.strip():
-            texts.append(value.strip())
-        return
-    for key, item in mapping.items():
-        name = str(key)
-        if _is_identifier_key(name):
-            _add_identifier(item, ids)
-            continue
-        if name.lower() in _TEXT_KEYS and isinstance(item, str) and item.strip():
-            texts.append(item.strip())
-            continue
-        nested = _as_mapping(item)
-        if nested is not None and depth < 2:
-            _collect(nested, ids, texts, depth + 1)
-
-
-def _add_identifier(value: Any, ids: set[str]) -> None:
-    if isinstance(value, (list, tuple)):
-        for item in value:
-            _add_identifier(item, ids)
-        return
-    text = _stringify(value)
-    if text is not None:
-        ids.add(text)
+    stripped = value.strip()
+    return stripped or None
 
 
 def _chunks_of(raw: Any) -> list[Any]:
@@ -89,28 +60,60 @@ class AttachedContext:
 
     chunks: tuple[Any, ...]
     source_ids: frozenset[str]
+    project_ids: frozenset[str]
     support_text: str
 
     @property
     def present(self) -> bool:
         return len(self.chunks) > 0
 
-    @property
-    def allowed_ids(self) -> frozenset[str]:
-        return self.source_ids
+    def text_contains(self, identifier: str) -> bool:
+        if not identifier or not identifier.strip():
+            return False
+        return identifier in self.support_text
+
+    def allows(self, kind: str, identifier: str) -> bool:
+        """True when this id is present on a field ``retrieve`` returned."""
+
+        if kind == "clause":
+            return self.text_contains(identifier)
+        if kind in {"citation", "source"}:
+            return (
+                identifier in self.source_ids
+                or identifier in self.project_ids
+                or self.text_contains(identifier)
+            )
+        return False
+
+    def cites_figure(self, cited: Iterable[str]) -> bool:
+        """A figure citation is a chunk id or a document id.
+
+        ``project_id`` alone does not cite a figure.
+        """
+
+        return any(item in self.source_ids for item in cited)
 
 
 def context_from_retrieve(raw: Any) -> AttachedContext:
     """Build attached context from whatever ``retrieve`` returned."""
 
-    ids: set[str] = set()
+    source_ids: set[str] = set()
+    project_ids: set[str] = set()
     texts: list[str] = []
     chunks = tuple(_chunks_of(raw))
     for chunk in chunks:
-        _collect(chunk, ids, texts, 0)
+        for name, sink in ((_CHUNK_ID, source_ids), (_DOC_ID, source_ids), (_PROJECT_ID, project_ids)):
+            identifier = _text(_read(chunk, name))
+            if identifier is not None:
+                sink.add(identifier)
+        body = _text(_read(chunk, _TEXT))
+        if body is not None:
+            texts.append(body)
+        _read(chunk, _FILENAME)
     return AttachedContext(
         chunks=chunks,
-        source_ids=frozenset(ids),
+        source_ids=frozenset(source_ids),
+        project_ids=frozenset(project_ids),
         support_text="\n".join(texts),
     )
 

@@ -37,11 +37,12 @@ class EscalationPolicyTests(unittest.TestCase):
         self.assertTrue(any("context_absent" in line for line in captured.output))
         self.assertTrue(any("confidence_below_floor" in line for line in captured.output))
 
-    def test_a_pass_is_not_an_escalation_log(self) -> None:
-        with self.assertNoLogs("src.policy.escalation", level="INFO"):
+    def test_a_pass_is_logged_too(self) -> None:
+        with self.assertLogs("src.policy.escalation", level="INFO") as captured:
             decision = decide(0.9, "lookup", True)
         self.assertFalse(decision.escalate)
         self.assertEqual(decision.reasons, ())
+        self.assertTrue(any("escalated=False" in line for line in captured.output))
 
     def test_out_of_range_confidence_escalates(self) -> None:
         decision = decide(1.4, "lookup", True)

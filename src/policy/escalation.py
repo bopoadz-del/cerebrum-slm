@@ -1,6 +1,7 @@
 """Frontier pass from confidence, task type, and whether context is present.
 
-The same inputs always produce the same decision. Every escalation is logged.
+The same inputs always produce the same decision. The decision is logged
+whether or not it escalates.
 """
 
 from __future__ import annotations
@@ -47,13 +48,12 @@ def decide(confidence: float, task_type: str, context_present: bool) -> Escalati
         task_type=label.strip(),
         context_present=bool(context_present),
     )
-    if decision.escalate:
-        LOGGER.info(
-            "escalation escalated=%s reasons=%s confidence=%s task_type=%s context_present=%s",
-            decision.escalate,
-            ",".join(decision.reasons),
-            decision.confidence,
-            decision.task_type,
-            decision.context_present,
-        )
+    LOGGER.info(
+        "escalation escalated=%s reasons=%s confidence=%s task_type=%s context_present=%s",
+        decision.escalate,
+        ",".join(decision.reasons),
+        decision.confidence,
+        decision.task_type,
+        decision.context_present,
+    )
     return decision

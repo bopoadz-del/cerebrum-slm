@@ -8,6 +8,15 @@ import unittest
 
 from src.retrieval.fork import FORMULA_MODULE, RETRIEVER_MODULE
 from src.retrieval.pipeline import answer
+from tests.retrieval.chunks import fork_chunk
+
+_CHUNK = fork_chunk(
+    chunk_id="chunk-1",
+    project_id="project-1",
+    doc_id="doc-1",
+    text="clause-marker applies. stored quantity 4. use formula-beta",
+    filename="pack-2024-03-15.pdf",
+)
 
 
 def _install(module_name: str) -> types.ModuleType:
@@ -30,21 +39,13 @@ class PipelineTests(unittest.TestCase):
         retriever = _install(RETRIEVER_MODULE)
         retriever.available = lambda: True
         retriever.retrieve = lambda query, project_id, k=None, intent=None: {
-            "chunks": [
-                {
-                    "chunk_id": "chunk-1",
-                    "doc_id": "doc-1",
-                    "formula_id": "formula-2",
-                    "clause_id": "clause-9",
-                    "text": "stored quantity 4",
-                }
-            ]
+            "chunks": [_CHUNK]
         }
         formulas = _install(FORMULA_MODULE)
 
         def run_formula(formula_id, params=None):
             self.formula_calls.append((formula_id, params))
-            return {"value": 8}
+            return {"result": 8, "width": 2, "note": "see 14"}
 
         formulas.run_formula = run_formula
 
@@ -56,40 +57,54 @@ class PipelineTests(unittest.TestCase):
     def test_answer_cites_only_source_ids_from_attached_context(self) -> None:
         result = answer(
             "quantity",
-            "project-7",
+            "project-1",
             "stored quantity 4",
             sources=("chunk-1", "doc-1"),
-            clauses=("clause-9",),
+            clauses=("clause-marker",),
             confidence=0.9,
             task_type="lookup",
         )
         self.assertEqual(result.answer, "stored quantity 4")
-        self.assertEqual(result.citations, ("clause-9", "chunk-1", "doc-1"))
+        self.assertEqual(result.citations, ("clause-marker", "chunk-1", "doc-1"))
         self.assertEqual(result.grounding_status, "PASS")
         self.assertFalse(result.escalated)
         self.assertEqual(self.formula_calls, [])
 
-    def test_formula_is_called_and_its_figure_is_cited(self) -> None:
-        result = answer(
+    def test_formula_is_called_from_text_and_only_its_result_is_a_figure(self) -> None:
+        passed = answer(
             "compute",
-            "project-7",
+            "project-1",
             "computed 8",
             sources=("chunk-1",),
-            formula_id="formula-2",
+            formula_id="formula-beta",
             formula_params={"width": 2},
             confidence=0.9,
             task_type="compute",
         )
-        self.assertEqual(self.formula_calls, [("formula-2", {"width": 2})])
-        self.assertEqual(result.answer, "computed 8")
-        self.assertIn("formula-2", result.citations)
-        self.assertIn("chunk-1", result.citations)
-        self.assertEqual(result.formula_called, "formula-2")
+        self.assertEqual(self.formula_calls, [("formula-beta", {"width": 2})])
+        self.assertEqual(passed.answer, "computed 8")
+        self.assertIn("formula-beta", passed.citations)
+        self.assertIn("chunk-1", passed.citations)
+        self.assertEqual(passed.formula_called, "formula-beta")
 
-    def test_formula_id_outside_context_is_not_called(self) -> None:
+        blocked = answer(
+            "compute",
+            "project-1",
+            "computed 2",
+            sources=("chunk-1",),
+            formula_id="formula-beta",
+            formula_params={"width": 2},
+            confidence=0.9,
+            task_type="compute",
+        )
+        self.assertIsNone(blocked.answer)
+        self.assertEqual(blocked.reason, "unsupported figure: 2")
+        self.assertFalse(blocked.escalated)
+
+    def test_formula_id_absent_from_text_is_not_called(self) -> None:
         result = answer(
             "compute",
-            "project-7",
+            "project-1",
             "computed 8",
             sources=("chunk-1",),
             formula_id="formula-missing",
@@ -100,10 +115,24 @@ class PipelineTests(unittest.TestCase):
         self.assertIsNone(result.answer)
         self.assertEqual(result.reason, "unsupported figure: 8")
 
+    def test_clause_absent_from_text_is_refused(self) -> None:
+        result = answer(
+            "quantity",
+            "project-1",
+            "stored quantity 4",
+            sources=("chunk-1",),
+            clauses=("clause-absent",),
+            confidence=0.9,
+            task_type="lookup",
+        )
+        self.assertIsNone(result.answer)
+        self.assertEqual(result.citations, ())
+        self.assertEqual(result.reason, "identifier is not in the attached context")
+
     def test_citation_outside_context_is_not_emitted(self) -> None:
         result = answer(
             "quantity",
-            "project-7",
+            "project-1",
             "stored quantity 4",
             sources=("chunk-1", "src-not-attached"),
             confidence=0.9,
@@ -114,24 +143,70 @@ class PipelineTests(unittest.TestCase):
         self.assertNotIn("src-not-attached", result.citations)
         self.assertEqual(result.reason, "identifier is not in the attached context")
 
-    def test_empty_context_refuses_citation_and_escalates(self) -> None:
+    def test_filename_date_stays_unsupported(self) -> None:
+        result = answer(
+            "when",
+            "project-1",
+            "filed 2024",
+            sources=("doc-1",),
+            confidence=0.9,
+            task_type="lookup",
+        )
+        self.assertIsNone(result.answer)
+        self.assertEqual(result.reason, "unsupported figure: 2024")
+
+    def test_project_id_alone_does_not_cite_a_figure(self) -> None:
+        result = answer(
+            "quantity",
+            "project-1",
+            "stored quantity 4",
+            sources=("project-1",),
+            confidence=0.9,
+            task_type="lookup",
+        )
+        self.assertIsNone(result.answer)
+        self.assertEqual(result.citations, ())
+        self.assertEqual(result.reason, "project_id is not a citation for a figure")
+
+    def test_empty_retrieve_withholds_a_sentence_with_no_number(self) -> None:
         retriever = sys.modules[RETRIEVER_MODULE]
         retriever.retrieve = lambda *args, **kwargs: {"chunks": []}
+        proposed = "nothing was recorded"
         with self.assertLogs("src.policy.escalation", level="INFO") as captured:
             result = answer(
                 "quantity",
-                "project-7",
-                "stored quantity 4",
+                "project-1",
+                proposed,
+                confidence=0.9,
+                task_type="lookup",
+            )
+        self.assertIsNone(result.answer)
+        self.assertNotEqual(result.answer, proposed)
+        self.assertEqual(result.citations, ())
+        self.assertEqual(result.reason, "empty context: no answer is possible")
+        self.assertEqual(result.grounding_status, "BLOCKED")
+        self.assertTrue(result.escalated)
+        self.assertIn("context_absent", result.escalation_reasons)
+        self.assertTrue(any("escalation" in line for line in captured.output))
+
+    def test_blocked_grounding_withholds_the_answer_when_not_escalating(self) -> None:
+        proposed = "stored quantity 9"
+        with self.assertLogs("src.policy.escalation", level="INFO") as captured:
+            result = answer(
+                "quantity",
+                "project-1",
+                proposed,
                 sources=("chunk-1",),
                 confidence=0.9,
                 task_type="lookup",
             )
         self.assertIsNone(result.answer)
+        self.assertNotEqual(result.answer, proposed)
         self.assertEqual(result.citations, ())
-        self.assertEqual(result.reason, "empty context: no citation is possible")
-        self.assertTrue(result.escalated)
-        self.assertIn("context_absent", result.escalation_reasons)
-        self.assertTrue(any("escalation" in line for line in captured.output))
+        self.assertEqual(result.grounding_status, "BLOCKED")
+        self.assertEqual(result.reason, "unsupported figure: 9")
+        self.assertFalse(result.escalated)
+        self.assertTrue(any("escalated=False" in line for line in captured.output))
 
 
 if __name__ == "__main__":
