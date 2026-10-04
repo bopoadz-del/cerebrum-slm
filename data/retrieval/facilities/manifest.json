@@ -23,7 +23,7 @@
         "indexed_count": 28,
         "pack": "facilities",
         "provenance_notes": [
-          "No filled extraction sheet and no design-basis section were present in the clone. facility_id, domain, source, and date_stated on these records are fixture defaults because the sheets did not supply them: facility_id A and a second facility B, domain data_centre, source worked-example, date_stated 2026-10-04. Transfer is three values as stated: UPS immediate (no separate unit token), generator available 10s, transfer complete 12s. The orphan_metric record is missing facility_id so it is logged unroutable and is not indexed. cooling_redundancy_topology is stored as UNKNOWN and is not estimated."
+          "No filled extraction sheet and no design-basis section were present in the clone. facility_id, domain, source, and date_stated on these records are fixture defaults because the sheets did not supply them: facility A, domain data_centre, source worked-example, date_stated 2026-10-04. Facility B is isolation data, not a worked example. Transfer is three values as stated: UPS immediate (no separate unit token), generator available 10s, transfer complete 12s. The orphan_metric record is missing facility_id so it is logged unroutable and is not indexed. cooling_redundancy_topology is stored as UNKNOWN and is not estimated."
         ],
         "rejected_facts_seen": 0,
         "scope": "facility-specific — never generalise",

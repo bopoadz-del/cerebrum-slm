@@ -260,6 +260,17 @@ class CorpusTests(unittest.TestCase):
         self.assertTrue(
             all(row["value"] == "UNKNOWN" for row in isolation + measured if row["parameter"] == "cooling_redundancy_topology")
         )
+        manifest = json.loads((ROOT / "data/retrieval/facilities/manifest.json").read_text(encoding="utf-8"))
+        provenance = " ".join(
+            text
+            for note in manifest["notes"]
+            for text in note["document"].get("provenance_notes", [])
+            if isinstance(text, str)
+        )
+        self.assertIn("Facility B is isolation data, not a worked example.", provenance)
+        self.assertIn("facility A, domain data_centre, source worked-example", provenance)
+        self.assertNotIn("facility B, domain data_centre, source worked-example", provenance)
+        self.assertNotIn("a second facility B, domain data_centre, source worked-example", provenance)
         orphan = [row for row in regression if row["meta"].get("source_relpath") == "facilities/unroutable.jsonl"]
         self.assertEqual(len(orphan), 1)
         self.assertIn("worked-example", orphan[0]["user"])

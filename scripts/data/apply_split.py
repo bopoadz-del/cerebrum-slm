@@ -397,6 +397,40 @@ def _relabel_isolation_facility(rows: list[dict[str, Any]]) -> list[dict[str, An
     return relabeled
 
 
+# The pack note attributed the worked-example source to A and B together.
+# A remains that worked example. B is isolation data.
+_PROVENANCE_GROUPS_B_WITH_WORKED_EXAMPLE = (
+    "facility_id A and a second facility B, domain data_centre, source worked-example, date_stated 2026-10-04."
+)
+_PROVENANCE_A_WORKED_EXAMPLE_B_ISOLATION = (
+    "facility A, domain data_centre, source worked-example, date_stated 2026-10-04. "
+    "Facility B is isolation data, not a worked example."
+)
+
+
+def _correct_facility_provenance(notes: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    corrected: list[dict[str, Any]] = []
+    for note in notes:
+        document = note.get("document")
+        if not isinstance(document, dict) or "provenance_notes" not in document:
+            corrected.append(note)
+            continue
+        provenance = []
+        for text in document["provenance_notes"]:
+            if isinstance(text, str):
+                text = text.replace(
+                    _PROVENANCE_GROUPS_B_WITH_WORKED_EXAMPLE,
+                    _PROVENANCE_A_WORKED_EXAMPLE_B_ISOLATION,
+                )
+            provenance.append(text)
+        document = dict(document)
+        document["provenance_notes"] = provenance
+        updated = dict(note)
+        updated["document"] = document
+        corrected.append(updated)
+    return corrected
+
+
 def _consume_json(buckets: dict[str, list[Any]], rel: str, payload: bytes) -> None:
     document = json.loads(payload.decode("utf-8"))
     note = {"source_relpath": rel, "document": document}
@@ -757,7 +791,7 @@ def apply_split(zip_path: Path, out_root: Path) -> dict[str, Any]:
         out_root / "data/retrieval/facilities/manifest.json",
         {
             "count": len(facilities),
-            "notes": buckets["facility_notes"],
+            "notes": _correct_facility_provenance(buckets["facility_notes"]),
             "source_zip_sha256": zip_hash,
         },
     )
