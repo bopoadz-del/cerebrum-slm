@@ -1,0 +1,31 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - "lane-1/**"
+
+permissions:
+  contents: read
+
+jobs:
+  gates:
+    name: repo gates
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install test runner
+        run: python -m pip install --disable-pip-version-check -r requirements.txt
+      - name: Run gates
+        env:
+          PYTHONPATH: scripts
+        run: python -m gates.run
+      - name: Run gate tests
+        env:
+          PYTHONPATH: scripts
+        run: python -m pytest tests/gates
