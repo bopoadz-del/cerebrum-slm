@@ -17,6 +17,42 @@ from model.identity import API_KEY_ENV, repo_root
 from model.sampling import TinkerKeyMissing
 from tests.eval.test_labels import _write_tiny_split
 
+def _plant_routing_registries(root: Path) -> None:
+    import json
+    reg = root / "data" / "retrieval"
+    reg.mkdir(parents=True, exist_ok=True)
+    (reg / "formula_registry.json").write_text(
+        json.dumps({
+            "count": 1,
+            "formulas": [{
+                "id": "formula.synthetic",
+                "definition": {
+                    "computes": "synthetic",
+                    "inputs": [{"name": "x", "required": True, "annotation": "float"}],
+                },
+            }],
+        }) + "\n",
+        encoding="utf-8",
+    )
+    eqs = root / "eval" / "graders" / "data"
+    eqs.mkdir(parents=True, exist_ok=True)
+    (eqs / "hds5_equations.json").write_text(
+        json.dumps({
+            "count": 1,
+            "equations": [{
+                "id": "HDS5-3.1",
+                "number": "3.1",
+                "name": "HL = He + Hf",
+                "inputs": ["He", "Hf"],
+                "pdf_page": 91,
+            }],
+            "source": {"pdf_pages": [91]},
+            "extracted_by": "test",
+        }) + "\n",
+        encoding="utf-8",
+    )
+
+
 
 _RESPONSE = '{"block":"refuse","missing_inputs":[],"formula_id":"","required_inputs":[]}'
 
@@ -41,6 +77,7 @@ def test_dry_run_checks_real_data_without_tinker(monkeypatch, capsys):
     assert "held_out: n=69" in text
     assert "blind: n=60" in text
     assert "seals: ok" in text
+    assert "routing_registry: attached_for_routing_only" in text
     assert "config: ok" in text
     _assert_no_item_text(text)
 
@@ -67,6 +104,7 @@ def test_fake_sampler_writes_aggregate_scores_only(tmp_path: Path, monkeypatch):
     monkeypatch.delenv(API_KEY_ENV, raising=False)
     root = tmp_path / "repo"
     _write_tiny_split(root, held_count=2, manifest_count=2)
+    _plant_routing_registries(root)
     # The second held-out row expects a formula id. The first expects refusal.
     held = root / "data" / "held_out" / "pairs.jsonl"
     rows = [json.loads(line) for line in held.read_text(encoding="utf-8").splitlines() if line.strip()]
@@ -93,7 +131,7 @@ def test_fake_sampler_writes_aggregate_scores_only(tmp_path: Path, monkeypatch):
         root=root,
         sampler=sampler,
     )
-    assert len(seen) == 3
+    assert len(seen) == 6
     assert all("role" in message for batch in seen for message in batch)
     assert payload["schema"] == SCHEMA
     assert payload["fork_context"] is False
@@ -110,6 +148,7 @@ def test_fake_sampler_writes_aggregate_scores_only(tmp_path: Path, monkeypatch):
 def test_prompt_only_flag_is_a_system_message_and_not_a_score_field(tmp_path: Path):
     root = tmp_path / "repo"
     _write_tiny_split(root, held_count=1, manifest_count=1)
+    _plant_routing_registries(root)
     (root / "eval" / "baselines").mkdir(parents=True)
     (root / "eval" / "baselines" / "scores.md").write_text(
         "Prompt-only, held-out, n=1: refusal/qualification 0, fact-leak rate 0, "

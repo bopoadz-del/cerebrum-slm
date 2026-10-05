@@ -1,0 +1,58 @@
+"""Sample base or prompt-only under the routing-registry protocol.
+
+Writes the same aggregate schema as ``run_tuned_eval.py``. Refusal/qualification
+and fact-leak are context-free; routing attaches the split registry and uses
+constrained decoding on formula ids.
+"""
+
+from __future__ import annotations
+
+import argparse
+import sys
+from pathlib import Path
+
+_ROOT = Path(__file__).resolve().parents[2]
+for _entry in (_ROOT / "scripts", _ROOT / "src", _ROOT):
+    _text = str(_entry)
+    if _text not in sys.path:
+        sys.path.insert(0, _text)
+
+from eval.baselines.prompt_only import load_system_prompt
+from eval.readers import EvalReadError
+from eval.stop_gate import StopGateError
+from eval.tuned import TunedEvalError, format_scores, run_tuned_eval
+from model.sampling import TinkerKeyMissing, default_client_factory, sample_messages
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="Grade base or prompt-only under the new protocol")
+    parser.add_argument("--output", type=Path, required=True, help="Aggregate score JSON")
+    parser.add_argument(
+        "--prompt-only-system-prompt",
+        action="store_true",
+        help="Use the committed prompt-only system prompt",
+    )
+    args = parser.parse_args(argv)
+
+    def sampler(messages):
+        return sample_messages(messages, client_factory=default_client_factory)
+
+    # Checkpoint field records the base model id for baseline runs.
+    checkpoint = "base://Qwen/Qwen3-8B"
+    try:
+        payload = run_tuned_eval(
+            checkpoint,
+            args.output,
+            prompt_only_system_prompt=args.prompt_only_system_prompt,
+            sampler=sampler,
+        )
+    except (TunedEvalError, TinkerKeyMissing, EvalReadError, StopGateError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
+    print(format_scores(payload))
+    print(f"wrote {args.output}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

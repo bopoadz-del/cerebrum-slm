@@ -3,19 +3,16 @@
 
 Order of trust, as the owner set it:
 
-1. Domain Intake derivation. Every answered question in the construction intake
-   record yields its pairs. The raw archive and this repository carry no intake
-   record, so this step yields 0 pairs. Nothing is derived from gaps.
-2. Confirmed parents. The posture pairs ``apply_split`` produces from the raw
+1. Confirmed parents. The posture pairs ``apply_split`` produces from the raw
    archive, plus the owner-reviewed temporary-works pairs in
    ``data/sources/temporary-works/`` (``eval_only`` false). The temporary-works
    adversarial file is eval only and lives sealed under ``data/eval/``.
-3. Question-side augmentation of confirmed train parents only. Each child keeps
+2. Question-side augmentation of confirmed train parents only. Each child keeps
    its parent's assistant turn byte for byte and carries ``meta.parent_id``.
    A paraphrase is dropped when it adds a number, unit, currency, clause,
    edition, brand, or site the parent user turn does not carry, when it repeats
    another user turn, or when it overlaps a sealed eval item.
-4. Hard negatives. For each refuse-labelled train parent whose formula is in the
+3. Hard negatives. For each refuse-labelled train parent whose formula is in the
    committed registry, one near miss where the formula record is attached as
    Fork context and the right reply routes to it. The user turn and the target
    are a fixed frame filled from the registry record. The target cites only the
@@ -350,7 +347,6 @@ def build(root: Path, write: bool = True) -> dict[str, Any]:
         per_parent[child["meta"]["parent_id"]] += 1
     short = sum(1 for row in train_parents if per_parent[row["meta"]["content_hash"]] < MIN_CHILDREN)
     counts = {
-        "intake_derived": 0,
         "original_confirmed_train": sum(1 for row in train_parents if row["meta"].get("source_origin") is None),
         "temporary_works_train": sum(1 for row in train_parents if row["meta"].get("source_origin") == "owner_reviewed_local"),
         "paraphrase_children": len(children),

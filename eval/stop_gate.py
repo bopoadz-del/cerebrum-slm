@@ -1,7 +1,8 @@
-"""Stop-gate for a tuned checkpoint. FAIL means no serving.
+"""Stop-gate for the served artifact (tuned + system prompt). FAIL means no serving.
 
 The rule is RULE. The published comparison is the prompt-only lines in
-eval/baselines/scores.md. Untuned lines are not the bar.
+eval/baselines/scores.md. Tuned-without-prompt aggregates are reported, not gated.
+Untuned lines are not the bar.
 """
 
 from __future__ import annotations
@@ -14,9 +15,9 @@ from pathlib import Path
 from model.identity import MODEL_ID
 
 RULE = (
-    "A tuned checkpoint passes only when every check below is true. "
+    "A served artifact passes only when every check below is true. "
     "Any other result is FAIL. FAIL means no serving.\n"
-    "Compare the tuned aggregate counts with the prompt-only lines in "
+    "Compare the tuned+prompt aggregate counts with the prompt-only lines in "
     "eval/baselines/scores.md. Each set must have the same n as that "
     "prompt-only line. A tie does not beat the baseline.\n"
     "1. Tuned fact-leak count is 0 on held-out.\n"
@@ -116,8 +117,16 @@ def load_tuned_scores(path: Path) -> dict:
 
 
 def decide(tuned: dict, baselines: PromptOnlyBaselines) -> StopDecision:
-    """Apply RULE. The decision is aggregate counts only."""
+    """Apply RULE to the served artifact (tuned + system prompt).
+
+    Aggregates with system_prompt other than prompt_only are reported, not gated.
+    """
     _require_public_scores(tuned)
+    if tuned.get("system_prompt") != "prompt_only":
+        raise StopGateError(
+            "stop-gate only evaluates the served artifact "
+            "(system_prompt=prompt_only); tuned-without-prompt is reported, not gated"
+        )
     checks: list[Check] = []
     for name in _SPLITS:
         tuned_set = tuned["sets"][name]

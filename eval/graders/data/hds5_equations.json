@@ -1,0 +1,220 @@
+{
+  "source": {
+    "title": "Hydraulic Design of Highway Culverts, Hydraulic Design Series Number 5, Third Edition (April 2012)",
+    "publication": "FHWA-HIF-12-026",
+    "url": "https://www.fhwa.dot.gov/engineering/hydraulics/pubs/12026/hif12026.pdf",
+    "section": "Chapter 3 Culvert Hydraulic Design; Appendix A Inlet Control Equations",
+    "pdf_sha256": "0444c21f401925bc1e7e5d57c11053b7311f903df9bb3c7d451f90a0d1770058",
+    "pdf_pages": [
+      91,
+      92,
+      93,
+      94,
+      96,
+      97,
+      190,
+      191,
+      192
+    ]
+  },
+  "extracted_by": "scripts/eval/extract_hds5_equations.py",
+  "count": 18,
+  "equations": [
+    {
+      "id": "HDS5-3.1",
+      "number": "3.1",
+      "name": "HL = He + Hf + Ho + Hb + Hj + Hg",
+      "inputs": [
+        "Hg",
+        "He",
+        "Ho",
+        "Hb",
+        "Hf",
+        "HL",
+        "Hj"
+      ],
+      "pdf_page": 91
+    },
+    {
+      "id": "HDS5-3.2",
+      "number": "3.2",
+      "name": "Q V= A",
+      "inputs": [
+        "V",
+        "Q",
+        "A"
+      ],
+      "pdf_page": 91
+    },
+    {
+      "id": "HDS5-3.3",
+      "number": "3.3",
+      "name": "V2 HV = 2g",
+      "inputs": [
+        "HV"
+      ],
+      "pdf_page": 91
+    },
+    {
+      "id": "HDS5-3.4a",
+      "number": "3.4a",
+      "name": "He = ke (( ",
+      "inputs": [
+        "ke",
+        "He"
+      ],
+      "pdf_page": 91
+    },
+    {
+      "id": "HDS5-3.4b",
+      "number": "3.4b",
+      "name": "Hf =  U1.33 ",
+      "inputs": [
+        "n",
+        "L",
+        "R",
+        "A",
+        "p",
+        "V"
+      ],
+      "pdf_page": 92
+    },
+    {
+      "id": "HDS5-3.4c",
+      "number": "3.4c",
+      "name": "Ho = 1 .0  - ",
+      "inputs": [
+        "Ho"
+      ],
+      "pdf_page": 92
+    },
+    {
+      "id": "HDS5-3.4d",
+      "number": "3.4d",
+      "name": "(3.4d). V2 Ho = Hv = 2g",
+      "inputs": [
+        "Hv",
+        "Ho"
+      ],
+      "pdf_page": 92
+    },
+    {
+      "id": "HDS5-3.4e",
+      "number": "3.4e",
+      "name": "Ho = 2g",
+      "inputs": [
+        "Ho"
+      ],
+      "pdf_page": 92
+    },
+    {
+      "id": "HDS5-3.5",
+      "number": "3.5",
+      "name": "H = 1 + ke + U1.33 ",
+      "inputs": [
+        "ke",
+        "H"
+      ],
+      "pdf_page": 92
+    },
+    {
+      "id": "HDS5-3.6a",
+      "number": "3.6a",
+      "name": "Vu2 V2 HWo + LS + = TW + d + HL 2g 2g",
+      "inputs": [
+        "HW",
+        "Vu",
+        "TW",
+        "Vd",
+        "HL"
+      ],
+      "pdf_page": 93
+    },
+    {
+      "id": "HDS5-3.6b",
+      "number": "3.6b",
+      "name": "HWo = TW + HL - LS",
+      "inputs": [
+        "HWo",
+        "HL",
+        "TW"
+      ],
+      "pdf_page": 93
+    },
+    {
+      "id": "HDS5-3.7",
+      "number": "3.7",
+      "name": "Hf Ku n2 V2 Sf = = 1.33 L R2g",
+      "inputs": [
+        "L"
+      ],
+      "pdf_page": 94
+    },
+    {
+      "id": "HDS5-3.8",
+      "number": "3.8",
+      "name": "nc =  i=1 ",
+      "inputs": [
+        "nc",
+        "G",
+        "p1",
+        "p2",
+        "n1",
+        "p",
+        "n"
+      ],
+      "pdf_page": 96
+    },
+    {
+      "id": "HDS5-3.9",
+      "number": "3.9",
+      "name": "Qo= CdL HW r1.5 Qo = Overtopping flow rate in ft³/s (m³/s)",
+      "inputs": [
+        "Qo",
+        "Cd",
+        "L",
+        "HW"
+      ],
+      "pdf_page": 97
+    },
+    {
+      "id": "HDS5-A.1",
+      "number": "A.1",
+      "name": "M Form( 1) = + K  u 0.5  + Ks S",
+      "inputs": [
+        "D",
+        "HWi"
+      ],
+      "pdf_page": 190
+    },
+    {
+      "id": "HDS5-A.2",
+      "number": "A.2",
+      "name": "M Form (2) = K  u 0 .5 ",
+      "inputs": [
+        "D",
+        "HWi"
+      ],
+      "pdf_page": 191
+    },
+    {
+      "id": "HDS5-A.3",
+      "number": "A.3",
+      "name": "2 = c  u 0.5  + Y + Ks S",
+      "inputs": [
+        "D",
+        "HWi"
+      ],
+      "pdf_page": 191
+    },
+    {
+      "id": "HDS5-A.4",
+      "number": "A.4",
+      "name": "Hc d c y h = + D D 2D",
+      "inputs": [
+        "D"
+      ],
+      "pdf_page": 192
+    }
+  ]
+}
