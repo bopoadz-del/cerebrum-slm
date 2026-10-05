@@ -52,3 +52,9 @@ The construction posture adapter is served with the committed system prompt in
 paired artifact (tuned weights + system prompt). A tuned checkpoint without the
 system prompt is reported for diagnosis and is not a serve decision.
 
+Pinned serve path (run 4 epoch 2, protocol v2 PASS):
+
+`tinker://d33e27e4-5533-5af4-9039-c9bf8254d4b7:train:0/sampler_weights/posture-qwen3-8b-lora-r16-epoch2`
+
+Config and client: `configs/serve/posture-epoch2.json`, `src/posture_model/`.
+Blind refusal/qualification: **7/60** (`KNOWN_LIMITATIONS.md`).
