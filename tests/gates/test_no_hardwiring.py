@@ -59,7 +59,7 @@ def test_catalog_seals_eval_and_leaves_posture_unsealed(repo_root: Path) -> None
     assert content(blind) in catalog.content_hashes
     assert content(governed) not in catalog.content_hashes
     assert content(datacenter) in catalog.content_hashes
-    assert len(catalog.content_hashes) == 60
+    assert len(catalog.content_hashes) == 74
 
 
 def test_real_probe_and_domain_red_then_removed(tmp_path: Path, repo_root: Path) -> None:
