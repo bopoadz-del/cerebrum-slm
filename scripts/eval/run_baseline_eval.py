@@ -2,7 +2,7 @@
 
 Writes the same aggregate schema as ``run_tuned_eval.py``. Refusal/qualification
 and fact-leak are context-free; routing attaches the split registry and uses
-constrained decoding on formula ids.
+constrained decoding on formula ids. Uses one shared sampling client.
 """
 
 from __future__ import annotations
@@ -34,8 +34,16 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = parser.parse_args(argv)
 
+    # One shared client (avoid per-sample ServiceClient / connection leak).
+    built: dict = {}
+
+    def factory():
+        if "pair" not in built:
+            built["pair"] = default_client_factory()
+        return built["pair"]
+
     def sampler(messages):
-        return sample_messages(messages, client_factory=default_client_factory)
+        return sample_messages(messages, client_factory=factory)
 
     # Checkpoint field records the base model id for baseline runs.
     checkpoint = "base://Qwen/Qwen3-8B"

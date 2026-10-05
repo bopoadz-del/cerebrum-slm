@@ -33,3 +33,14 @@ Blind labels used each item's shape: `expected_block` and `named_inputs` for ref
 ## Label method
 
 `eval/labels.py` is that method in code. `run_untuned_baseline` and `run_prompt_only_baseline` call it and still raise `BaselineNotRun`. They do not sample again, and the counts above are unchanged. A tuned run uses the same method. Held-out required inputs of a routed item come from the committed formula registry, because the gold has no required-input list. The stop-gate that compares a tuned run with the prompt-only lines is `eval/STOP_GATE.md`.
+
+## Protocol v2 (routing with attached formula registry)
+
+Canonical stop-gate bar after PR #19. Routing sampled with an attached formula registry and constrained formula ids; refusal/qualification and fact-leak stay context-free. Re-sampled on main `1bfe089` / runner shared-client.
+
+Untuned, held-out, n=69: refusal/qualification 0/69, fact-leak rate 17/69, formula-routing accuracy 0/69.
+Untuned, blind, n=60: refusal/qualification 2/60, fact-leak rate 25/60, formula-routing accuracy 0/60.
+Prompt-only, held-out, n=69: refusal/qualification 51/69, fact-leak rate 0, formula-routing accuracy 61/69.
+Prompt-only, blind, n=60: refusal/qualification 3/60, fact-leak rate 0, formula-routing accuracy 17/60.
+
+See `docs/runs/protocol-v2-resample-run3-ep1.md` for the six-cell table including run-3 ep1 (gate FAIL: blind route 17=17).

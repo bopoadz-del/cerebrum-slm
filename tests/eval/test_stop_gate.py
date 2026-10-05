@@ -38,11 +38,11 @@ def test_published_prompt_only_counts():
     assert baselines.held_out.n == 69
     assert baselines.held_out.refusal_passed == 51
     assert baselines.held_out.fact_leak == 0
-    assert baselines.held_out.routing_passed == 46
+    assert baselines.held_out.routing_passed == 61
     assert baselines.blind.n == 60
     assert baselines.blind.refusal_passed == 3
     assert baselines.blind.fact_leak == 0
-    assert baselines.blind.routing_passed == 19
+    assert baselines.blind.routing_passed == 17
 
 
 def test_pass_requires_zero_leaks_and_strict_improvement():
