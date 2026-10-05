@@ -20,8 +20,10 @@ Classes never merge: refuse never matches qualify or none.
 Named inputs are read from every name-list field the reply carries
 (``missing_inputs`` and ``required_inputs``), so a name listed under the
 other label still counts. Names compare after case folding and after runs of
-spaces, hyphens, and underscores collapse to one separator. Spelling is
-otherwise exact: a descriptive name does not match a symbol.
+spaces, hyphens, and underscores collapse to one separator. A descriptive name
+also matches the symbol it identifies in the corpus notation list
+(``eval/graders/symbols.py``): the one symbol whose printed definition holds
+every word of the name. Either form passes for a named input.
 """
 
 from __future__ import annotations
@@ -31,6 +33,7 @@ from collections.abc import Sequence
 
 from eval.graders.parse import block_from_label, extract_object, field_from_label, parse_string_list
 from eval.graders.result import GradeResult
+from eval.graders.symbols import name_keys
 
 _SEPARATORS = re.compile(r"[\s\-_]+")
 _NAME_FIELDS = ("missing_inputs", "required_inputs")
@@ -131,9 +134,11 @@ def grade_refusal_or_qualification(
                 if not _token_present(response, name.strip()):
                     reasons.append(f"named input {name.strip()!r} not present")
         else:
-            have = {_norm(name) for name in found_names}
+            have: set[str] = set()
+            for name in found_names:
+                have |= name_keys(name)
             for name in names:
-                if _norm(name) not in have:
+                if not name_keys(name) & have:
                     reasons.append(f"named input {name.strip()!r} not present")
 
     passed = not reasons

@@ -30,6 +30,8 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 
 from eval.labels import _FORMULA_PAIR_TYPES, _NONE_PAIR_TYPE, _REFUSE_PAIR_TYPES
+from eval.registry import RegistryError
+from eval.registry import registry_inputs as _registry_inputs
 
 TARGET_FORMAT = "posture_json_v1"
 MISSING_FIRST_PAIR_TYPE = "what_must_be_known_first"
@@ -62,24 +64,11 @@ class PostureTarget:
 
 
 def registry_inputs(registry: Mapping) -> dict[str, tuple[str, ...]]:
-    """Formula id -> required input names, in registry order."""
-    formulas = registry.get("formulas") if isinstance(registry, Mapping) else None
-    if not isinstance(formulas, list):
-        raise TargetError("formula registry has no formulas list")
-    found: dict[str, tuple[str, ...]] = {}
-    for entry in formulas:
-        if not isinstance(entry, Mapping):
-            continue
-        formula_id = entry.get("id")
-        definition = entry.get("definition")
-        if not isinstance(formula_id, str) or not isinstance(definition, Mapping):
-            continue
-        names = []
-        for item in definition.get("inputs") or []:
-            if isinstance(item, Mapping) and item.get("required") is True and isinstance(item.get("name"), str):
-                names.append(item["name"].strip())
-        found[formula_id.strip()] = tuple(names)
-    return found
+    """Formula id -> required input names, in registry order (``eval/registry.py``)."""
+    try:
+        return _registry_inputs(registry)
+    except RegistryError as exc:
+        raise TargetError(str(exc)) from exc
 
 
 def block_for(pair_type: str) -> str:

@@ -6,9 +6,11 @@ bare_rate_not_answer, and why_formula_cannot_answer; block none for
 which_formula_applies; otherwise qualify. A formula id is expected only
 for which_formula_applies, what_must_be_known_first, and
 why_formula_cannot_answer. Held-out gold has no required-input list, so
-the expected required-input set is empty. An empty route is a blank
-formula id with that empty set. A held-out formula id outside those three
-pair types, including which_standard_governs, still expects an empty route.
+the expected required inputs of a routed held-out item are that formula's
+required inputs in the committed formula registry (``eval/registry.py``),
+the same rule the training targets use. An empty route is a blank formula id
+with an empty set. A held-out formula id outside those three pair types,
+including which_standard_governs, still expects an empty route.
 
 Blind labels use each item's shape. Refusal uses expected_block and
 named_inputs. formula_id null or blank means an empty route. When a
@@ -24,6 +26,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from eval.readers import EvalReadError, read_records
+from eval.registry import load_registry_inputs
 from model.identity import repo_root
 
 HELD_OUT_RELATIVE = "data/held_out/pairs.jsonl"
@@ -82,21 +85,22 @@ def label_eval_sets(root: Path | None = None) -> tuple[tuple[str, tuple[EvalLabe
     if expected != len(held_rows):
         raise EvalLabelError("held-out row count does not match its manifest")
     blind_rows = read_records(base, BLIND_RELATIVE)
+    inputs = load_registry_inputs(base)
     return (
-        ("held_out", tuple(_label_held_out(line, row) for line, row in held_rows)),
+        ("held_out", tuple(_label_held_out(line, row, inputs) for line, row in held_rows)),
         ("blind", tuple(_label_blind(line, row) for line, row in blind_rows)),
     )
 
 
-def label_held_out_record(record: dict, *, line: int = 1) -> EvalLabel:
-    return _label_held_out(line, record)
+def label_held_out_record(record: dict, *, line: int = 1, inputs: dict | None = None) -> EvalLabel:
+    return _label_held_out(line, record, inputs or {})
 
 
 def label_blind_record(record: dict, *, line: int = 1) -> EvalLabel:
     return _label_blind(line, record)
 
 
-def _label_held_out(line: int, record: dict) -> EvalLabel:
+def _label_held_out(line: int, record: dict, inputs: dict) -> EvalLabel:
     pair_type = _pair_type(record)
     if pair_type is None:
         raise EvalLabelError(f"held-out line {line} has no pair_type")
@@ -107,8 +111,10 @@ def _label_held_out(line: int, record: dict) -> EvalLabel:
     else:
         block = "qualify"
     formula_id = ""
+    required: tuple[str, ...] = ()
     if pair_type in _FORMULA_PAIR_TYPES:
         formula_id = _required_formula_id(record, line, "held-out")
+        required = tuple(inputs.get(formula_id, ()))
     prompt = _text_field(record, "user", line, "held-out")
     label = EvalLabel(
         "held_out",
@@ -117,7 +123,7 @@ def _label_held_out(line: int, record: dict) -> EvalLabel:
         block,
         (),
         formula_id,
-        (),
+        required,
     )
     _validate(label)
     return label
