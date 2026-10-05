@@ -118,6 +118,64 @@ def test_schema_rewrite_matches_content_hash_then_a_different_answer_passes(tmp_
     assert check_hardwiring(tmp_path) == []
 
 
+_RETRIEVAL_EXPORTS = (
+    "AttachedContext",
+    "GroundingVerdict",
+    "TurnResult",
+    "answer",
+    "attach_context",
+    "call_formula",
+    "call_retrieve",
+    "grounding_gate",
+)
+
+
+def _literal(names: tuple[str, ...] | list[str], opener: str, closer: str) -> str:
+    body = ",\n".join(f"    {name!r}" for name in names)
+    return f"__all__ = {opener}\n{body},\n{closer}\n"
+
+
+def test_dunder_all_exports_are_not_a_word_list(tmp_path: Path) -> None:
+    module = tmp_path / "src" / "retrieval" / "__init__.py"
+    _write(module, _literal(_RETRIEVAL_EXPORTS, "[", "]"))
+    assert check_hardwiring(tmp_path) == []
+    _write(module, _literal(_RETRIEVAL_EXPORTS, "(", ")"))
+    assert check_hardwiring(tmp_path) == []
+    _write(module, "__all__: list[str] = [\n" + ",\n".join(f"    {name!r}" for name in _RETRIEVAL_EXPORTS) + ",\n]\n")
+    assert check_hardwiring(tmp_path) == []
+
+
+def test_word_lists_of_domains_brands_sites_and_probes_still_fail(tmp_path: Path) -> None:
+    for name in ("domains", "brands", "sites", "probe_ids"):
+        path = tmp_path / "src" / f"{name}.py"
+        _write(path, f'{name} = ["alpha", "beta", "gamma"]\n')
+        findings = check_hardwiring(tmp_path)
+        assert any(
+            f"word list assigned to {name}" in finding.message for finding in findings
+        ), name
+        path.unlink()
+
+    terms = ", ".join(f'"term{i}"' for i in range(8))
+    assigned = tmp_path / "src" / "terms.py"
+    _write(assigned, f"values = [{terms}]\n")
+    assert any(
+        "word list literal with 8 strings" in finding.message
+        for finding in check_hardwiring(tmp_path)
+    )
+
+    sites = ",\n".join(f'    "North Wharf {i}"' for i in range(8))
+    _write(assigned, f"__all__ = [\n{sites},\n]\n")
+    assert any(
+        "word list literal with 8 strings" in finding.message
+        for finding in check_hardwiring(tmp_path)
+    )
+
+    both = ",\n".join(f'    "token{i}"' for i in range(8))
+    _write(assigned, f"__all__ = domains = [\n{both},\n]\n")
+    findings = check_hardwiring(tmp_path)
+    assert any("word list assigned to domains" in finding.message for finding in findings)
+
+
 def test_word_list_in_python_json_and_yaml_then_removed(tmp_path: Path) -> None:
     py_file = tmp_path / "src" / "lexicon.py"
     _write(py_file, 'domains = ["alpha", "beta", "gamma"]\n')
