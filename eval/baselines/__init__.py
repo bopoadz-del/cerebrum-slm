@@ -1,4 +1,4 @@
-"""Baseline entry points. Neither baseline is run from this package."""
+"""Baseline entry points. Neither baseline is sampled from this package."""
 
 from eval.baselines.blocked import BaselineNotRun
 from eval.baselines.prompt_only import load_system_prompt, run_prompt_only_baseline

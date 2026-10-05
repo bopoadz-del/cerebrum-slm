@@ -30,6 +30,12 @@ Training files are `*.jsonl` and `*.json` under `data/`, except `data/raw/`, `da
 
 `configs/lora/qwen3-8b-posture.json` is the posture adapter for `Qwen/Qwen3-8B`. `scripts/train/train_lora.py --dry-run` checks that config and the train split and prints counts. It does not contact Tinker. Hyperparameter reasoning is in `configs/lora/README.md`.
 
+## Tuned eval
+
+`scripts/eval/run_tuned_eval.py` samples a Tinker checkpoint of the Qwen3-8B LoRA on held-out and the blind set, grades with the refusal, fact-leak, and formula-routing graders, and writes counts only. `--dry-run` checks the model config, the held-out manifest, and the sealed blind file, and does not contact Tinker. `--prompt-only-system-prompt` stacks the committed prompt-only system prompt on the tuned checkpoint. Labels for both sets live in `eval/labels.py`, which the baseline entry points call without sampling again.
+
+`scripts/eval/run_stop_gate.py` compares those counts with the prompt-only lines in `eval/baselines/scores.md`. The rule is in `eval/STOP_GATE.md`. FAIL means no serving.
+
 ## What this entry point does not do
 
 No training run is started by CI or by `--dry-run`. No new pairs. `data/eval/` stays sealed and is not read by the training entry point.
