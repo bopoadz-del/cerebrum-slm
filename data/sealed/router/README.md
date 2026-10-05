@@ -1,8 +1,8 @@
 # Sealed router eval
 
-OWNER: sealed router eval needs 60 documents from a project outside the Fork pool, labelled by a practitioner
+OWNER: sealed router eval needs 60 documents from Master Folder (or another corpus not yet used as training labels), labelled by a practitioner
 
-This directory waits for that corpus. The documents must come from a project that is not in the Fork pool. The person who labels them must be a different author from the author of any training labels.
+This directory waits for that corpus. Master Folder, including DG2 Infra Pack 1, is a valid source: not all of Master Folder is in Fork, and nothing is sealed yet. Another corpus is valid when it has not yet been used as training labels. A practitioner labels the documents.
 
 `labelling_sheet.csv` has 60 blank rows, five for each label in `configs/router/labels.json`. The practitioner reads the excerpt and ticks exactly one label from the document content. Do not infer a label from the filename, the folder, the document id, or the project name. Leave `filename_optional_blank` empty. Tick `unsure` when the text does not support one declared label. `unsure` is not a training label.
 

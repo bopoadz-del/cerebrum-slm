@@ -10,7 +10,7 @@ Pull request #25 (`data/router-labels`) is the raw document pool. That file is n
 
 ## Sealed eval
 
-The sealed set is an owner corpus outside the Fork pool. The sheet, the empty drop file, and the owner line are in `data/sealed/router/`. `configs/router/sealed_eval.json` sets n=60 (5 per label), the agreement threshold, teacher placeholders, and `majority_class_fail`.
+The sealed set is 60 documents from Master Folder (or another corpus not yet used as training labels), labelled by a practitioner. Master Folder, including DG2 Infra Pack 1, is a valid source: not all of Master Folder is in Fork, and nothing is sealed yet. The sheet, the empty drop file, and the owner line are in `data/sealed/router/`. `configs/router/sealed_eval.json` sets n=60 (5 per label), the agreement threshold, teacher placeholders, and `majority_class_fail`.
 
 Holding out one Fork project is an extra in-pool check only. It is not the sealed set.
 

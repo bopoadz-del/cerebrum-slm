@@ -6,8 +6,8 @@ from router.sheet import header, sealed_rows
 
 
 OWNER_LINE = (
-    "OWNER: sealed router eval needs 60 documents from a project outside "
-    "the Fork pool, labelled by a practitioner"
+    "OWNER: sealed router eval needs 60 documents from Master Folder "
+    "(or another corpus not yet used as training labels), labelled by a practitioner"
 )
 
 
@@ -22,8 +22,8 @@ def test_sealed_config_matches_the_label_file(repo_root: Path) -> None:
     assert config["teacher"]["provider"] is None
     assert config["teacher"]["model"] is None
     assert config["teacher"]["confidence_floor"] is None
-    assert "Fork pool" in config["note"]
-    assert "different author" in config["note"]
+    assert "Master Folder" in config["note"]
+    assert "practitioner" in config["note"]
     assert config["labels_file"] == "configs/router/labels.json"
 
 
