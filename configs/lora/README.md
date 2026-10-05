@@ -19,7 +19,26 @@ Checked against the Tinker Python SDK 0.32 signatures and the training docs: `Se
 - **Batch size 8.** The primer notes that LoRA loses more from a large batch than full fine-tuning does. Eight gives 27 updates in the epoch, and the last batch is kept even though it is short of eight.
 - **Max sequence length 1024.** Train replies are short posture turns. 1024 covers the Qwen3 chat template and refuses a long document. The model's native context is 32768 and is not used.
 - **Seed 0.** This is the seed already fixed for sampling, so the adapter initialization and the shuffle are reproducible.
-- **Loss on assistant turns only.** `forward_backward(..., "cross_entropy")` gets a shift-by-one datum: weights are 0 through the prompt, including the generation header, and 1 on the assistant tokens. System and user tokens are not trained. Weights stay 0 or 1.
+- **Loss on assistant turns only.** Checked on all train pairs with the Qwen3-8B tokenizer: weight 0 through the system, user, and generation header, weight 1 on the reply and its end-of-turn token.
+- **Loss detail.** `forward_backward(..., "cross_entropy")` gets a shift-by-one datum: weights are 0 through the prompt, including the generation header, and 1 on the assistant tokens. System and user tokens are not trained. Weights stay 0 or 1.
+
+## Format: the same system prompt and the graded reply (phase-1 fix)
+
+Run 1 trained every pair with an empty system turn and a prose target, while the eval grades one JSON object and the tuned+prompt eval stacks `eval/baselines/prompt_only_system_prompt.txt`. That was the defect (see `docs/audit/phase1-grader-and-format-audit.md`).
+
+- `system_prompt_file` must be `eval/baselines/prompt_only_system_prompt.txt`. Every train pair gets that system turn, so train and tuned+prompt eval see the same prompt and the same Qwen3 template.
+- `target_format` must be `posture_json_v1`. `scripts/train/posture_target.py` renders each target from the pair's own labels: block by the eval label rule, formula id from the pair, required inputs from the committed formula registry. No model writes target text. The rendered target passes the Split check.
+- `--log-json PATH` writes step losses and checkpoint paths (no key, no item text).
+
+## Rank-16 run: `qwen3-8b-posture-r16.json`
+
+Used once, after the data change, with the same format.
+
+- **Rank 16, alpha 16.** More capacity for about 1,500 examples. The LoRA primer notes the optimal LR does not depend on rank.
+- **Learning rate 0.000473.** Tinker's recommended LoRA LR, `tinker_cookbook.hyperparam_utils.get_lr("Qwen/Qwen3-8B", is_lora=True)` = `5e-5 * 10 * (2000 / 4096) ** 0.0775` (base LR 5e-5, LoRA multiplier 10, Qwen exponent 0.0775, hidden size 4096). Sources: https://tinker-docs.thinkingmachines.ai/cookbook/api-reference/hyperparam_utils/get_lr/ and https://tinker-docs.thinkingmachines.ai/tinker/lora-primer/ ("LoRA requires a much larger LR than full fine-tuning, typically about 10x").
+- **Two epochs, batch 16.** A sampler checkpoint is saved after each epoch (`<name>-epoch<N>`).
+- **Early stop on held-out leak.** Each epoch checkpoint is scored by `scripts/eval/run_tuned_eval.py`. The served candidate is the last epoch before the first epoch whose held-out fact-leak is above 0. The training script itself never reads held-out.
+- **Max sequence length 2048.** Train rows now carry the system prompt and, for hard negatives, an attached Fork context.
 
 The script renders with the tokenizer from `TrainingClient.get_tokenizer()`, calling `apply_chat_template(..., enable_thinking=False)`. That is the same Qwen3 chat template the sampling client uses. If the rendered prompt is not a prefix of the full conversation, the run stops instead of guessing the assistant span.
 

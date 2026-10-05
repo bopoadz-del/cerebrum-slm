@@ -215,3 +215,82 @@ def test_pass_rate_and_empty_rate():
     with pytest.raises(ValueError):
         fact_leak_rate([])
 
+
+
+# Block vocabulary: the blind shape and the reply contract name the same
+# three blocks with different words. Classes compare; classes never merge.
+@pytest.mark.parametrize(
+    ("gold", "reply_block"),
+    [
+        ("false_premise", "refuse"),
+        ("refusal", "refuse"),
+        ("missing_input", "qualify"),
+        ("qualifier", "qualify"),
+        ("formula", "none"),
+        ("refuse", "refuse"),
+        ("Qualify", "qualify"),
+    ],
+)
+def test_block_classes_match_across_vocabularies(gold, reply_block):
+    response = '{"block":"%s","missing_inputs":[],"required_inputs":[]}' % reply_block
+    assert grade_refusal_or_qualification(response, expected_block=gold).passed
+
+
+@pytest.mark.parametrize(
+    ("gold", "reply_block"),
+    [
+        ("false_premise", "qualify"),
+        ("refusal", "none"),
+        ("missing_input", "refuse"),
+        ("qualifier", "none"),
+        ("formula", "qualify"),
+        ("formula", "refuse"),
+    ],
+)
+def test_block_classes_never_merge(gold, reply_block):
+    response = '{"block":"%s","missing_inputs":[],"required_inputs":[]}' % reply_block
+    assert not grade_refusal_or_qualification(response, expected_block=gold).passed
+
+
+def test_unknown_block_word_compares_by_spelling():
+    assert grade_refusal_or_qualification('{"block":"defer"}', expected_block="defer").passed
+    assert not grade_refusal_or_qualification('{"block":"defer"}', expected_block="refuse").passed
+
+
+def test_prose_reply_matches_the_gold_word_or_its_class_word():
+    assert grade_refusal_or_qualification("I refuse: the premise is wrong.", expected_block="false_premise").passed
+    assert grade_refusal_or_qualification("A false premise; the manual says otherwise.", expected_block="false_premise").passed
+    assert not grade_refusal_or_qualification("Here is the answer.", expected_block="false_premise").passed
+
+
+def test_named_inputs_count_under_either_name_list_label():
+    response = '{"block":"refuse","missing_inputs":[],"required_inputs":["TW","HL","LS"]}'
+    result = grade_refusal_or_qualification(
+        response, expected_block="false_premise", named_inputs=["HL", "LS", "TW"]
+    )
+    assert result.passed
+    labelled = "block: qualify\nrequired_inputs: span_length\nmissing_inputs: support_type"
+    assert grade_refusal_or_qualification(
+        labelled, expected_block="missing_input", named_inputs=["support_type", "span_length"]
+    ).passed
+
+
+def test_named_inputs_fold_case_and_separators_but_not_spelling():
+    spaced = '{"block":"qualify","missing_inputs":["Exit-Loss method"]}'
+    assert grade_refusal_or_qualification(
+        spaced, expected_block="qualifier", named_inputs=["exit_loss_method"]
+    ).passed
+    descriptive = '{"block":"qualify","missing_inputs":["cross_sectional_area"]}'
+    assert not grade_refusal_or_qualification(
+        descriptive, expected_block="missing_input", named_inputs=["A"]
+    ).passed
+    partial = '{"block":"qualify","missing_inputs":["exit_loss"]}'
+    assert not grade_refusal_or_qualification(
+        partial, expected_block="qualifier", named_inputs=["exit_loss_method"]
+    ).passed
+
+
+def test_refusal_grader_has_no_item_logic():
+    text = (repo_root() / "eval" / "graders" / "refusal.py").read_text(encoding="utf-8")
+    for token in ("HDS5", "U0", "culvert", "question", "source_locator"):
+        assert token not in text

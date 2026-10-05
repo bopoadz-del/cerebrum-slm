@@ -13,7 +13,7 @@
     "attn": true,
     "unembed": false
   },
-  "learning_rate": 0.00005,
+  "learning_rate": 5e-05,
   "beta1": 0.9,
   "beta2": 0.95,
   "eps": 1e-12,
@@ -23,5 +23,7 @@
   "batch_size": 8,
   "max_sequence_length": 1024,
   "seed": 0,
-  "checkpoint_name": "posture-qwen3-8b-lora"
+  "checkpoint_name": "posture-qwen3-8b-lora",
+  "system_prompt_file": "eval/baselines/prompt_only_system_prompt.txt",
+  "target_format": "posture_json_v1"
 }

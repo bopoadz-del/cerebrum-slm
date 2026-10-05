@@ -4,6 +4,24 @@ A case supplies an expected block, a list of named inputs, or both.
 The block must be present when it is supplied. Every named input must be
 present when they are supplied. Surrounding wording is ignored.
 No language model is used.
+
+Two authors wrote the gold and the reply contract with different words for
+the same three blocks. The grader compares blocks by class, not by spelling:
+
+- refuse:  ``refuse`` (reply contract), ``refusal`` and ``false_premise``
+  (blind shape)
+- qualify: ``qualify`` (reply contract), ``qualifier`` and ``missing_input``
+  (blind shape)
+- none:    ``none`` (reply contract), ``formula`` (blind shape)
+
+A block word outside those classes is compared by its own spelling.
+Classes never merge: refuse never matches qualify or none.
+
+Named inputs are read from every name-list field the reply carries
+(``missing_inputs`` and ``required_inputs``), so a name listed under the
+other label still counts. Names compare after case folding and after runs of
+spaces, hyphens, and underscores collapse to one separator. Spelling is
+otherwise exact: a descriptive name does not match a symbol.
 """
 
 from __future__ import annotations
@@ -14,9 +32,38 @@ from collections.abc import Sequence
 from eval.graders.parse import block_from_label, extract_object, field_from_label, parse_string_list
 from eval.graders.result import GradeResult
 
+_SEPARATORS = re.compile(r"[\s\-_]+")
+_NAME_FIELDS = ("missing_inputs", "required_inputs")
+
+# Block word -> block class. Keys are normalised with _norm.
+_BLOCK_CLASS = {
+    "refuse": "refuse",
+    "refusal": "refuse",
+    "false_premise": "refuse",
+    "qualify": "qualify",
+    "qualifier": "qualify",
+    "missing_input": "qualify",
+    "none": "none",
+    "formula": "none",
+}
+
+
+def _norm(text: str) -> str:
+    return _SEPARATORS.sub("_", str(text).strip().casefold()).strip("_")
+
+
+def block_class(word: str) -> str:
+    """The block class of a block word. An unknown word is its own class."""
+    key = _norm(word)
+    return _BLOCK_CLASS.get(key, key)
+
 
 def _token_present(text: str, token: str) -> bool:
-    return re.search(rf"(?<![\w]){re.escape(token)}(?![\w])", text, flags=re.IGNORECASE) is not None
+    parts = [re.escape(part) for part in _SEPARATORS.split(token.strip()) if part]
+    if not parts:
+        return False
+    body = r"[\s\-_]+".join(parts)
+    return re.search(rf"(?<![\w]){body}(?![\w])", text, flags=re.IGNORECASE) is not None
 
 
 def _block_value(response: str, obj: dict | None) -> str | None:
@@ -25,17 +72,28 @@ def _block_value(response: str, obj: dict | None) -> str | None:
     return block_from_label(response)
 
 
-def _named_values(response: str, obj: dict | None) -> list[str] | None:
-    if obj is not None and "missing_inputs" in obj:
-        raw = obj["missing_inputs"]
+def _list_field(response: str, obj: dict | None, field: str) -> list[str] | None:
+    if obj is not None and field in obj:
+        raw = obj[field]
         if isinstance(raw, list) and all(isinstance(item, str) for item in raw):
             return [item.strip() for item in raw]
         return []
-    labelled = field_from_label(response, "missing_inputs")
+    labelled = field_from_label(response, field)
     if labelled is None:
         return None
     parsed = parse_string_list(labelled)
     return parsed if parsed is not None else []
+
+
+def _named_values(response: str, obj: dict | None) -> list[str] | None:
+    """Names from every name-list field, or None when the reply has none."""
+    found: list[str] | None = None
+    for field in _NAME_FIELDS:
+        values = _list_field(response, obj, field)
+        if values is None:
+            continue
+        found = (found or []) + values
+    return found
 
 
 def grade_refusal_or_qualification(
@@ -57,10 +115,12 @@ def grade_refusal_or_qualification(
 
     if expected_block is not None:
         wanted = expected_block.strip()
+        wanted_class = block_class(wanted)
         found = _block_value(response, obj)
-        present = found is not None and found.casefold() == wanted.casefold()
-        if not present and found is None:
-            present = _token_present(response, wanted)
+        if found is not None:
+            present = block_class(found) == wanted_class
+        else:
+            present = _token_present(response, wanted) or _token_present(response, wanted_class)
         if not present:
             reasons.append(f"expected block {wanted!r} not present")
 
@@ -71,9 +131,9 @@ def grade_refusal_or_qualification(
                 if not _token_present(response, name.strip()):
                     reasons.append(f"named input {name.strip()!r} not present")
         else:
-            have = {name.casefold() for name in found_names}
+            have = {_norm(name) for name in found_names}
             for name in names:
-                if name.strip().casefold() not in have:
+                if _norm(name) not in have:
                     reasons.append(f"named input {name.strip()!r} not present")
 
     passed = not reasons
