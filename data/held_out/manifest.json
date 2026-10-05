@@ -1,5 +1,4 @@
 {
-  "build": "scripts/data/build_phase1.py",
   "by_stratum": {
     "concrete_structures": {
       "candidates": 28,
@@ -49,22 +48,14 @@
       "held_out": 1,
       "stratified": 1,
       "train": 3
-    },
-    "temporary_works_interface": {
-      "candidates": 28,
-      "full_domain": 0,
-      "held_out": 4,
-      "stratified": 4,
-      "train": 24
     }
   },
-  "count": 69,
+  "count": 65,
   "domain_pair_count": 27,
   "fraction_denominator": 100,
   "fraction_numerator": 15,
-  "group_by": "parent_id; children of a held-out parent are not written to train",
   "held_out_domain": "governance",
-  "holdout_rule": "held-out domain whole; 15 percent of every other source group, first by content hash, round half up",
+  "holdout_rule": "median explicit domain ordered by (count ascending, name ascending); index (n-1)//2",
   "schema": [
     "system",
     "user",
@@ -72,5 +63,5 @@
     "meta"
   ],
   "source_zip_sha256": "1dfd42e871d6fa4228566b408a2e0b30ef1388121980867bef4e8ed68aeb2665",
-  "stratified_pair_count": 42
+  "stratified_pair_count": 38
 }

@@ -93,22 +93,3 @@ Checked with the Qwen3-8B tokenizer on all 209 train pairs:
   committed formula registry, missing inputs = required inputs on what-must-be-known-first pairs,
   basis `unspecified`, unsourced_figure `refused` only on a refuse block. No model writes any target text.
 - The rendered target passes the same Split check as the data. Loss stays on assistant tokens only.
-
-## 3. Phase-1 data (L2)
-
-Counts come from `data/train/manifest.json` and `data/held_out/manifest.json`, written by `scripts/data/build_phase1.py`.
-
-| Source | Train | Held-out |
-|---|---|---|
-| Domain intake (answered questions) | 0 | 0 |
-| Original confirmed pairs | 209 | 65 |
-| Temporary-works confirmed pairs | 24 | 4 |
-| User-turn paraphrases (assistant verbatim) | 1864 | 0 |
-| Hard negatives (sourced figure in attached context) | 25 | 0 |
-| Total | 2122 | 69 |
-
-- Intake: no answered construction intake record exists in the repository or the raw archive, so nothing is derived from it.
-- Paraphrases: 2106 offered for 233 train parents; 8 duplicates, 1 new-fact and 0 sealed-overlap candidates dropped; 8 kept per parent.
-- Hard negatives: 26 refuse-labelled train parents; 25 have a registry formula and got one near-miss. The one with no registry record got none rather than an invented record.
-- Held-out children: none. Augmentation is grouped by parent, and held-out parents are never paraphrased.
-- The 14 temporary-works adversarial items are sealed under `data/eval/temporary_works/` and stay eval-only.
