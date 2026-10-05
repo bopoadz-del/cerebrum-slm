@@ -160,6 +160,28 @@ def _word_lists(path: Path, text: str, where: str) -> list[Finding]:
     return findings
 
 
+def _assigns_dunder_all(targets: list[ast.AST]) -> bool:
+    for target in targets:
+        if isinstance(target, ast.Name) and target.id == "__all__":
+            return True
+        if isinstance(target, (ast.List, ast.Tuple)):
+            if _assigns_dunder_all(list(target.elts)):
+                return True
+    return False
+
+
+def _is_identifier_literal(node: ast.AST) -> bool:
+    """True for a list, tuple, or set of Python identifiers, as in __all__."""
+    if not isinstance(node, (ast.List, ast.Tuple, ast.Set)) or not node.elts:
+        return False
+    for element in node.elts:
+        if not isinstance(element, ast.Constant) or not isinstance(element.value, str):
+            return False
+        if not element.value.isidentifier():
+            return False
+    return True
+
+
 def _python_word_lists(text: str, where: str) -> list[Finding]:
     try:
         tree = ast.parse(text)
@@ -168,13 +190,18 @@ def _python_word_lists(text: str, where: str) -> list[Finding]:
     findings: list[Finding] = []
 
     class Visitor(ast.NodeVisitor):
+        def __init__(self) -> None:
+            self._export_ids: set[int] = set()
+
         def visit_Assign(self, node: ast.Assign) -> None:
             self._named(node.targets, node.value)
+            self._remember_export(node.targets, node.value)
             self.generic_visit(node)
 
         def visit_AnnAssign(self, node: ast.AnnAssign) -> None:
             if node.value is not None:
                 self._named([node.target], node.value)
+                self._remember_export([node.target], node.value)
             self.generic_visit(node)
 
         def visit_List(self, node: ast.List) -> None:
@@ -193,6 +220,10 @@ def _python_word_lists(text: str, where: str) -> list[Finding]:
             self._unnamed(node)
             self.generic_visit(node)
 
+        def _remember_export(self, targets: list[ast.AST], value: ast.AST) -> None:
+            if _assigns_dunder_all(targets) and _is_identifier_literal(value):
+                self._export_ids.add(id(value))
+
         def _named(self, targets: list[ast.AST], value: ast.AST) -> None:
             strings = _string_consts(value)
             if len(strings) < _NAMED_MIN:
@@ -209,6 +240,8 @@ def _python_word_lists(text: str, where: str) -> list[Finding]:
                     )
 
         def _unnamed(self, node: ast.AST) -> None:
+            if id(node) in self._export_ids:
+                return
             strings = _string_consts(node)
             if len(strings) >= _UNNAMED_MIN:
                 findings.append(

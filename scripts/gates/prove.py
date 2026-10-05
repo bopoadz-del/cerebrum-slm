@@ -9,6 +9,7 @@ from pathlib import Path
 from gates.blind_seal import BlindSealError, check_blind, training_open
 from gates.findings import Finding
 from gates.no_hardwiring import check_hardwiring
+from gates.records import sha256_file
 from gates.split import check_split
 
 _EVAL_PAIR = {
@@ -51,6 +52,7 @@ def run_proofs() -> list[str]:
         root = Path(temporary)
         eval_path = root / "data" / "eval" / "blind" / "item.jsonl"
         _write_jsonl(eval_path, [_EVAL_PAIR])
+        _write_sha256_seal(eval_path)
         _write_jsonl(root / "data" / "retrieval" / "rates.jsonl", [_RATE])
         posture_path = root / "data" / "train" / "posture.jsonl"
         _write_jsonl(posture_path, [_POSTURE])
@@ -186,6 +188,11 @@ def _write(path: Path, text: str) -> None:
 def _write_jsonl(path: Path, rows: list[dict]) -> None:
     payload = "".join(json.dumps(row, ensure_ascii=False) + "\n" for row in rows)
     _write(path, payload)
+
+
+def _write_sha256_seal(path: Path) -> None:
+    digest = sha256_file(path)
+    _write(path.with_name(path.name + ".sha256"), f"{digest}  {path.name}\n")
 
 
 def _flatten(items: list[str | list[str]]) -> list[str]:
