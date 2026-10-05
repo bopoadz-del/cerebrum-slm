@@ -541,7 +541,8 @@ def _fit(client: Any, types: Any, config: dict[str, Any], pairs: list[TrainPair]
             output = forward.result()
             optim.result()
             steps += 1
-            losses.append(_loss_record(steps, epoch + 1, output, batch))
+            weighted = sum(sum(prepared[index][2]) for index in order[start : start + batch_size])
+            losses.append(_loss_record(steps, epoch + 1, output, len(batch), weighted))
         if epochs > 1:
             saved = client.save_weights_for_sampler(name=f"{name}-epoch{epoch + 1}").result()
             path = getattr(saved, "path", None)
@@ -564,18 +565,16 @@ def _fit(client: Any, types: Any, config: dict[str, Any], pairs: list[TrainPair]
     )
 
 
-def _loss_record(step: int, epoch: int, output: Any, batch: list[Any]) -> dict:
-    tokens = 0.0
-    for datum in batch:
-        weights = getattr(datum, "loss_fn_inputs", {}).get("weights", [])
-        tokens += float(sum(weights))
+def _loss_record(step: int, epoch: int, output: Any, n_datums: int, weighted: float) -> dict:
+    """Loss for one step. Token counts come from the prepared weight lists, not the SDK datum."""
+    tokens = float(weighted)
     metrics = getattr(output, "metrics", None)
     loss_sum = None
     if isinstance(metrics, dict):
         value = metrics.get("loss:sum")
         if isinstance(value, (int, float)):
             loss_sum = float(value)
-    record: dict = {"step": step, "epoch": epoch, "n_datums": len(batch), "loss_weight_tokens": tokens}
+    record: dict = {"step": step, "epoch": epoch, "n_datums": n_datums, "loss_weight_tokens": tokens}
     if loss_sum is not None:
         record["loss_sum"] = round(loss_sum, 6)
         record["loss_mean_per_token"] = round(loss_sum / tokens, 6) if tokens else None
