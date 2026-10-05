@@ -59,3 +59,15 @@ python -m pip install -r requirements.txt
 PYTHONPATH=scripts python -m gates.run
 PYTHONPATH=scripts python -m pytest tests
 ```
+
+
+## Served artifact (epoch 2)
+
+Stop-gate **PASS** under protocol v2. Blind refusal/qualification is **7/60** (see `KNOWN_LIMITATIONS.md`).
+
+- Checkpoint: `tinker://d33e27e4-5533-5af4-9039-c9bf8254d4b7:train:0/sampler_weights/posture-qwen3-8b-lora-r16-epoch2`
+- Config: `configs/serve/posture-epoch2.json`
+- Client: `src/posture_model/` (system prompt ships with the artifact; Fork context kwarg required)
+- Load/sample: `docs/serve/LOAD_AND_SAMPLE.md`
+- Fork hook: `docs/serve/FORK_INTEGRATION.md`
+- Example transcripts: `docs/serve/transcripts-epoch2.md`
