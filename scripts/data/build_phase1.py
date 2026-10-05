@@ -58,8 +58,8 @@ TEMPORARY_WORKS = Path("data/sources/temporary-works/temporary_works_pairs.jsonl
 PARAPHRASES = Path("data/augment/user_paraphrases.jsonl")
 REGISTRY = Path("data/retrieval/formula_registry.json")
 SEALED_TREE = Path("data/eval")
-MAX_CHILDREN = 8
-MIN_CHILDREN = 5
+MAX_CHILDREN = 3
+MIN_CHILDREN = 3
 OVERLAP_LIMIT = 0.8
 HARD_NEGATIVE_PAIR_TYPE = "which_formula_applies"
 AUG_PARAPHRASE = "paraphrase"
@@ -227,7 +227,12 @@ def paraphrase_children(
     for parent in sorted(train_parents, key=lambda row: row["meta"]["content_hash"]):
         parent_id = parent["meta"]["content_hash"]
         kept = 0
-        for text in variants.get(parent_id, []):
+        # Deterministic selection: stable hash order, then keep first MAX_CHILDREN.
+        ordered = sorted(
+            variants.get(parent_id, []),
+            key=lambda text: hashlib.sha256(" ".join(text.split()).encode("utf-8")).hexdigest(),
+        )
+        for text in ordered:
             stats["offered"] += 1
             user = " ".join(text.split())
             if kept >= MAX_CHILDREN:
