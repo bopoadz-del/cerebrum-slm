@@ -44,3 +44,11 @@ On 4 October 2026 the environment that prepared this change had no `TINKER_API_K
 ## What this base is for
 
 Posture only: state the basis (`as-designed`, `as-built`, `as-operating`, or `unspecified`), name a missing input, refuse an unsourced figure, and route to a formula id with its required inputs. No training run is part of this card.
+
+## Served artifact
+
+The construction posture adapter is served with the committed system prompt in
+`eval/baselines/prompt_only_system_prompt.txt`. The stop-gate evaluates that
+paired artifact (tuned weights + system prompt). A tuned checkpoint without the
+system prompt is reported for diagnosis and is not a serve decision.
+

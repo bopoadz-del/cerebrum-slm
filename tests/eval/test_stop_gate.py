@@ -13,6 +13,20 @@ from eval.stop_gate import (
 from model.identity import MODEL_ID, repo_root
 
 
+def test_gate_refuses_tuned_without_prompt():
+    baselines = load_prompt_only_baselines(repo_root() / "eval" / "baselines" / "scores.md")
+    payload = _tuned(
+        baselines,
+        held_refusal=baselines.held_out.refusal_passed + 1,
+        held_route=baselines.held_out.routing_passed + 1,
+        blind_refusal=baselines.blind.refusal_passed + 1,
+        blind_route=20,
+    )
+    payload["system_prompt"] = "none"
+    with pytest.raises(StopGateError, match="served artifact"):
+        decide(payload, baselines)
+
+
 def test_docs_state_the_stop_gate_rule():
     doc = (repo_root() / "eval" / "STOP_GATE.md").read_text(encoding="utf-8")
     assert RULE in doc
@@ -118,7 +132,7 @@ def _tuned(
         "schema": SCHEMA,
         "model_id": MODEL_ID,
         "checkpoint": "tinker://example/weights/checkpoint",
-        "system_prompt": "none",
+        "system_prompt": "prompt_only",
         "fork_context": False,
         "sets": {
             "held_out": {

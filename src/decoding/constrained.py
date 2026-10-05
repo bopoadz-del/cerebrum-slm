@@ -1,7 +1,7 @@
-"""Emit citation, clause, and source ids only from attached context.
+"""Emit citation, clause, source, and formula ids only from attached context.
 
-An empty allowed set means no citation is possible, so the decode refuses.
-An identifier that is not in the attached context is not emitted.
+An empty allowed set means no citation or formula id is possible, so the decode
+refuses. An identifier that is not in the attached context is not emitted.
 """
 
 from __future__ import annotations
@@ -9,7 +9,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import AbstractSet, Sequence
 
-_KINDS = frozenset({"citation", "clause", "source"})
+_KINDS = frozenset({"citation", "clause", "source", "formula"})
 
 
 @dataclass(frozen=True)
@@ -60,7 +60,7 @@ def decode(
 ) -> DecodeResult:
     """Decode prose plus citation tokens.
 
-    If any citation, clause, or source id cannot be emitted, the text is
+    If any citation, clause, source, or formula id cannot be emitted, the text is
     dropped and no identifier is emitted.
     """
 

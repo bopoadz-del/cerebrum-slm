@@ -3,6 +3,11 @@
 No item text is printed or written. A dry-run checks data and config and
 does not contact Tinker. Sampling uses the committed Qwen3-8B parameters
 and a Tinker sampling client pointed at the checkpoint path.
+
+Protocol: refusal/qualification and fact-leak are sampled context-free.
+Formula routing is sampled with the split's formula registry attached and
+constrained decoding on formula ids from that registry. Bare routing is
+refused.
 """
 
 from __future__ import annotations
@@ -19,6 +24,13 @@ from eval.baselines.prompt_only import load_system_prompt
 from eval.graders import grade_fact_leak, grade_formula_routing, grade_refusal_or_qualification
 from eval.labels import EvalLabel, EvalLabelError, label_eval_sets
 from eval.readers import EvalReadError
+from eval.routing_registry import (
+    RoutingRegistry,
+    RoutingRegistryError,
+    constrain_formula_response,
+    load_routing_registry,
+    require_routing_registry,
+)
 from eval.stop_gate import SCHEMA, PromptOnlyBaselines, StopGateError, load_prompt_only_baselines
 from gates.blind_seal import path_is_sealed
 from model.identity import API_KEY_ENV, MODEL_ID, load_model_config, repo_root
@@ -81,11 +93,14 @@ def dry_run_tuned_eval(
         f"model_id: {config['model_id']}",
         "checkpoint: accepted",
         f"system_prompt: {'prompt_only' if prompt_only_system_prompt else 'none'}",
+        "routing_registry: attached_for_routing_only",
         "tinker_contacted: no",
         "scores_written: no",
     ]
     for name, items in base.sets:
         lines.append(_split_summary(name, items))
+        registry = base.registries[name]
+        lines.append(f"{name}_registry: entries={len(registry.entries)} source={registry.source}")
     lines.append("seals: ok")
     lines.append("config: ok")
     return "\n".join(lines)
@@ -119,21 +134,33 @@ def run_tuned_eval(
 
     tallies: dict[str, SetTally] = {}
     for name, items in base.sets:
+        registry = require_routing_registry(base.registries[name])
         refusal_passed = 0
         leaked = 0
         routing_passed = 0
         for label in items:
             try:
-                response = sample(build_messages(label.prompt, system_prompt=system))
+                # Context-free sample: refusal/qualification and fact-leak.
+                response_cf = sample(build_messages(label.prompt, system_prompt=system))
+                # Routing sample: formula registry attached; constrain ids.
+                response_rt = sample(
+                    build_messages(
+                        label.prompt,
+                        system_prompt=system,
+                        fork_context=registry.format_context(),
+                    )
+                )
             except TinkerKeyMissing:
                 raise
             except TunedEvalError:
                 raise
+            except RoutingRegistryError as exc:
+                raise TunedEvalError(str(exc)) from None
             except Exception:
                 raise TunedEvalError(f"{name} line {label.line} sample failed") from None
-            if not isinstance(response, str):
+            if not isinstance(response_cf, str) or not isinstance(response_rt, str):
                 raise TunedEvalError(f"{name} line {label.line} sample was not text")
-            refusal, leak, route = _grade(label, response)
+            refusal, leak, route = _grade(label, response_cf, response_rt, registry)
             refusal_passed += int(refusal.passed)
             leaked += int(not leak.passed)
             routing_passed += int(route.passed)
@@ -155,6 +182,7 @@ def format_scores(payload: dict) -> str:
         f"model_id: {payload['model_id']}",
         f"system_prompt: {payload['system_prompt']}",
         "fork_context: no",
+        "routing_registry: attached_for_routing_only",
     ]
     for name in ("held_out", "blind"):
         row = payload["sets"][name]
@@ -173,6 +201,7 @@ class _Prepared:
     sets: tuple[tuple[str, tuple[EvalLabel, ...]], ...]
     system_prompt: str | None
     baselines: PromptOnlyBaselines
+    registries: dict[str, RoutingRegistry]
 
 
 def _prepare(
@@ -187,7 +216,11 @@ def _prepare(
     try:
         sets = label_eval_sets(base)
         baselines = load_prompt_only_baselines(base / _BASELINE_FILE)
-    except (EvalReadError, EvalLabelError, StopGateError) as exc:
+        registries = {
+            "held_out": load_routing_registry("held_out", base),
+            "blind": load_routing_registry("blind", base),
+        }
+    except (EvalReadError, EvalLabelError, StopGateError, RoutingRegistryError) as exc:
         raise TunedEvalError(str(exc)) from None
     for name, items in sets:
         published = baselines.for_split(name)
@@ -195,30 +228,55 @@ def _prepare(
             raise TunedEvalError(
                 f"{name} count {len(items)} does not match the prompt-only baseline n"
             )
+        require_routing_registry(registries[name])
     system = None
     if prompt_only_system_prompt:
         system = load_system_prompt()
         if not system.strip():
             raise TunedEvalError("prompt-only system prompt is empty")
-    return _Prepared(base, sets, system, baselines)
+    return _Prepared(base, sets, system, baselines, registries)
 
 
-def _grade(label: EvalLabel, response: str):
+def _grade(
+    label: EvalLabel,
+    response_context_free: str,
+    response_routing: str,
+    registry: RoutingRegistry,
+):
     try:
+        require_routing_registry(registry)
         refusal = grade_refusal_or_qualification(
-            response,
+            response_context_free,
             expected_block=label.expected_block,
             named_inputs=label.named_inputs,
         )
-        leak = grade_fact_leak(response, label.prompt)
+        leak = grade_fact_leak(response_context_free, label.prompt)
+        constrained = constrain_formula_response(response_routing, registry)
         route = grade_formula_routing(
-            response,
+            constrained,
             formula_id=label.formula_id,
             required_inputs=label.required_inputs,
         )
-    except ValueError:
+    except (ValueError, RoutingRegistryError):
         raise TunedEvalError(f"{label.split} line {label.line} cannot be graded") from None
     return refusal, leak, route
+
+
+def grade_routing_or_raise(
+    response: str,
+    *,
+    formula_id: str,
+    required_inputs,
+    registry: RoutingRegistry | None,
+):
+    """Public routing grade path. Fails closed when no registry is attached."""
+    require_routing_registry(registry)
+    constrained = constrain_formula_response(response, registry)
+    return grade_formula_routing(
+        constrained,
+        formula_id=formula_id,
+        required_inputs=required_inputs,
+    )
 
 
 def _public_scores(checkpoint: str, system_prompt: str, tallies: dict[str, SetTally]) -> dict:

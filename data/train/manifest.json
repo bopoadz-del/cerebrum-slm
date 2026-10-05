@@ -2,7 +2,6 @@
   "build": "scripts/data/build_phase1.py",
   "by_source": {
     "hard_negatives": 25,
-    "intake_derived": 0,
     "original_confirmed_train": 209,
     "paraphrase_children": 1864,
     "temporary_works_train": 24
