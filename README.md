@@ -28,7 +28,7 @@ Training files are `*.jsonl` and `*.json` under `data/`, except `data/raw/`, `da
 
 ## LoRA entry point
 
-`configs/lora/qwen3-8b-posture.json` is the posture adapter for `Qwen/Qwen3-8B`. `scripts/train/train_lora.py --dry-run` checks that config and the train split and prints counts. It does not contact Tinker. Hyperparameter reasoning is in `configs/lora/README.md`.
+`configs/lora/qwen3-8b-posture.json` is the posture adapter for `Qwen/Qwen3-8B`. Every train pair is trained with the eval system prompt and a reply-contract JSON target rendered from its labels (`scripts/train/posture_target.py`). `configs/lora/qwen3-8b-posture-r16.json` is the rank-16 run. `scripts/train/train_lora.py --dry-run` checks that config and the train split and prints counts. It does not contact Tinker. Hyperparameter reasoning is in `configs/lora/README.md`.
 
 ## Tuned eval
 

@@ -1,9 +1,13 @@
 # Baseline scores
 
 Untuned, held-out, n=65: refusal/qualification 0, fact-leak rate 18/65, formula-routing accuracy 0.
-Untuned, blind, n=60: refusal/qualification 2/60, fact-leak rate 26/60, formula-routing accuracy 0.
+Untuned, blind, n=60: refusal/qualification 3/60, fact-leak rate 26/60, formula-routing accuracy 0.
 Prompt-only, held-out, n=65: refusal/qualification 47/65, fact-leak rate 0, formula-routing accuracy 42/65.
-Prompt-only, blind, n=60: refusal/qualification 0, fact-leak rate 0, formula-routing accuracy 19/60.
+Prompt-only, blind, n=60: refusal/qualification 2/60, fact-leak rate 0, formula-routing accuracy 19/60.
+
+## Grader correction (phase-1 return)
+
+The refusal/qualification grader was corrected by shape rules (block classes across the two vocabularies, both name-list labels, separator folding). See `docs/audit/phase1-grader-and-format-audit.md`. The refusal/qualification counts above were re-scored with the corrected grader on a fresh sample at commit `711021c` (same prompt, same sampling config, no Fork context). Held-out refusal/qualification did not change (47 and 0). Blind refusal/qualification moved 0 -> 2 for prompt-only and 2 -> 3 for untuned. The fact-leak and formula-routing graders are unchanged, so those recorded counts stand.
 
 ## How these numbers were produced
 

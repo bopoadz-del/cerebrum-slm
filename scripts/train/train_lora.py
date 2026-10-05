@@ -22,20 +22,25 @@ from typing import Any
 
 def _bootstrap() -> None:
     scripts = Path(__file__).resolve().parents[1]
-    text = str(scripts)
-    if text not in sys.path:
-        sys.path.insert(0, text)
+    root = scripts.parent
+    for entry in (scripts, root / "src", root):
+        text = str(entry)
+        if text not in sys.path:
+            sys.path.append(text)
 
 
 _bootstrap()
 
 from gates.blind_seal import BlindSealError, training_open
 from gates.split import TermsError, leak_kinds, load_retrieval_terms
+from train.posture_target import TARGET_FORMAT, TargetError, registry_inputs, target_for
 
 TRAIN_SPLIT = "data/train/pairs.jsonl"
 TRAIN_MANIFEST = "data/train/manifest.json"
 MODEL_CONFIG = "configs/model/qwen3-8b.json"
 LORA_CONFIG = "configs/lora/qwen3-8b-posture.json"
+EVAL_SYSTEM_PROMPT = "eval/baselines/prompt_only_system_prompt.txt"
+FORMULA_REGISTRY = "data/retrieval/formula_registry.json"
 INSTRUCT_ID = "Qwen/Qwen3-8B"
 API_KEY_ENV = "TINKER_API_KEY"
 
@@ -61,6 +66,8 @@ _CONFIG_KEYS = {
     "max_sequence_length",
     "seed",
     "checkpoint_name",
+    "system_prompt_file",
+    "target_format",
 }
 _MODULE_KEYS = {"mlp", "attn", "unembed"}
 _MAX_LEARNING_RATE = 0.0005
@@ -84,6 +91,8 @@ class TrainPair:
     system: str
     user: str
     assistant: str
+    pair_type: str = ""
+    formula_id: str = ""
 
 
 @dataclass(frozen=True)
@@ -98,6 +107,8 @@ class TrainResult:
     steps: int
     state_path: str
     sampler_path: str
+    epoch_sampler_paths: tuple[str, ...] = ()
+    losses: tuple[dict, ...] = ()
 
 
 def repo_root() -> Path:
@@ -203,6 +214,65 @@ def validate_lora_config(config: dict[str, Any], model: dict[str, Any]) -> None:
     name = config["checkpoint_name"]
     if not isinstance(name, str) or not _checkpoint_name(name):
         raise TrainRefused("checkpoint_name must be a short lowercase slug")
+    if config["system_prompt_file"] != EVAL_SYSTEM_PROMPT:
+        raise TrainRefused("system_prompt_file must be the eval system prompt " + EVAL_SYSTEM_PROMPT)
+    if config["target_format"] != TARGET_FORMAT:
+        raise TrainRefused("target_format must be " + TARGET_FORMAT)
+
+
+def load_system_prompt(root: Path, config: dict[str, Any]) -> str:
+    """The same system prompt the eval stacks on the tuned checkpoint."""
+    text = read_text(root / config["system_prompt_file"], root)
+    if not text.strip():
+        raise TrainRefused("system prompt file is empty")
+    return text
+
+
+def load_registry_inputs(root: Path) -> dict[str, tuple[str, ...]]:
+    try:
+        return registry_inputs(load_json(root / FORMULA_REGISTRY, root))
+    except TargetError as exc:
+        raise TrainRefused(str(exc)) from exc
+
+
+def render_pairs(
+    pairs: list[TrainPair],
+    system_prompt: str,
+    inputs: dict[str, tuple[str, ...]],
+    root: Path | None = None,
+) -> list[TrainPair]:
+    """Put the eval system prompt and the reply-contract target on every pair.
+
+    A row that already carries a different system prompt is refused: train and
+    eval must see the same one. The rendered target passes the Split check.
+    """
+    rendered: list[TrainPair] = []
+    for pair in pairs:
+        if pair.system.strip() and pair.system != system_prompt:
+            raise TrainRefused(f"line {pair.line}: system prompt differs from the eval system prompt")
+        try:
+            target = target_for(pair.pair_type, pair.formula_id, inputs).render()
+        except TargetError as exc:
+            raise TrainRefused(f"line {pair.line}: {exc}") from exc
+        rendered.append(
+            TrainPair(
+                line=pair.line,
+                system=system_prompt,
+                user=pair.user,
+                assistant=target,
+                pair_type=pair.pair_type,
+                formula_id=pair.formula_id,
+            )
+        )
+    if root is not None:
+        _refuse_gates_text(root, rendered)
+    return rendered
+
+
+def prepare_training_pairs(root: Path, config: dict[str, Any]) -> list[TrainPair]:
+    """Train pairs as the run sees them: eval system prompt plus contract target."""
+    pairs = load_train_pairs(root, config)
+    return render_pairs(pairs, load_system_prompt(root, config), load_registry_inputs(root), root)
 
 
 def load_train_pairs(root: Path, config: dict[str, Any]) -> list[TrainPair]:
@@ -249,6 +319,8 @@ def format_dry_run(config: dict[str, Any], summary: TrainSummary) -> str:
         f"loss_fn: {config['loss_fn']}",
         f"loss_on: {config['loss_on']}",
         f"checkpoint_name: {config['checkpoint_name']}",
+        f"system_prompt_file: {config['system_prompt_file']}",
+        f"target_format: {config['target_format']}",
         "tinker: not contacted",
     ]
     return "\n".join(lines)
@@ -356,6 +428,7 @@ def prepare(argv: list[str] | None = None) -> tuple[argparse.Namespace, Path]:
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--root", type=Path, default=None)
     parser.add_argument("--config", type=Path, default=None)
+    parser.add_argument("--log-json", type=Path, default=None, help="Write step losses and checkpoint paths")
     args = parser.parse_args(argv)
     root = args.root.resolve() if args.root is not None else repo_root()
     return args, root
@@ -370,7 +443,7 @@ def main(argv: list[str] | None = None) -> int:
         config = load_lora_config(root, config_path)
         model = load_model_identity(root)
         validate_lora_config(config, model)
-        pairs = load_train_pairs(root, config)
+        pairs = prepare_training_pairs(root, config)
         if args.dry_run:
             print(format_dry_run(config, summarize(pairs)))
             return 0
@@ -387,9 +460,34 @@ def main(argv: list[str] | None = None) -> int:
         print(f"refused: {exc}", file=sys.stderr)
         return 2
     print(f"steps: {result.steps}")
+    for index, path in enumerate(result.epoch_sampler_paths, 1):
+        print(f"checkpoint_sampler_epoch{index}: {path}")
     print(f"checkpoint_state: {result.state_path}")
     print(f"checkpoint_sampler: {result.sampler_path}")
+    if args.log_json is not None:
+        _write_log(args.log_json, config, pairs, result)
     return 0
+
+
+def _write_log(path: Path, config: dict[str, Any], pairs: list[TrainPair], result: TrainResult) -> None:
+    payload = {
+        "checkpoint_name": config["checkpoint_name"],
+        "base_model": config["base_model"],
+        "pairs": len(pairs),
+        "system_turns": sum(1 for pair in pairs if pair.system.strip()),
+        "target_format": config["target_format"],
+        "rank": config["rank"],
+        "learning_rate": config["learning_rate"],
+        "epochs": config["epochs"],
+        "batch_size": config["batch_size"],
+        "steps": result.steps,
+        "losses": list(result.losses),
+        "checkpoint_state": result.state_path,
+        "checkpoint_sampler": result.sampler_path,
+        "epoch_samplers": list(result.epoch_sampler_paths),
+    }
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
 
 
 def _fit(client: Any, types: Any, config: dict[str, Any], pairs: list[TrainPair]) -> TrainResult:
@@ -420,7 +518,11 @@ def _fit(client: Any, types: Any, config: dict[str, Any], pairs: list[TrainPair]
     )
     steps = 0
     batch_size = int(config["batch_size"])
-    for epoch in range(int(config["epochs"])):
+    epochs = int(config["epochs"])
+    name = str(config["checkpoint_name"])
+    epoch_paths: list[str] = []
+    losses: list[dict] = []
+    for epoch in range(epochs):
         order = list(range(len(prepared)))
         random.Random(int(config["seed"]) + epoch).shuffle(order)
         for start in range(0, len(order), batch_size):
@@ -436,18 +538,48 @@ def _fit(client: Any, types: Any, config: dict[str, Any], pairs: list[TrainPair]
             ]
             forward = client.forward_backward(batch, config["loss_fn"])
             optim = client.optim_step(optim_params=adam)
-            forward.result()
+            output = forward.result()
             optim.result()
             steps += 1
+            losses.append(_loss_record(steps, epoch + 1, output, batch))
+        if epochs > 1:
+            saved = client.save_weights_for_sampler(name=f"{name}-epoch{epoch + 1}").result()
+            path = getattr(saved, "path", None)
+            if not isinstance(path, str):
+                raise TrainRefused("epoch checkpoint save did not return a path")
+            epoch_paths.append(path)
 
-    name = str(config["checkpoint_name"])
     state = client.save_state(name=name).result()
     sampler = client.save_weights_for_sampler(name=name).result()
     state_path = getattr(state, "path", None)
     sampler_path = getattr(sampler, "path", None)
     if not isinstance(state_path, str) or not isinstance(sampler_path, str):
         raise TrainRefused("checkpoint save did not return a path")
-    return TrainResult(steps=steps, state_path=state_path, sampler_path=sampler_path)
+    return TrainResult(
+        steps=steps,
+        state_path=state_path,
+        sampler_path=sampler_path,
+        epoch_sampler_paths=tuple(epoch_paths),
+        losses=tuple(losses),
+    )
+
+
+def _loss_record(step: int, epoch: int, output: Any, batch: list[Any]) -> dict:
+    tokens = 0.0
+    for datum in batch:
+        weights = getattr(datum, "loss_fn_inputs", {}).get("weights", [])
+        tokens += float(sum(weights))
+    metrics = getattr(output, "metrics", None)
+    loss_sum = None
+    if isinstance(metrics, dict):
+        value = metrics.get("loss:sum")
+        if isinstance(value, (int, float)):
+            loss_sum = float(value)
+    record: dict = {"step": step, "epoch": epoch, "n_datums": len(batch), "loss_weight_tokens": tokens}
+    if loss_sum is not None:
+        record["loss_sum"] = round(loss_sum, 6)
+        record["loss_mean_per_token"] = round(loss_sum / tokens, 6) if tokens else None
+    return record
 
 
 def _parse_pairs(raw: str) -> list[TrainPair]:
@@ -471,7 +603,18 @@ def _parse_pairs(raw: str) -> list[TrainPair]:
             raise TrainRefused(f"line {lineno}: user and assistant must be non-empty")
         if not isinstance(meta, dict) or meta.get("split") != "train":
             raise TrainRefused(f"line {lineno}: meta.split must be train")
-        pairs.append(TrainPair(line=lineno, system=system, user=user, assistant=assistant))
+        pair_type = meta.get("pair_type")
+        formula_id = meta.get("formula_id")
+        pairs.append(
+            TrainPair(
+                line=lineno,
+                system=system,
+                user=user,
+                assistant=assistant,
+                pair_type=pair_type.strip() if isinstance(pair_type, str) else "",
+                formula_id=formula_id.strip() if isinstance(formula_id, str) else "",
+            )
+        )
     return pairs
 
 
@@ -484,6 +627,10 @@ def _refuse_gates(root: Path, manifest: Any, pairs: list[TrainPair]) -> None:
         raise TrainRefused("train manifest count does not match the train split")
     if not pairs:
         raise TrainRefused("train split is empty")
+    _refuse_gates_text(root, pairs)
+
+
+def _refuse_gates_text(root: Path, pairs: list[TrainPair]) -> None:
     try:
         terms = load_retrieval_terms(root)
     except TermsError as exc:

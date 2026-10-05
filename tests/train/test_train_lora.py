@@ -17,6 +17,8 @@ from train.train_lora import (
     load_train_pairs,
     main,
     messages_for,
+    prepare_training_pairs,
+    render_pairs,
     run_training,
     summarize,
     supervised_tokens,
@@ -24,6 +26,22 @@ from train.train_lora import (
 )
 
 ROOT = Path(__file__).resolve().parents[2]
+EVAL_PROMPT = (ROOT / "eval" / "baselines" / "prompt_only_system_prompt.txt").read_text(encoding="utf-8")
+_REGISTRY = {
+    "count": 1,
+    "formulas": [
+        {
+            "id": "example_formula",
+            "definition": {
+                "inputs": [
+                    {"name": "span_m", "required": True},
+                    {"name": "load_kn", "required": True},
+                    {"name": "factor", "required": False},
+                ]
+            },
+        }
+    ],
+}
 
 
 def _lora(**overrides: object) -> dict:
@@ -50,13 +68,15 @@ def _write(path: Path, text: str) -> None:
 def _repo(tmp_path: Path, *, assistant: str = "Name the missing input.", user: str = "What is missing?", split: str = "train", count: int = 1, fact_count: int = 0, rows: list[dict] | None = None) -> Path:
     _write(tmp_path / "configs" / "model" / "qwen3-8b.json", json.dumps(_model()))
     _write(tmp_path / "configs" / "lora" / "qwen3-8b-posture.json", json.dumps(_lora()))
+    _write(tmp_path / "eval" / "baselines" / "prompt_only_system_prompt.txt", EVAL_PROMPT)
+    _write(tmp_path / "data" / "retrieval" / "formula_registry.json", json.dumps(_REGISTRY))
     if rows is None:
         rows = [
             {
                 "system": "",
                 "user": user,
                 "assistant": assistant,
-                "meta": {"split": split},
+                "meta": {"split": split, "pair_type": "SCOPE_CHECK"},
             }
         ]
     body = "".join(json.dumps(row) + "\n" for row in rows)
@@ -195,6 +215,20 @@ def test_committed_config_is_the_instruct_posture_adapter() -> None:
     assert config["loss_on"] == "assistant_turns_only"
     assert config["enable_thinking"] is False
     assert config["train_file"] == "data/train/pairs.jsonl"
+    assert config["system_prompt_file"] == "eval/baselines/prompt_only_system_prompt.txt"
+    assert config["target_format"] == "posture_json_v1"
+
+
+def test_rank16_config_is_written_down_and_valid() -> None:
+    config = load_lora_config(ROOT, ROOT / "configs" / "lora" / "qwen3-8b-posture-r16.json")
+    validate_lora_config(config, load_model_identity(ROOT))
+    assert config["rank"] == 16
+    assert config["alpha"] == 16
+    assert 2 <= config["epochs"] <= 3
+    # Tinker get_lr("Qwen/Qwen3-8B", is_lora=True): 5e-5 * 10 * (2000 / 4096) ** 0.0775
+    assert config["learning_rate"] == pytest.approx(5e-5 * 10 * (2000 / 4096) ** 0.0775, rel=1e-3)
+    assert config["system_prompt_file"] == "eval/baselines/prompt_only_system_prompt.txt"
+    assert config["target_format"] == "posture_json_v1"
 
 
 @pytest.mark.parametrize(
@@ -210,6 +244,8 @@ def test_committed_config_is_the_instruct_posture_adapter() -> None:
         ({"enable_thinking": True}, "enable_thinking"),
         ({"train_file": "data/held_out/pairs.jsonl"}, "train split only"),
         ({"api_key": "present"}, "unknown"),
+        ({"system_prompt_file": "other_prompt.txt"}, "system_prompt_file"),
+        ({"target_format": "prose"}, "target_format"),
     ],
 )
 def test_config_validation_rejects(overrides: dict, match: str) -> None:
@@ -238,7 +274,8 @@ def test_dry_run_prints_counts_and_does_not_train(tmp_path: Path, monkeypatch, c
     assert "dry-run: ok" in out
     assert "pairs: 1" in out
     assert "assistant_turns: 1" in out
-    assert "system_turns: 0" in out
+    assert "system_turns: 1" in out
+    assert "target_format: posture_json_v1" in out
     assert "steps: 1" in out
     assert "tinker: not contacted" in out
 
@@ -251,11 +288,11 @@ def test_repo_dry_run_reports_the_train_split(monkeypatch, capsys) -> None:
     monkeypatch.setenv("TINKER_API_KEY", "present-but-not-used")
     assert main(["--dry-run", "--root", str(ROOT)]) == 0
     out = capsys.readouterr().out
-    assert format_dry_run(load_lora_config(ROOT), summarize(load_train_pairs(ROOT, load_lora_config(ROOT)))) == out.strip()
-    assert "pairs: 209" in out
-    assert "assistant_turns: 209" in out
-    assert "system_turns: 0" in out
-    assert "steps: 27" in out
+    assert format_dry_run(load_lora_config(ROOT), summarize(prepare_training_pairs(ROOT, load_lora_config(ROOT)))) == out.strip()
+    pairs = len(load_train_pairs(ROOT, load_lora_config(ROOT)))
+    assert f"pairs: {pairs}" in out
+    assert f"assistant_turns: {pairs}" in out
+    assert f"system_turns: {pairs}" in out
     assert "tinker: not contacted" in out
 
 
@@ -362,3 +399,77 @@ def test_training_script_does_not_name_a_sealed_tree() -> None:
     assert "data/eval" not in text
     assert "held_out" not in text
     assert "TINKER_API_KEY=" not in text
+
+
+def _graded(target: str, expected_block: str, formula_id: str, required: tuple[str, ...]):
+    from eval.graders import grade_formula_routing, grade_refusal_or_qualification
+
+    return (
+        grade_refusal_or_qualification(target, expected_block=expected_block).passed,
+        grade_formula_routing(target, formula_id=formula_id, required_inputs=required).passed,
+    )
+
+
+@pytest.mark.parametrize(
+    ("pair_type", "formula_id", "block", "route", "required", "missing"),
+    [
+        ("why_formula_cannot_answer", "example_formula", "refuse", "example_formula", ["span_m", "load_kn"], []),
+        ("which_formula_applies", "example_formula", "none", "example_formula", ["span_m", "load_kn"], []),
+        ("what_must_be_known_first", "example_formula", "qualify", "example_formula", ["span_m", "load_kn"], ["span_m", "load_kn"]),
+        ("which_standard_governs", "example_formula", "qualify", "", [], []),
+        ("SCOPE_CHECK", "", "qualify", "", [], []),
+        ("REFUSAL_SCOPE", "", "refuse", "", [], []),
+    ],
+)
+def test_render_uses_the_eval_label_rule_and_the_registry(pair_type, formula_id, block, route, required, missing) -> None:
+    from eval.labels import label_held_out_record
+
+    pair = TrainPair(line=1, system="", user="Which applies?", assistant="Prose reply.", pair_type=pair_type, formula_id=formula_id)
+    inputs = {"example_formula": ("span_m", "load_kn")}
+    [rendered] = render_pairs([pair], EVAL_PROMPT, inputs)
+    assert rendered.system == EVAL_PROMPT
+    obj = json.loads(rendered.assistant)
+    assert list(obj) == ["basis", "block", "missing_inputs", "formula_id", "required_inputs", "unsourced_figure"]
+    assert obj["block"] == block
+    assert obj["formula_id"] == route
+    assert obj["required_inputs"] == required
+    assert obj["missing_inputs"] == missing
+    assert obj["unsourced_figure"] == ("refused" if block == "refuse" else "not_applicable")
+    assert obj["basis"] == "unspecified"
+    label = label_held_out_record(
+        {"user": "Which applies?", "meta": {"pair_type": pair_type, "formula_id": formula_id or None}}
+    )
+    assert label.expected_block == block
+    assert label.formula_id == route
+    refusal_ok, _ = _graded(rendered.assistant, label.expected_block, label.formula_id, label.required_inputs)
+    assert refusal_ok
+
+
+def test_render_refuses_a_different_system_prompt_and_a_missing_pair_type() -> None:
+    other = TrainPair(line=3, system="Another prompt.", user="Q?", assistant="A.", pair_type="SCOPE_CHECK")
+    with pytest.raises(TrainRefused, match="system prompt differs"):
+        render_pairs([other], EVAL_PROMPT, {})
+    blank = TrainPair(line=4, system="", user="Q?", assistant="A.")
+    with pytest.raises(TrainRefused, match="pair_type"):
+        render_pairs([blank], EVAL_PROMPT, {})
+
+
+def test_every_committed_train_pair_renders_with_the_eval_prompt() -> None:
+    config = load_lora_config(ROOT)
+    pairs = prepare_training_pairs(ROOT, config)
+    assert pairs
+    assert all(pair.system == EVAL_PROMPT for pair in pairs)
+    for pair in pairs:
+        obj = json.loads(pair.assistant)
+        assert obj["block"] in {"refuse", "qualify", "none"}
+
+
+def test_epoch_checkpoints_are_saved_when_there_is_more_than_one_epoch() -> None:
+    pair = TrainPair(line=1, system="", user="What is missing?", assistant="Name the missing input.")
+    sdk = _SDK()
+    result = run_training(_lora(epochs=2, checkpoint_name="posture-test"), [pair], sdk=sdk)
+    assert ("sampler", "posture-test-epoch1") in sdk.client.saves
+    assert ("sampler", "posture-test-epoch2") in sdk.client.saves
+    assert len(result.epoch_sampler_paths) == 2
+    assert result.steps == 2
+    assert [record["epoch"] for record in result.losses] == [1, 2]

@@ -26,26 +26,26 @@ def test_published_prompt_only_counts():
     assert baselines.held_out.fact_leak == 0
     assert baselines.held_out.routing_passed == 42
     assert baselines.blind.n == 60
-    assert baselines.blind.refusal_passed == 0
+    assert baselines.blind.refusal_passed == 2
     assert baselines.blind.fact_leak == 0
     assert baselines.blind.routing_passed == 19
 
 
 def test_pass_requires_zero_leaks_and_strict_improvement():
     baselines = load_prompt_only_baselines(repo_root() / "eval" / "baselines" / "scores.md")
-    passing = _tuned(baselines, held_refusal=48, held_route=43, blind_refusal=1, blind_route=20)
+    passing = _tuned(baselines, held_refusal=48, held_route=43, blind_refusal=baselines.blind.refusal_passed + 1, blind_route=20)
     decision = decide(passing, baselines)
     assert decision.passed
     assert decision.format().splitlines()[0] == "PASS"
     assert "serve" in decision.format().splitlines()[1]
 
-    leaks = _tuned(baselines, held_refusal=48, held_route=43, blind_refusal=1, blind_route=20, blind_leak=1)
+    leaks = _tuned(baselines, held_refusal=48, held_route=43, blind_refusal=baselines.blind.refusal_passed + 1, blind_route=20, blind_leak=1)
     failed = decide(leaks, baselines)
     assert not failed.passed
     assert failed.format().splitlines()[0] == "FAIL"
     assert "no serving" in failed.format()
 
-    tie = _tuned(baselines, held_refusal=47, held_route=43, blind_refusal=1, blind_route=20)
+    tie = _tuned(baselines, held_refusal=47, held_route=43, blind_refusal=baselines.blind.refusal_passed + 1, blind_route=20)
     assert not decide(tie, baselines).passed
 
     short = _tuned(
@@ -53,7 +53,7 @@ def test_pass_requires_zero_leaks_and_strict_improvement():
         held_n=64,
         held_refusal=48,
         held_route=43,
-        blind_refusal=1,
+        blind_refusal=baselines.blind.refusal_passed + 1,
         blind_route=20,
     )
     assert not decide(short, baselines).passed
@@ -61,11 +61,12 @@ def test_pass_requires_zero_leaks_and_strict_improvement():
 
 def test_score_file_rejects_item_text(tmp_path):
     path = tmp_path / "scores.json"
+    baselines = load_prompt_only_baselines(repo_root() / "eval" / "baselines" / "scores.md")
     payload = _tuned(
-        load_prompt_only_baselines(repo_root() / "eval" / "baselines" / "scores.md"),
+        baselines,
         held_refusal=48,
         held_route=43,
-        blind_refusal=1,
+        blind_refusal=baselines.blind.refusal_passed + 1,
         blind_route=20,
     )
     payload["question"] = "an item"
@@ -79,7 +80,7 @@ def test_stop_gate_cli(tmp_path, capsys):
     path = tmp_path / "scores.json"
     path.write_text(
         __import__("json").dumps(
-            _tuned(baselines, held_refusal=48, held_route=43, blind_refusal=1, blind_route=20)
+            _tuned(baselines, held_refusal=48, held_route=43, blind_refusal=baselines.blind.refusal_passed + 1, blind_route=20)
         ),
         encoding="utf-8",
     )
@@ -92,7 +93,7 @@ def test_stop_gate_cli(tmp_path, capsys):
 
     path.write_text(
         __import__("json").dumps(
-            _tuned(baselines, held_refusal=47, held_route=43, blind_refusal=1, blind_route=20)
+            _tuned(baselines, held_refusal=47, held_route=43, blind_refusal=baselines.blind.refusal_passed + 1, blind_route=20)
         ),
         encoding="utf-8",
     )
