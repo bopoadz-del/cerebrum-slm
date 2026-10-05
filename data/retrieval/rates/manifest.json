@@ -1,0 +1,97 @@
+{
+  "count": 316,
+  "required_fields": [
+    "market",
+    "year",
+    "source"
+  ],
+  "source_manifests": [
+    {
+      "document": {
+        "duplicate_count": 0,
+        "knowledge_files_skipped": 0,
+        "packs": [
+          {
+            "path": "/workspace/slm-datasets/rates/diriyah-gate-phase-ii-2023.jsonl",
+            "rows": 73
+          },
+          {
+            "path": "/workspace/slm-datasets/rates/doha-2024.jsonl",
+            "rows": 7
+          },
+          {
+            "path": "/workspace/slm-datasets/rates/dubai-2024.jsonl",
+            "rows": 7
+          },
+          {
+            "path": "/workspace/slm-datasets/rates/riyadh-2024.jsonl",
+            "rows": 7
+          },
+          {
+            "path": "/workspace/slm-datasets/rates/saudi-arabia-2024.jsonl",
+            "rows": 87
+          },
+          {
+            "path": "/workspace/slm-datasets/rates/saudi-arabia-2025.jsonl",
+            "rows": 135
+          }
+        ],
+        "pdf_pages_without_extractable_text": 0,
+        "row_schema": [
+          "market",
+          "year",
+          "currency",
+          "rate",
+          "unit",
+          "description",
+          "group",
+          "source",
+          "source_path",
+          "indicative"
+        ],
+        "skip_counts": [
+          {
+            "count": 8,
+            "reason": "approximate (leading tilde)"
+          },
+          {
+            "count": 2,
+            "reason": "missing rate"
+          },
+          {
+            "count": 5,
+            "reason": "not a unit price (lead time)"
+          },
+          {
+            "count": 12,
+            "reason": "not a unit price (market indicator)"
+          },
+          {
+            "count": 28,
+            "reason": "not a unit price (part or grand summary)"
+          }
+        ],
+        "source_paths": [
+          "/workspace/corpus-handoff/knowledge/construction_catalog_rates_ksa_2025.md",
+          "/workspace/corpus-handoff/knowledge/construction_rates_gulf_ksa_2025.md",
+          "/workspace/corpus-handoff/dg2/DGII - Infra-1 - Demolition BOQ.pdf"
+        ],
+        "total_rows": 316
+      },
+      "source_relpath": "rates/manifest.json"
+    }
+  ],
+  "source_zip_sha256": "1dfd42e871d6fa4228566b408a2e0b30ef1388121980867bef4e8ed68aeb2665",
+  "sources": [
+    "AECOM Middle East Handbook 2024",
+    "AECOM Middle East Property & Construction Handbook 2024.",
+    "RFP No DD-2023-118",
+    "RFP No. DD-2023-118",
+    "SCA Jan 2025 / msamer.com",
+    "Saudi Equipment Rental Market 2025",
+    "Turner & Townsend KSAMI 2025",
+    "Turner & Townsend KSAMI 2025.",
+    "Turner & Townsend KSAMI 2025; Saudi Contractors Authority (Jan 2025); msamer.com.",
+    "raghdan.sa 2025 guide."
+  ]
+}

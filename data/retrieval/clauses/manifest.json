@@ -1,0 +1,18 @@
+{
+  "count": 8,
+  "licences": [
+    {
+      "entries": [
+        {
+          "basis": "authored test fixture, not a published code",
+          "document": "synthetic_practice_note.txt",
+          "licence status": "redistributable",
+          "publisher": "Fixture Author",
+          "redistributable": true
+        }
+      ],
+      "source_relpath": "practice/licences.yaml"
+    }
+  ],
+  "source_zip_sha256": "1dfd42e871d6fa4228566b408a2e0b30ef1388121980867bef4e8ed68aeb2665"
+}
