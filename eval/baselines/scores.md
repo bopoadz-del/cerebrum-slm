@@ -9,6 +9,15 @@ Prompt-only, blind, n=60: refusal/qualification 2/60, fact-leak rate 0, formula-
 
 The refusal/qualification grader was corrected by shape rules (block classes across the two vocabularies, both name-list labels, separator folding). See `docs/audit/phase1-grader-and-format-audit.md`. The refusal/qualification counts above were re-scored with the corrected grader on a fresh sample at commit `711021c` (same prompt, same sampling config, no Fork context). Held-out refusal/qualification did not change (47 and 0). Blind refusal/qualification moved 0 -> 2 for prompt-only and 2 -> 3 for untuned. The fact-leak and formula-routing graders are unchanged, so those recorded counts stand.
 
+## Grader and label corrections (owner order 11:29)
+
+Two more shape corrections, applied identically to every model, were re-scored on the same stored run-1 replies (no resampling): base, prompt-only, tuned, and tuned with the prompt.
+
+1. Symbols vs names. The refusal/qualification grader also accepts a descriptive name for a named input when it identifies one symbol in the blind corpus's own LIST OF SYMBOLS (`eval/graders/data/hds5_symbols.json`, 146 entries extracted by `scripts/eval/extract_symbol_table.py` from FHWA-HIF-12-026, pages 19-23). No stored count changed: the descriptive names the models wrote were either ambiguous in the table (for example a bare "area" or "velocity" phrase) or named a different symbol.
+2. Held-out routing labels. The 17 routed held-out items now expect the required inputs of their formula in `data/retrieval/formula_registry.json` (`eval/registry.py`, the same rule as the training targets) instead of an empty set. No stored count changed: no stored reply routed any of those 17 items to the right id before or after, so prompt-only held-out routing stays 42/65.
+
+The recorded lines above therefore stand.
+
 ## How these numbers were produced
 
 Model `Qwen/Qwen3-8B`. Repo commit sampled: `a0cd715c3d7999b2c20cc2383aa4e1e2c9363b3a`. Sampling used `sample_messages`. The prompt-only run used the existing `eval/baselines/prompt_only_system_prompt.txt`. Grading used the existing refusal, fact-leak, and formula-routing graders. The functions `run_untuned_baseline` and `run_prompt_only_baseline` still raise `BaselineNotRun`, so they were not what produced these numbers. No Fork context was attached.
@@ -19,4 +28,4 @@ Blind labels used each item's shape: `expected_block` and `named_inputs` for ref
 
 ## Label method
 
-`eval/labels.py` is that method in code. `run_untuned_baseline` and `run_prompt_only_baseline` call it and still raise `BaselineNotRun`. They do not sample again, and the counts above are unchanged. A tuned run uses the same method. Held-out required inputs are empty because the gold has no required-input list. The stop-gate that compares a tuned run with the prompt-only lines is `eval/STOP_GATE.md`.
+`eval/labels.py` is that method in code. `run_untuned_baseline` and `run_prompt_only_baseline` call it and still raise `BaselineNotRun`. They do not sample again, and the counts above are unchanged. A tuned run uses the same method. Held-out required inputs of a routed item come from the committed formula registry, because the gold has no required-input list. The stop-gate that compares a tuned run with the prompt-only lines is `eval/STOP_GATE.md`.

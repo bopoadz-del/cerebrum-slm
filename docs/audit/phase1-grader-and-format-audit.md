@@ -93,3 +93,18 @@ Checked with the Qwen3-8B tokenizer on all 209 train pairs:
   committed formula registry, missing inputs = required inputs on what-must-be-known-first pairs,
   basis `unspecified`, unsourced_figure `refused` only on a refuse block. No model writes any target text.
 - The rendered target passes the same Split check as the data. Loss stays on assistant tokens only.
+
+## 3. Symbols vs names (owner order 11:29)
+
+Blind gold names inputs by the manual's symbols (for example `ke`, `HWr`); models often write a descriptive name. `scripts/eval/extract_symbol_table.py` reads the corpus's own LIST OF SYMBOLS from the public HDS-5 PDF (FHWA-HIF-12-026, sha256 `0444c21f…0058`, pages 19-23) with `pdftotext -layout` and writes `eval/graders/data/hds5_symbols.json` (146 symbol/definition rows). Nothing is typed by hand. Three printed entries read `H9`, `K9`, `V9` in the PDF text layer (the grate subscript); they are kept as printed.
+
+Rule (`eval/graders/symbols.py`): a descriptive name identifies a symbol when exactly one printed definition contains every word of the name and the name has a word of four or more letters. A named input passes when the reply lists the symbol or a name that identifies it. Same rule for every item and model.
+
+Re-score on the stored run-1 replies, before -> after (refusal/qualification, blind n=60): base 3 -> 3, prompt-only 2 -> 2, tuned 5 -> 5, tuned + prompt 3 -> 3. Held-out unchanged. The descriptive names in those replies were ambiguous in the table or pointed at a different symbol, so they stay misses (class a).
+
+## 4. Held-out routing labels (owner order 11:29)
+
+The 17 routed held-out items (`which_formula_applies` 2, `what_must_be_known_first` 7, `why_formula_cannot_answer` 8) now expect their formula's required inputs from `data/retrieval/formula_registry.json` (`eval/registry.py`), the rule the training targets already use. Five of those ids carry no required inputs in the registry and still expect an empty set.
+
+Re-score on the stored run-1 replies, before -> after (formula routing, held-out n=65): base 0 -> 0, prompt-only 42 -> 42, tuned 0 -> 0, tuned + prompt 45 -> 45. No stored reply routed any of the 17 items to the right id, so the bar does not move.
+

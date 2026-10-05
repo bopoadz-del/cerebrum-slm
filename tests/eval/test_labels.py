@@ -15,6 +15,7 @@ from eval.labels import (
     label_held_out_record,
 )
 from eval.readers import EvalReadError, read_records
+from eval.registry import REGISTRY_RELATIVE, load_registry_inputs
 from model.identity import repo_root
 
 
@@ -97,6 +98,7 @@ def test_blind_shape_labels_refusal_and_route():
 
 def test_real_splits_use_the_same_label_method(repo_root: Path):
     sets = dict(label_eval_sets(repo_root))
+    inputs = load_registry_inputs(repo_root)
     held_rows = read_records(repo_root, HELD_OUT_RELATIVE)
     blind_rows = read_records(repo_root, BLIND_RELATIVE)
     _mismatch(len(sets["held_out"]) == len(held_rows), "held-out count")
@@ -123,7 +125,8 @@ def test_real_splits_use_the_same_label_method(repo_root: Path):
             block = "qualify"
         _mismatch(label.expected_block == block, f"held-out line {line} block")
         _mismatch(label.named_inputs == (), f"held-out line {line} names")
-        _mismatch(label.required_inputs == (), f"held-out line {line} inputs")
+        expected_inputs = inputs.get(row["meta"]["formula_id"].strip(), ()) if pair_type in formula else ()
+        _mismatch(label.required_inputs == tuple(expected_inputs), f"held-out line {line} inputs")
         if pair_type in formula:
             _mismatch(label.formula_id == row["meta"]["formula_id"].strip(), f"held-out line {line} route")
         else:
@@ -240,6 +243,9 @@ def _write_tiny_split(root: Path, held_count: int, manifest_count: int) -> None:
     held.write_text("\n".join(rows) + "\n", encoding="utf-8")
     manifest = root / HELD_OUT_MANIFEST
     manifest.write_text(json.dumps({"count": manifest_count}) + "\n", encoding="utf-8")
+    registry = root / REGISTRY_RELATIVE
+    registry.parent.mkdir(parents=True, exist_ok=True)
+    registry.write_text(json.dumps({"formulas": []}) + "\n", encoding="utf-8")
     blind = root / BLIND_RELATIVE
     blind.parent.mkdir(parents=True)
     blind.write_text(
@@ -258,3 +264,40 @@ def _write_tiny_split(root: Path, held_count: int, manifest_count: int) -> None:
     )
     digest = sha256_file(blind)
     blind.with_name(blind.name + ".sha256").write_text(f"{digest}  {blind.name}\n", encoding="utf-8")
+
+
+def test_held_out_route_expects_the_registry_inputs(tmp_path: Path):
+    _write_tiny_split(tmp_path, held_count=3, manifest_count=3)
+    held = tmp_path / HELD_OUT_RELATIVE
+    rows = [json.loads(line) for line in held.read_text(encoding="utf-8").splitlines() if line.strip()]
+    rows[0]["meta"] = {"pair_type": "what_must_be_known_first", "formula_id": "formula.synthetic"}
+    rows[1]["meta"] = {"pair_type": "which_formula_applies", "formula_id": "formula.unlisted"}
+    held.write_text("".join(json.dumps(row) + "\n" for row in rows), encoding="utf-8")
+    registry = {
+        "formulas": [
+            {
+                "id": "formula.synthetic",
+                "definition": {
+                    "inputs": [
+                        {"name": "span", "required": True},
+                        {"name": "optional_factor", "required": False},
+                        {"name": "load", "required": True},
+                    ]
+                },
+            }
+        ]
+    }
+    (tmp_path / REGISTRY_RELATIVE).write_text(json.dumps(registry), encoding="utf-8")
+    labels = dict(label_eval_sets(tmp_path))["held_out"]
+    assert labels[0].required_inputs == ("span", "load")
+    assert labels[1].required_inputs == ()
+    assert labels[2].formula_id == "" and labels[2].required_inputs == ()
+
+
+def test_training_targets_and_held_out_labels_share_the_registry_rule(repo_root: Path):
+    import json as _json
+
+    from train.posture_target import registry_inputs as target_inputs
+
+    registry = _json.loads((repo_root / REGISTRY_RELATIVE).read_text(encoding="utf-8"))
+    assert target_inputs(registry) == load_registry_inputs(repo_root)
