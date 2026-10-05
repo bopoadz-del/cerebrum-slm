@@ -23,14 +23,14 @@
     {
       "id": "HDS5-3.1",
       "number": "3.1",
-      "name": "HL = He + Hf + Ho + Hb + Hj + Hg",
+      "name": "total energy (HL) required to pass the flow through the culvert barrel is made up of the entrance loss (He), the friction losses through the barrel (Hf), and",
       "inputs": [
-        "Hg",
-        "He",
-        "Ho",
         "Hb",
-        "Hf",
+        "Hg",
         "HL",
+        "Ho",
+        "Hf",
+        "He",
         "Hj"
       ],
       "pdf_page": 91
@@ -38,7 +38,7 @@
     {
       "id": "HDS5-3.2",
       "number": "3.2",
-      "name": "Q V= A",
+      "name": "Average velocity in the culvert barrel, ft/s (m/s)",
       "inputs": [
         "V",
         "Q",
@@ -49,7 +49,7 @@
     {
       "id": "HDS5-3.3",
       "number": "3.3",
-      "name": "V2 HV = 2g",
+      "name": "The velocity head is",
       "inputs": [
         "HV"
       ],
@@ -58,7 +58,7 @@
     {
       "id": "HDS5-3.4a",
       "number": "3.4a",
-      "name": "He = ke (( ",
+      "name": "The entrance loss is a function of the velocity head in the barrel, and can be expressed as a coefficient times the velocity head",
       "inputs": [
         "ke",
         "He"
@@ -68,21 +68,19 @@
     {
       "id": "HDS5-3.4b",
       "number": "3.4b",
-      "name": "Hf =  U1.33 ",
+      "name": "The friction loss is",
       "inputs": [
         "n",
+        "Hf",
         "L",
-        "R",
-        "A",
-        "p",
-        "V"
+        "R"
       ],
       "pdf_page": 92
     },
     {
       "id": "HDS5-3.4c",
       "number": "3.4c",
-      "name": "Ho = 1 .0  - ",
+      "name": "The exit loss is",
       "inputs": [
         "Ho"
       ],
@@ -91,38 +89,40 @@
     {
       "id": "HDS5-3.4d",
       "number": "3.4d",
-      "name": "(3.4d). V2 Ho = Hv = 2g",
+      "name": "The exit loss is equal to the full flow velocity head in the barrel, as shown in Equation",
       "inputs": [
-        "Hv",
-        "Ho"
+        "Ho",
+        "Hv"
       ],
       "pdf_page": 92
     },
     {
       "id": "HDS5-3.4e",
       "number": "3.4e",
-      "name": "Ho = 2g",
+      "name": "Equation (3.4e)",
       "inputs": [
-        "Ho"
+        "Ho",
+        "Vd",
+        "V"
       ],
       "pdf_page": 92
     },
     {
       "id": "HDS5-3.5",
       "number": "3.5",
-      "name": "H = 1 + ke + U1.33 ",
+      "name": "The following equation for barrel losses (H) is obtained",
       "inputs": [
         "ke",
-        "H"
+        "L",
+        "R"
       ],
       "pdf_page": 92
     },
     {
       "id": "HDS5-3.6a",
       "number": "3.6a",
-      "name": "Vu2 V2 HWo + LS + = TW + d + HL 2g 2g",
+      "name": "The following relationship results",
       "inputs": [
-        "HW",
         "Vu",
         "TW",
         "Vd",
@@ -133,10 +133,11 @@
     {
       "id": "HDS5-3.6b",
       "number": "3.6b",
-      "name": "HWo = TW + HL - LS",
+      "name": "Equation 3.6a becomes",
       "inputs": [
         "HWo",
         "HL",
+        "LS",
         "TW"
       ],
       "pdf_page": 93
@@ -144,75 +145,98 @@
     {
       "id": "HDS5-3.7",
       "number": "3.7",
-      "name": "Hf Ku n2 V2 Sf = = 1.33 L R2g",
+      "name": "Full flow friction slope is",
       "inputs": [
-        "L"
+        "L",
+        "n2",
+        "Sf",
+        "Hf",
+        "Ku"
       ],
       "pdf_page": 94
     },
     {
       "id": "HDS5-3.8",
       "number": "3.8",
-      "name": "nc =  i=1 ",
+      "name": "Composite or weighted Manning's n value",
       "inputs": [
         "nc",
         "G",
         "p1",
         "p2",
         "n1",
-        "p",
-        "n"
+        "p"
       ],
       "pdf_page": 96
     },
     {
       "id": "HDS5-3.9",
       "number": "3.9",
-      "name": "Qo= CdL HW r1.5 Qo = Overtopping flow rate in ft³/s (m³/s)",
+      "name": "Overtopping flow rate in ft³/s (m³/s)",
       "inputs": [
         "Qo",
-        "Cd",
-        "L",
-        "HW"
+        "Cd"
       ],
       "pdf_page": 97
     },
     {
       "id": "HDS5-A.1",
       "number": "A.1",
-      "name": "M Form( 1) = + K  u 0.5  + Ks S",
+      "name": "Form (1) is based on the specific head at critical depth, adjusted with correction factors",
       "inputs": [
         "D",
-        "HWi"
+        "HWi",
+        "Hc",
+        "Ks",
+        "K",
+        "M",
+        "S",
+        "A",
+        "Q"
       ],
       "pdf_page": 190
     },
     {
       "id": "HDS5-A.2",
       "number": "A.2",
-      "name": "M Form (2) = K  u 0 .5 ",
+      "name": "A.2.1 Unsubmerged Inlet Control Equations",
       "inputs": [
         "D",
-        "HWi"
+        "HWi",
+        "K",
+        "M",
+        "A",
+        "Q"
       ],
       "pdf_page": 191
     },
     {
       "id": "HDS5-A.3",
       "number": "A.3",
-      "name": "2 = c  u 0.5  + Y + Ks S",
+      "name": "A.2.2 Submerged Inlet Control Equations",
       "inputs": [
         "D",
-        "HWi"
+        "HWi",
+        "Ks",
+        "Y",
+        "K",
+        "c",
+        "S",
+        "A",
+        "Q"
       ],
       "pdf_page": 191
     },
     {
       "id": "HDS5-A.4",
       "number": "A.4",
-      "name": "Hc d c y h = + D D 2D",
+      "name": "Therefore, specific head at critical depth divided by D is",
       "inputs": [
-        "D"
+        "D",
+        "Hc",
+        "yh",
+        "dc",
+        "A"
       ],
       "pdf_page": 192
     }
