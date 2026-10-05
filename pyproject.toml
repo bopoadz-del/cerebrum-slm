@@ -9,6 +9,6 @@ readme = "README.md"
 dev = ["pytest==8.3.5"]
 
 [tool.pytest.ini_options]
-testpaths = ["tests/gates"]
+testpaths = ["tests"]
 pythonpath = ["scripts"]
 cache_dir = "/tmp/pytest-cerebrum-slm"

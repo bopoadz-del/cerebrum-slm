@@ -25,18 +25,40 @@ def test_number_with_unit_fails(text: str) -> None:
 
 @pytest.mark.parametrize(
     "text",
-    ["6 USD", "USD", "SAR 12", "$6", "6 riyals", "The allowance is 6 USD."],
+    ["6 USD", "SAR 12", "$6", "6 riyals", "The allowance is 6 USD."],
 )
-def test_currency_fails(text: str) -> None:
+def test_currency_amount_fails(text: str) -> None:
     assert "currency" in leak_kinds(text, EMPTY_TERMS)
 
 
 @pytest.mark.parametrize(
     "text",
-    ["Apply ACI 318-19.", "Follow BS 8110.", "See EN 1992-1-1.", "ASTM A416"],
+    ["USD", "SAR", "cement price sar t", "material price sar t", "labour rate sar hr"],
 )
-def test_standard_designator_fails(text: str) -> None:
+def test_bare_currency_code_names_an_input(text: str) -> None:
+    assert "currency" not in leak_kinds(text, EMPTY_TERMS)
+
+
+@pytest.mark.parametrize(
+    "text",
+    ["Apply ACI 318-19.", "See EN 1992-1-1.", "Quote ISO 9001:2015."],
+)
+def test_clause_citation_with_edition_or_part_fails(text: str) -> None:
     assert leak_kinds(text, EMPTY_TERMS) == ["clause-edition"]
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "Follow BS 8110.",
+        "The source names BS 8110 and CIRIA",
+        "CIRIA",
+        "CIRIA C660",
+        "ASTM A416",
+    ],
+)
+def test_bare_standard_number_is_not_a_clause_edition(text: str) -> None:
+    assert "clause-edition" not in leak_kinds(text, EMPTY_TERMS)
 
 
 def test_clause_needs_an_edition() -> None:
@@ -159,14 +181,17 @@ def test_archived_posture_passes_and_standard_names_fail(repo_root: Path) -> Non
                 view = pair_view(json.loads(line))
                 assert view is not None
                 kinds = leak_kinds(view.assistant, terms)
-                # Routing text may name a standard or write "sar" as a price unit.
-                # A number+unit, brand, or site name is still a leak.
+                # A bare standard number, a body name, or "sar" as an input name
+                # is not a fact. A real citation such as ACI 318-19 still is.
                 assert "number-unit" not in kinds, view.assistant
                 assert "brand" not in kinds, view.assistant
                 assert "site" not in kinds, view.assistant
+                assert "currency" not in kinds, view.assistant
+                if "BS 8110" in view.assistant or "CIRIA" in view.assistant or "sar t" in view.assistant:
+                    assert "clause-edition" not in kinds, view.assistant
                 if "clause-edition" in kinds:
                     clause_hits += 1
                 if "currency" in kinds:
                     currency_hits += 1
-        assert clause_hits >= 5
-        assert currency_hits >= 3
+        assert clause_hits == 4
+        assert currency_hits == 0

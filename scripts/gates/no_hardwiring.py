@@ -125,7 +125,8 @@ def _token_pattern(tokens: frozenset[str]) -> re.Pattern[str] | None:
     if not tokens:
         return None
     parts = sorted((re.escape(token) for token in tokens), key=len, reverse=True)
-    return re.compile(r"\b(?:" + "|".join(parts) + r")\b", re.IGNORECASE)
+    # Case-sensitive: a comment that does not repeat the sealed token stays green.
+    return re.compile(r"\b(?:" + "|".join(parts) + r")\b")
 
 
 def _string_consts(node: ast.AST) -> list[str]:

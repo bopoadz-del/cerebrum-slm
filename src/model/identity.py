@@ -19,10 +19,24 @@ def repo_root() -> Path:
     raise FileNotFoundError(f"{_CONFIG_NAME} not found from {here}")
 
 
+def _read_text(path: Path) -> str:
+    """Read through training_open so a computed path cannot skip the eval seal."""
+    root = repo_root()
+    scripts = str(root / "scripts")
+    import sys
+
+    if scripts not in sys.path:
+        sys.path.insert(0, scripts)
+    from gates.blind_seal import training_open
+
+    with training_open(path, root, "r") as handle:
+        return handle.read()
+
+
 @lru_cache(maxsize=1)
 def load_model_config() -> dict:
     path = repo_root() / _CONFIG_NAME
-    config = json.loads(path.read_text(encoding="utf-8"))
+    config = json.loads(_read_text(path))
     if config.get("model_id") != MODEL_ID:
         raise ValueError(f"model config id {config.get('model_id')!r} != {MODEL_ID!r}")
     if config.get("tinker_base_model") != MODEL_ID:

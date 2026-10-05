@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import ast
 import json
 import re
 from dataclasses import dataclass
@@ -307,6 +308,352 @@ def blind_summary(root: Path) -> str:
     return "\n".join(lines)
 
 
+_EVAL_PATH = re.compile(r"data[/\\]+eval\b", re.IGNORECASE)
+_MODULE_OPENERS = {"io", "builtins", "codecs"}
+_PATH_MODULES = {"path", "posixpath", "ntpath"}
+
+
+def _contains_eval_path(text: str) -> bool:
+    return _EVAL_PATH.search(text) is not None
+
+
+def _string_seq(node: ast.AST, env: dict[str, str]) -> list[str] | None:
+    if not isinstance(node, (ast.List, ast.Tuple)):
+        return None
+    values: list[str] = []
+    for elt in node.elts:
+        folded = _fold(elt, env)
+        if folded is None:
+            return None
+        values.append(folded)
+    return values
+
+
+def _fold_mod(node: ast.BinOp, env: dict[str, str]) -> str | None:
+    template = _fold(node.left, env)
+    if template is None:
+        return None
+    if isinstance(node.right, (ast.List, ast.Tuple)):
+        values = _string_seq(node.right, env)
+        if values is None:
+            return None
+        try:
+            return template % tuple(values)
+        except (TypeError, ValueError):
+            return None
+    value = _fold(node.right, env)
+    if value is None:
+        return None
+    try:
+        return template % value
+    except (TypeError, ValueError):
+        return None
+
+
+def _is_path_join(func: ast.AST) -> bool:
+    if not isinstance(func, ast.Attribute) or func.attr != "join":
+        return False
+    value = func.value
+    if isinstance(value, ast.Name) and value.id in _PATH_MODULES:
+        return True
+    return isinstance(value, ast.Attribute) and value.attr == "path"
+
+
+def _fold_call(node: ast.Call, env: dict[str, str]) -> str | None:
+    func = node.func
+    if isinstance(func, ast.Name) and func.id == "Path" and len(node.args) == 1 and not node.keywords:
+        return _fold(node.args[0], env)
+    if isinstance(func, ast.Attribute) and func.attr == "format" and not node.keywords:
+        template = _fold(func.value, env)
+        if template is None:
+            return None
+        args: list[str] = []
+        for arg in node.args:
+            folded = _fold(arg, env)
+            if folded is None:
+                return None
+            args.append(folded)
+        try:
+            return template.format(*args)
+        except (IndexError, KeyError, ValueError):
+            return None
+    if isinstance(func, ast.Attribute) and func.attr == "join" and not node.keywords:
+        if _is_path_join(func):
+            parts: list[str] = []
+            for arg in node.args:
+                folded = _fold(arg, env)
+                if folded is None:
+                    return None
+                parts.append(folded)
+            if not parts:
+                return None
+            return "/".join(parts)
+        receiver = _fold(func.value, env)
+        if receiver is None or len(node.args) != 1:
+            return None
+        parts = _string_seq(node.args[0], env)
+        if parts is None:
+            return None
+        return receiver.join(parts)
+    return None
+
+
+def _fold(node: ast.AST | None, env: dict[str, str]) -> str | None:
+    """Constant string, including pieces joined into one path."""
+    if node is None:
+        return None
+    if isinstance(node, ast.Constant) and isinstance(node.value, str):
+        return node.value
+    if isinstance(node, ast.Name):
+        return env.get(node.id)
+    if isinstance(node, ast.JoinedStr):
+        parts: list[str] = []
+        for value in node.values:
+            if isinstance(value, ast.Constant) and isinstance(value.value, str):
+                parts.append(value.value)
+                continue
+            if isinstance(value, ast.FormattedValue):
+                folded = _fold(value.value, env)
+                if folded is None:
+                    return None
+                parts.append(folded)
+                continue
+            return None
+        return "".join(parts)
+    if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Add):
+        left, right = _fold(node.left, env), _fold(node.right, env)
+        if left is None or right is None:
+            return None
+        return left + right
+    if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Div):
+        left, right = _fold(node.left, env), _fold(node.right, env)
+        if left is None or right is None:
+            return None
+        return f"{left.rstrip('/\\')}/{right.lstrip('/\\')}"
+    if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Mod):
+        return _fold_mod(node, env)
+    if isinstance(node, ast.Call):
+        return _fold_call(node, env)
+    return None
+
+
+def _is_training_open(node: ast.Call) -> bool:
+    func = node.func
+    if isinstance(func, ast.Name):
+        return func.id == "training_open"
+    return isinstance(func, ast.Attribute) and func.attr == "training_open"
+
+
+def _is_reader_expr(node: ast.AST | None, readers: set[str]) -> bool:
+    if node is None:
+        return False
+    if isinstance(node, ast.Name) and node.id in readers:
+        return True
+    if isinstance(node, ast.Attribute) and node.attr == "open":
+        return isinstance(node.value, ast.Name) and node.value.id in _MODULE_OPENERS
+    return False
+
+
+def _is_raw_read(node: ast.Call, readers: set[str]) -> bool:
+    if _is_training_open(node):
+        return False
+    func = node.func
+    if isinstance(func, ast.Name):
+        return func.id in readers
+    if isinstance(func, ast.Attribute):
+        if func.attr in {"read_text", "read_bytes"}:
+            return True
+        if func.attr == "open":
+            return True
+    return False
+
+
+def _path_exprs(node: ast.Call) -> list[ast.AST]:
+    func = node.func
+    if isinstance(func, ast.Name):
+        return [node.args[0]] if node.args else []
+    if not isinstance(func, ast.Attribute):
+        return []
+    if func.attr in {"read_text", "read_bytes"}:
+        return [func.value]
+    if func.attr != "open":
+        return []
+    if isinstance(func.value, ast.Name) and func.value.id in _MODULE_OPENERS:
+        return [node.args[0]] if node.args else []
+    exprs = [func.value]
+    if node.args:
+        exprs.append(node.args[0])
+    return exprs
+
+
+def _proven_outside_eval(exprs: list[ast.AST], env: dict[str, str]) -> bool:
+    if not exprs:
+        return False
+    for expr in exprs:
+        folded = _fold(expr, env)
+        if folded is None or _contains_eval_path(folded):
+            return False
+    return True
+
+
+def _assigned_names(statements: list[ast.stmt]) -> set[str]:
+    names: set[str] = set()
+    for statement in statements:
+        for node in ast.walk(statement):
+            if isinstance(node, ast.Assign):
+                names.update(target.id for target in node.targets if isinstance(target, ast.Name))
+            elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
+                names.add(node.target.id)
+            elif isinstance(node, ast.AugAssign) and isinstance(node.target, ast.Name):
+                names.add(node.target.id)
+    return names
+
+
+class _TrainingReadScan(ast.NodeVisitor):
+    def __init__(self) -> None:
+        self.env: dict[str, str] = {}
+        self.readers = {"open"}
+        self.eval_path = False
+        self.raw_read = False
+
+    def message(self) -> str | None:
+        if self.eval_path:
+            return "training code reads the sealed eval tree data/eval"
+        if self.raw_read:
+            return (
+                "training code reads a file without training_open(); "
+                "the read is not rejected"
+            )
+        return None
+
+    def _note(self, text: str) -> None:
+        if _contains_eval_path(text):
+            self.eval_path = True
+
+    def _bind(self, name: str, folded: str | None, reader: bool) -> None:
+        if isinstance(folded, str):
+            self.env[name] = folded
+            self._note(folded)
+        elif name in self.env:
+            del self.env[name]
+        if reader:
+            self.readers.add(name)
+        elif name in self.readers:
+            self.readers.discard(name)
+
+    def visit(self, node: ast.AST) -> None:
+        if isinstance(node, ast.expr):
+            folded = _fold(node, self.env)
+            if isinstance(folded, str):
+                self._note(folded)
+        if isinstance(node, ast.Call) and _is_raw_read(node, self.readers):
+            exprs = _path_exprs(node)
+            if any(
+                isinstance(folded, str) and _contains_eval_path(folded)
+                for folded in (_fold(expr, self.env) for expr in exprs)
+            ):
+                self.eval_path = True
+            elif not _proven_outside_eval(exprs, self.env):
+                self.raw_read = True
+        super().visit(node)
+
+    def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
+        saved_env = dict(self.env)
+        saved_readers = set(self.readers)
+        for arg in (*node.args.posonlyargs, *node.args.args, *node.args.kwonlyargs):
+            self.env.pop(arg.arg, None)
+            self.readers.discard(arg.arg)
+        if node.args.vararg is not None:
+            self.env.pop(node.args.vararg.arg, None)
+        if node.args.kwarg is not None:
+            self.env.pop(node.args.kwarg.arg, None)
+        self.generic_visit(node)
+        self.env = saved_env
+        self.readers = saved_readers
+
+    visit_AsyncFunctionDef = visit_FunctionDef  # type: ignore[assignment]
+
+    def visit_ClassDef(self, node: ast.ClassDef) -> None:
+        saved_env = dict(self.env)
+        saved_readers = set(self.readers)
+        self.generic_visit(node)
+        self.env = saved_env
+        self.readers = saved_readers
+
+    def visit_Assign(self, node: ast.Assign) -> None:
+        folded = _fold(node.value, self.env)
+        reader = _is_reader_expr(node.value, self.readers)
+        self.generic_visit(node)
+        for target in node.targets:
+            if isinstance(target, ast.Name):
+                self._bind(target.id, folded, reader)
+
+    def visit_AnnAssign(self, node: ast.AnnAssign) -> None:
+        folded = _fold(node.value, self.env) if node.value is not None else None
+        reader = _is_reader_expr(node.value, self.readers) if node.value is not None else False
+        self.generic_visit(node)
+        if isinstance(node.target, ast.Name):
+            self._bind(node.target.id, folded, reader)
+
+    def visit_AugAssign(self, node: ast.AugAssign) -> None:
+        self.generic_visit(node)
+        if not isinstance(node.target, ast.Name) or not isinstance(node.op, ast.Add):
+            if isinstance(node.target, ast.Name):
+                self.env.pop(node.target.id, None)
+            return
+        current = self.env.get(node.target.id)
+        added = _fold(node.value, self.env)
+        if current is not None and added is not None:
+            self._bind(node.target.id, current + added, False)
+        else:
+            self.env.pop(node.target.id, None)
+
+    def visit_ImportFrom(self, node: ast.ImportFrom) -> None:
+        if node.module in {None, "builtins", "io", "codecs"}:
+            for alias in node.names:
+                if alias.name == "open":
+                    self.readers.add(alias.asname or alias.name)
+        self.generic_visit(node)
+
+    def _visit_branches(self, groups: list[list[ast.stmt]]) -> None:
+        for statements in groups:
+            for statement in statements:
+                self.visit(statement)
+        # A name written in a branch is not a constant afterwards.
+        # Reader aliases stay, so a later call is still rejected.
+        for name in set().union(*(_assigned_names(statements) for statements in groups)):
+            self.env.pop(name, None)
+
+    def visit_If(self, node: ast.If) -> None:
+        self.visit(node.test)
+        self._visit_branches([node.body, node.orelse])
+
+    def visit_For(self, node: ast.For) -> None:
+        self.visit(node.iter)
+        self._visit_branches([node.body, node.orelse])
+        if isinstance(node.target, ast.Name):
+            self.env.pop(node.target.id, None)
+
+    def visit_While(self, node: ast.While) -> None:
+        self.visit(node.test)
+        self._visit_branches([node.body, node.orelse])
+
+    def visit_Try(self, node: ast.Try) -> None:
+        groups = [node.body, node.orelse, node.finalbody]
+        groups.extend(handler.body for handler in node.handlers)
+        self._visit_branches(groups)
+
+
+def _python_read_message(text: str) -> str | None:
+    try:
+        tree = ast.parse(text)
+    except SyntaxError:
+        return None
+    scan = _TrainingReadScan()
+    scan.visit(tree)
+    return scan.message()
+
+
 def _static_reads(root: Path) -> list[Finding]:
     findings: list[Finding] = []
     for path in training_code_files(root):
@@ -314,14 +661,15 @@ def _static_reads(root: Path) -> list[Finding]:
             text = path.read_text(encoding="utf-8")
         except UnicodeError:
             continue
-        if any(pattern.search(text) for pattern in _READS):
-            findings.append(
-                Finding(
-                    "blind-seal",
-                    relpath(path, root),
-                    "training code reads the sealed eval tree data/eval",
-                )
-            )
+        regex_hit = any(pattern.search(text) for pattern in _READS)
+        ast_message = _python_read_message(text) if path.suffix.lower() == ".py" else None
+        if not regex_hit and ast_message is None:
+            continue
+        if regex_hit and (ast_message is None or "data/eval" not in ast_message):
+            message = "training code reads the sealed eval tree data/eval"
+        else:
+            message = ast_message or "training code reads the sealed eval tree data/eval"
+        findings.append(Finding("blind-seal", relpath(path, root), message))
     return findings
 
 

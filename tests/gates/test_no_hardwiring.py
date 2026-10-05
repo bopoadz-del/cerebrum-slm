@@ -35,8 +35,11 @@ def test_catalog_seals_eval_and_leaves_posture_unsealed(repo_root: Path) -> None
     domains = {domain.casefold() for domain in catalog.domains}
     assert "striking_time" in probes
     assert "all" not in probes
+    assert "case_1" not in probes
     assert "concrete_structures" in domains
     assert "data_centre" in domains
+    assert "governance" not in domains
+    assert "datacenter" not in domains
 
     adversarial = _first_jsonl(repo_root, "concrete/concrete_adversarial.jsonl")
     posture = _first_jsonl(repo_root, "concrete/concrete_pairs.jsonl")
@@ -192,6 +195,49 @@ def test_word_list_in_python_json_and_yaml_then_removed(tmp_path: Path) -> None:
     assert any("word list" in finding.message for finding in check_hardwiring(tmp_path))
     yaml_file.unlink()
     assert check_hardwiring(tmp_path) == []
+
+
+def test_training_domain_words_and_a_different_case_stay_green(tmp_path: Path, repo_root: Path) -> None:
+    _copy_zip(tmp_path, repo_root)
+    note = tmp_path / "src" / "note.py"
+    _write(note, "# governance of the datacenter stays in retrieval\n# DataCenter\nlabel = \"Case_1\"\n")
+    assert check_hardwiring(tmp_path) == []
+    _write(note, "# do not special-case striking_time\n")
+    assert any("striking_time" in finding.message for finding in check_hardwiring(tmp_path))
+    _write(note, "# Striking_Time is not the sealed token\n")
+    assert check_hardwiring(tmp_path) == []
+
+
+def test_plain_word_domain_is_not_sealed_and_an_identifier_domain_is(tmp_path: Path) -> None:
+    _write(
+        tmp_path / "data" / "eval" / "blind" / "item.jsonl",
+        "\n".join(
+            [
+                json.dumps(
+                    {
+                        "instruction": "q",
+                        "output": "a",
+                        "meta": {"domain": "governance", "source_case": "striking_time", "eval_only": True},
+                    }
+                ),
+                json.dumps(
+                    {
+                        "instruction": "q2",
+                        "output": "a2",
+                        "meta": {"domain": "concrete_structures", "source_case": "other_probe_zz", "eval_only": True},
+                    }
+                ),
+            ]
+        )
+        + "\n",
+    )
+    note = tmp_path / "src" / "note.py"
+    _write(note, 'label = "governance"\n')
+    assert check_hardwiring(tmp_path) == []
+    _write(note, 'label = "concrete_structures"\n')
+    assert any("concrete_structures" in finding.message for finding in check_hardwiring(tmp_path))
+    _write(note, 'label = "striking_time"\n')
+    assert any("striking_time" in finding.message for finding in check_hardwiring(tmp_path))
 
 
 def test_commented_probe_id_is_still_red(tmp_path: Path) -> None:

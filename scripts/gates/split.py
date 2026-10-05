@@ -74,12 +74,18 @@ _NUM_UNIT = re.compile(
 )
 _ISO = r"USD|SAR|AED|QAR|EUR|GBP|KWD|BHD|OMR"
 _CURRENCY_WORD = r"riyals?|dirhams?|dollars?|euros?|pounds?"
+_AMOUNT = r"\d[\d,]*(?:\.\d+)?"
+# A bare code is not an amount. "cement price sar t" names a missing input.
 _CURRENCY = re.compile(
-    rf"(?i)(?:[$€£]\s?\d[\d,]*(?:\.\d+)?|(?<![A-Za-z])(?:{_ISO})(?![A-Za-z])|"
-    rf"(?<![A-Za-z0-9])\d[\d,]*(?:\.\d+)?\s*(?:{_CURRENCY_WORD})(?![A-Za-z]))"
+    rf"(?i)(?:[$€£]\s?{_AMOUNT}"
+    rf"|(?<![A-Za-z])(?:{_ISO})\s*{_AMOUNT}(?![A-Za-z0-9])"
+    rf"|(?<![A-Za-z0-9]){_AMOUNT}\s*(?:{_ISO})(?![A-Za-z])"
+    rf"|(?<![A-Za-z0-9]){_AMOUNT}\s*(?:{_CURRENCY_WORD})(?![A-Za-z]))"
 )
+# BS 8110 and CIRIA have no edition. ACI 318-19 and EN 1992-1-1 do.
 _STANDARD = re.compile(
-    r"\b(?:BS\s*EN|BS|EN|ISO|IEC|ACI|ASTM|ASME|AASHTO|DIN|CIRIA|NFPA|IBC|UBC)\s*[A-Z]?\d[\w./:-]*",
+    r"\b(?:BS\s*EN|BS|EN|ISO|IEC|ACI|ASTM|ASME|AASHTO|DIN|CIRIA|NFPA|IBC|UBC)"
+    r"\s*[A-Z]?\d[\w]*[-:.][\w./:-]*[A-Za-z0-9]",
     re.IGNORECASE,
 )
 _CLAUSE = re.compile(r"(?i)\b(?:clauses?|cl\.|sections?|tables?)\s+\d[\d.]*")
