@@ -6,6 +6,7 @@ import argparse
 import sys
 from pathlib import Path
 
+from gates.augment import check_augmentation
 from gates.blind_seal import blind_summary, check_blind
 from gates.findings import Finding
 from gates.no_hardwiring import check_hardwiring
@@ -16,7 +17,7 @@ from gates.split import check_split
 
 def evaluate(root: Path) -> list[Finding]:
     findings: list[Finding] = []
-    for checker in (check_raw, check_hardwiring, check_split, check_blind):
+    for checker in (check_raw, check_hardwiring, check_split, check_blind, check_augmentation):
         findings.extend(checker(root))
     return findings
 

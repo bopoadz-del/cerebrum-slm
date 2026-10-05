@@ -108,3 +108,21 @@ The 17 routed held-out items (`which_formula_applies` 2, `what_must_be_known_fir
 
 Re-score on the stored run-1 replies, before -> after (formula routing, held-out n=65): base 0 -> 0, prompt-only 42 -> 42, tuned 0 -> 0, tuned + prompt 45 -> 45. No stored reply routed any of the 17 items to the right id, so the bar does not move.
 
+## 5. Phase-1 data (L2, after run 2 failed the stop gate)
+
+Built only after the r16 run on the original 209 pairs failed STOP GATE 5.4 (blind routing tie), per the owner's order. Counts come from `data/train/manifest.json` and `data/held_out/manifest.json`, written by `scripts/data/build_phase1.py`.
+
+| Source | Train | Held-out |
+|---|---|---|
+| Domain intake (answered questions) | 0 | 0 |
+| Original confirmed pairs | 209 | 65 |
+| Temporary-works confirmed pairs | 24 | 4 |
+| User-turn paraphrases (assistant verbatim) | 1864 | 0 |
+| Hard negatives (sourced figure in attached context) | 25 | 0 |
+| Total | 2122 | 69 |
+
+- Intake: no answered construction intake record exists in the repository or the raw archive, so nothing is derived from it.
+- Paraphrases: 2106 offered for 233 train parents; 8 duplicates, 1 new-fact and 0 sealed-overlap candidates dropped; 8 kept per parent.
+- Hard negatives: 26 refuse-labelled train parents; 25 have a registry formula and got one near-miss. The one with no registry record got none rather than an invented record.
+- Held-out children: none. Augmentation is grouped by parent, and held-out parents are never paraphrased.
+- The 14 temporary-works adversarial items are sealed under `data/eval/temporary_works/` and stay eval-only.

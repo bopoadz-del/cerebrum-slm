@@ -38,7 +38,7 @@ def test_dry_run_checks_real_data_without_tinker(monkeypatch, capsys):
     assert "tinker_contacted: no" in text
     assert "scores_written: no" in text
     assert "model_id: Qwen/Qwen3-8B" in text
-    assert "held_out: n=65" in text
+    assert "held_out: n=69" in text
     assert "blind: n=60" in text
     assert "seals: ok" in text
     assert "config: ok" in text

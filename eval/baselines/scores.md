@@ -1,9 +1,13 @@
 # Baseline scores
 
-Untuned, held-out, n=65: refusal/qualification 0, fact-leak rate 18/65, formula-routing accuracy 0.
+Untuned, held-out, n=69: refusal/qualification 0, fact-leak rate 14/69, formula-routing accuracy 0.
 Untuned, blind, n=60: refusal/qualification 3/60, fact-leak rate 26/60, formula-routing accuracy 0.
-Prompt-only, held-out, n=65: refusal/qualification 47/65, fact-leak rate 0, formula-routing accuracy 42/65.
-Prompt-only, blind, n=60: refusal/qualification 2/60, fact-leak rate 0, formula-routing accuracy 19/60.
+Prompt-only, held-out, n=69: refusal/qualification 51/69, fact-leak rate 0, formula-routing accuracy 46/69.
+Prompt-only, blind, n=60: refusal/qualification 3/60, fact-leak rate 0, formula-routing accuracy 19/60.
+
+## Held-out re-sample (phase-1 data)
+
+The phase-1 data build added 4 confirmed temporary-works items to held-out (65 -> 69). The two held-out lines above were sampled again on all 69 items with the corrected grader, the same prompt-only system prompt, the same sampling config, and no Fork context. Earlier n=65 lines: untuned 0, 18/65, 0; prompt-only 47/65, 0, 42/65. Those 69 held-out replies were graded with the current grader and labels (symbol aliases, registry required inputs for routed items). A fresh blind sample taken at the same time and graded with the current grader scored prompt-only 3/60, 0, 18/60 and untuned 2/60, 24/60, 0. The prompt-only blind line keeps the higher bar of the two samples on each count: refusal/qualification 3/60 (was 2/60), formula-routing 19/60. The untuned blind line is unchanged.
 
 ## Grader correction (phase-1 return)
 
