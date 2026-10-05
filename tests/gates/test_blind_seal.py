@@ -142,3 +142,43 @@ def test_seal_json_matches_then_count_hash_and_source_zip_fail(
 
     seal_path.unlink()
     assert any(finding.message == "missing seal" for finding in check_blind(tmp_path))
+
+
+def test_concatenated_eval_path_is_red_and_training_open_is_not(tmp_path: Path) -> None:
+    train = tmp_path / "src" / "train_step.py"
+    train.parent.mkdir(parents=True)
+    train.write_text(
+        'def load():\n    return open("data/" + "eval/blind/case.jsonl").read()\n',
+        encoding="utf-8",
+    )
+    findings = check_blind(tmp_path)
+    assert any("data/eval" in finding.message for finding in findings)
+
+    joined = tmp_path / "scripts" / "train" / "fit.py"
+    joined.parent.mkdir(parents=True)
+    joined.write_text(
+        'path = "".join(["dat", "a/eval/blind"])\n',
+        encoding="utf-8",
+    )
+    assert any(finding.path.endswith("fit.py") and "data/eval" in finding.message for finding in check_blind(tmp_path))
+
+    train.write_text(
+        "def load(path, root):\n    return training_open(path, root).read()\n",
+        encoding="utf-8",
+    )
+    joined.unlink()
+    assert check_blind(tmp_path) == []
+
+
+def test_unknown_path_requires_training_open_and_a_constant_outside_does_not(tmp_path: Path) -> None:
+    train = tmp_path / "src" / "train_step.py"
+    train.parent.mkdir(parents=True)
+    train.write_text("def load(path):\n    return open(path).read()\n", encoding="utf-8")
+    findings = check_blind(tmp_path)
+    assert any("training_open" in finding.message for finding in findings)
+
+    train.write_text(
+        'def load():\n    return open("configs/model/qwen3-8b.json", encoding="utf-8").read()\n',
+        encoding="utf-8",
+    )
+    assert check_blind(tmp_path) == []

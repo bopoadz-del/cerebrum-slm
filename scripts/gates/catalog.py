@@ -63,6 +63,10 @@ def _add_domain(bucket: set[str], value: object) -> None:
     token = value.strip()
     if len(token) < 4 or _DOMAIN_TOKEN.fullmatch(token) is None:
         return
+    # governance, datacenter: a single word is a training-domain label.
+    # Sealed item names carry an underscore or a digit.
+    if token.isalpha():
+        return
     bucket.add(token)
 
 
@@ -135,12 +139,9 @@ def _consume_zip(
             if info.is_dir():
                 continue
             name = info.filename
+            # Facility notes are not sealed eval items. Names come from eval records.
             if name.endswith((".yaml", ".yml")):
-                text = _read_zip_member(zf, name)
-                for match in _YAML_DOMAIN.finditer(text):
-                    _add_domain(domains, match.group(1))
-                for match in _YAML_PROBE.finditer(text):
-                    _add_probe(probes, match.group(1))
+                _read_zip_member(zf, name)
                 continue
             if not name.endswith(".jsonl"):
                 continue
@@ -154,8 +155,8 @@ def _consume_zip(
                     obj = _loads_object(line, where, lineno)
                 except RecordParseError as exc:
                     raise CatalogError(where, str(exc)) from exc
-                _harvest_identifiers(obj, probes, domains)
                 if seal_file or _record_is_eval(obj):
+                    _harvest_identifiers(obj, probes, domains)
                     _seal_record(obj, content_hashes, record_hashes)
 
 
@@ -199,7 +200,7 @@ def _consume_eval_tree(
 
 
 def build_catalog(root: Path) -> Catalog:
-    """Union of data/eval/** and eval-only records inside the raw archive."""
+    """Names and hashes from sealed eval records only, not from training rows."""
     probes: set[str] = set()
     domains: set[str] = set()
     content_hashes: set[str] = set()
