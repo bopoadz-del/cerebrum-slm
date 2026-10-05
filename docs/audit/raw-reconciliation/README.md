@@ -31,3 +31,8 @@
 - `candidate_exact_collapsed: 38`: all 38 are legacy-tree `formulas/formula_selection.jsonl` lines byte-identical (user + assistant) to a `from-source` line. No governance or other domain pair is involved.
 - `formula_key_preferred: 94`: legacy-tree lines with the same formula id, pair type, and exact question as a `from-source` line, but older answer wording (for example units spelled into input names). The key includes the full question text, so it is not over-broad; restoring them would train two answers to one question. Nothing was restored.
 - The 4 legacy-tree lines with no `from-source` twin are in train.
+
+## Rows that do not come from the archive
+
+`summary.json` `non_raw_rows` counts train and held-out rows built outside the archive: the owner's confirmed temporary-works pairs (`data/sources/temporary-works/`, 24 train, 4 held-out) and the phase-1 augmentation in train (1864 user-turn paraphrases, 25 hard negatives). They are traced to their parents by `scripts/gates/augment.py`, not by this table.
+

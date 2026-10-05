@@ -88,6 +88,16 @@
   },
   "files_non_jsonl": 76,
   "lines": 796,
+  "non_raw_rows": {
+    "held_out": {
+      "data/sources/temporary-works/temporary_works_pairs.jsonl": 4
+    },
+    "train": {
+      "data/sources/temporary-works/temporary_works_pairs.jsonl": 24,
+      "hard_negative": 25,
+      "paraphrase": 1864
+    }
+  },
   "split_counts": {
     "held_out": 65,
     "regression": 61,

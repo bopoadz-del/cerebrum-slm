@@ -30,6 +30,11 @@ FACTS = Path("data/retrieval/fact_pairs.jsonl")
 OUT = Path("docs/audit/raw-reconciliation")
 
 
+def _from_raw(meta: dict) -> bool:
+    """A row built from a raw-archive line (not augmentation, not a data/sources file)."""
+    return not meta.get("aug") and not str(meta.get("source_relpath", "")).startswith("data/")
+
+
 def _hashes(root: Path, rel: Path) -> set[str]:
     path = root / rel
     if not path.is_file():
@@ -37,8 +42,22 @@ def _hashes(root: Path, rel: Path) -> set[str]:
     found = set()
     for line in path.read_text(encoding="utf-8").splitlines():
         if line.strip():
-            found.add(json.loads(line)["meta"]["content_hash"])
+            meta = json.loads(line)["meta"]
+            if _from_raw(meta):
+                found.add(meta["content_hash"])
     return found
+
+
+def _non_raw(root: Path, rel: Path) -> dict[str, int]:
+    path = root / rel
+    counts: Counter = Counter()
+    if path.is_file():
+        for line in path.read_text(encoding="utf-8").splitlines():
+            if line.strip():
+                meta = json.loads(line)["meta"]
+                if not _from_raw(meta):
+                    counts[meta.get("aug") or meta.get("source_relpath")] += 1
+    return dict(sorted(counts.items()))
 
 
 def _record_id(record: dict) -> str:
@@ -145,6 +164,7 @@ def reconcile(root: Path) -> tuple[list[dict], dict]:
     summary["by_destination"] = dict(sorted(Counter(r["destination"] for r in rows if r["kind"] != "file").items()))
     summary["dropped_reasons"] = dict(sorted(Counter(r["reason"].split(" of ")[0].split(" as ")[0] for r in rows if r["destination"] == "dropped").items()))
     summary["split_counts"] = {name: len(digests) for name, digests in splits.items()}
+    summary["non_raw_rows"] = {"train": _non_raw(root, TRAIN), "held_out": _non_raw(root, HELD)}
     return rows, summary
 
 
