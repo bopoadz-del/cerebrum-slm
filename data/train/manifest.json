@@ -1,0 +1,26 @@
+{
+  "by_stratum": {
+    "concrete_structures": 24,
+    "construction_site": 21,
+    "formulas": 111,
+    "governance": 0,
+    "mech_water_epc": 22,
+    "plant_fleet_maintenance": 28,
+    "rates": 3
+  },
+  "count": 209,
+  "dedupe": {
+    "candidate_exact_collapsed": 38,
+    "formula_key_preferred": 94,
+    "regression_exact_collapsed": 0,
+    "sealed_overlap_removed": 0
+  },
+  "fact_count": 0,
+  "schema": [
+    "system",
+    "user",
+    "assistant",
+    "meta"
+  ],
+  "source_zip_sha256": "1dfd42e871d6fa4228566b408a2e0b30ef1388121980867bef4e8ed68aeb2665"
+}

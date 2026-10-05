@@ -1,0 +1,21 @@
+---
+code: Synthetic Practice Note
+edition: 2024
+publisher: Fixture Author
+---
+1 Purpose
+This amber-ledger-token clause is an authored fixture — not a published code.
+
+1.1 Scope
+The scope is only the structure of a clause, a numbered paragraph, and a table row.
+
+2 Records
+2.1 Field notes
+Keep the edition beside the clause so a citation can be resolved.
+
+| item | limit |
+| :--- | :--- |
+| alpha | 10 |
+| beta-row-keep-intact | a-very-long-table-cell-that-must-never-be-split-across-chunks-abcdefghijklmnopqrstuvwxyz |
+
+(1) A numbered paragraph under the field notes stays its own citable unit.

@@ -1,0 +1,7 @@
+{
+  "algorithm": "sha256",
+  "artifact": "pairs.jsonl",
+  "count": 61,
+  "sha256": "d45b6838080311208a9064534480eb09f3e9f3feaeef4e24d4ec352ef27b8938",
+  "source_zip_sha256": "1dfd42e871d6fa4228566b408a2e0b30ef1388121980867bef4e8ed68aeb2665"
+}
