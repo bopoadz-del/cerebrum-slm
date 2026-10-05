@@ -26,9 +26,13 @@ Training files are `*.jsonl` and `*.json` under `data/`, except `data/raw/`, `da
 
 `gates.run` plants a probe id, a domain name, a word list, a sealed-hash copy, fact-bearing assistant turns, and a blind read in a temporary tree. Each plant is red, then removed, then green. Those files are not written into this repository.
 
-## What this branch does not do
+## LoRA entry point
 
-No training run. No new pairs. `data/eval/` is hashed when present; this branch does not fill it. Paths outside `.github/`, `scripts/gates/`, `tests/gates/`, this README, `pyproject.toml`, `requirements.txt`, and `data/raw/` are left untouched.
+`configs/lora/qwen3-8b-posture.json` is the posture adapter for `Qwen/Qwen3-8B`. `scripts/train/train_lora.py --dry-run` checks that config and the train split and prints counts. It does not contact Tinker. Hyperparameter reasoning is in `configs/lora/README.md`.
+
+## What this entry point does not do
+
+No training run is started by CI or by `--dry-run`. No new pairs. `data/eval/` stays sealed and is not read by the training entry point.
 
 ## Local run
 
