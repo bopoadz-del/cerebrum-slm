@@ -1,0 +1,1480 @@
+{
+  "count": 33,
+  "formulas": [
+    {
+      "content_hash": "2ebfb26d8d8be434902dba9fdaf63f2184ec2f5a248e0a5a686a15d8c03fe303",
+      "definition": {
+        "computes": "Cantilever, point load at the tip: delta = PL^3 / (3EI). Returns mm.",
+        "expression": "def beam_deflection_cantilever_point_load(p_kn: float, span_m: float, ec_mpa: float, i_mm4: float) -> float:\n    \"\"\"Cantilever, point load at the tip: delta = PL^3 / (3EI). Returns mm.\n\n    Distinct from ``beam_deflection_cantilever_udl``: substituting a point\n    load into wL^4/8EI overstates a 4 m / 30 kN tip deflection by half.\n    \"\"\"\n    if span_m < 0 or p_kn < 0:\n        raise ValueError(\"span_m and p_kn must be >= 0\")\n    if ec_mpa <= 0:\n        raise ValueError(\"ec_mpa must be > 0\")\n    i_mm4 = _second_moment_mm4(i_mm4)\n    p_n = p_kn * 1e3\n    l_mm = span_m * 1e3\n    return round((p_n * l_mm**3) / (3 * ec_mpa * i_mm4), 2)\n",
+        "id": "beam_deflection_cantilever_point_load",
+        "inputs": [
+          {
+            "annotation": "float",
+            "name": "p_kn",
+            "required": true
+          },
+          {
+            "annotation": "float",
+            "name": "span_m",
+            "required": true
+          },
+          {
+            "annotation": "float",
+            "name": "ec_mpa",
+            "required": true
+          },
+          {
+            "annotation": "float",
+            "name": "i_mm4",
+            "required": true
+          }
+        ],
+        "preconditions": [
+          "span_m and p_kn must be >= 0",
+          "ec_mpa must be > 0",
+          "i_mm4 must be > 0",
+          "i_mm4 below the mm4 floor is refused as a metres-to-the-fourth unit mix-up"
+        ]
+      },
+      "id": "beam_deflection_cantilever_point_load",
+      "repo": "bopoadz-del/The_Fork",
+      "source_relpath": "formulas/from-source/beam_deflection_cantilever_point_load.yaml"
+    },
+    {
+      "content_hash": "e12790d3619e7e7393453ca9d30956792fc99be5601900eab86c61cdbf7c9f48",
+      "definition": {
+        "computes": "Cantilever, UDL: delta = wL^4 / (8EI). Returns mm.",
+        "expression": "def beam_deflection_cantilever_udl(w_kn_m: float, span_m: float, ec_mpa: float, i_mm4: float) -> float:\n    \"\"\"Cantilever, UDL: delta = wL^4 / (8EI). Returns mm.\"\"\"\n    if span_m < 0 or w_kn_m < 0:\n        raise ValueError(\"span_m and w_kn_m must be >= 0\")\n    if ec_mpa <= 0:\n        raise ValueError(\"ec_mpa must be > 0\")\n    i_mm4 = _second_moment_mm4(i_mm4)\n    w_n_mm = w_kn_m\n    l_mm = span_m * 1e3\n    return round((w_n_mm * l_mm**4) / (8 * ec_mpa * i_mm4), 2)\n",
+        "id": "beam_deflection_cantilever_udl",
+        "inputs": [
+          {
+            "annotation": "float",
+            "name": "w_kn_m",
+            "required": true
+          },
+          {
+            "annotation": "float",
+            "name": "span_m",
+            "required": true
+          },
+          {
+            "annotation": "float",
+            "name": "ec_mpa",
+            "required": true
+          },
+          {
+            "annotation": "float",
+            "name": "i_mm4",
+            "required": true
+          }
+        ],
+        "preconditions": [
+          "span_m and w_kn_m must be >= 0",
+          "ec_mpa must be > 0",
+          "i_mm4 must be > 0",
+          "i_mm4 below the mm4 floor is refused as a metres-to-the-fourth unit mix-up"
+        ]
+      },
+      "id": "beam_deflection_cantilever_udl",
+      "repo": "bopoadz-del/The_Fork",
+      "source_relpath": "formulas/from-source/beam_deflection_cantilever_udl.yaml"
+    },
+    {
+      "content_hash": "f3633f97063290cce2105b7b5c96340f384eef082c1cd715ea0911c537ff1aee",
+      "definition": {
+        "computes": "Simply supported, point load at midspan: delta = PL^3 / (48EI). Returns mm.",
+        "expression": "def beam_deflection_ss_point_load_midspan(p_kn: float, span_m: float, ec_mpa: float, i_mm4: float) -> float:\n    \"\"\"Simply supported, point load at midspan: delta = PL^3 / (48EI). Returns mm.\"\"\"\n    if span_m < 0 or p_kn < 0:\n        raise ValueError(\"span_m and p_kn must be >= 0\")\n    if ec_mpa <= 0:\n        raise ValueError(\"ec_mpa must be > 0\")\n    i_mm4 = _second_moment_mm4(i_mm4)\n    p_n = p_kn * 1e3\n    l_mm = span_m * 1e3\n    return round((p_n * l_mm**3) / (48 * ec_mpa * i_mm4), 2)\n",
+        "id": "beam_deflection_ss_point_load_midspan",
+        "inputs": [
+          {
+            "annotation": "float",
+            "name": "p_kn",
+            "required": true
+          },
+          {
+            "annotation": "float",
+            "name": "span_m",
+            "required": true
+          },
+          {
+            "annotation": "float",
+            "name": "ec_mpa",
+            "required": true
+          },
+          {
+            "annotation": "float",
+            "name": "i_mm4",
+            "required": true
+          }
+        ],
+        "preconditions": [
+          "span_m and p_kn must be >= 0",
+          "ec_mpa must be > 0",
+          "i_mm4 must be > 0",
+          "i_mm4 below the mm4 floor is refused as a metres-to-the-fourth unit mix-up"
+        ]
+      },
+      "id": "beam_deflection_ss_point_load_midspan",
+      "repo": "bopoadz-del/The_Fork",
+      "source_relpath": "formulas/from-source/beam_deflection_ss_point_load_midspan.yaml"
+    },
+    {
+      "content_hash": "41263e62188d5a8cdf27884029e9985dcfd5f74893a04d790ed93b43138b357d",
+      "definition": {
+        "computes": "Simply supported, UDL: delta = 5wL^4 / (384EI). Returns mm.",
+        "expression": "def beam_deflection_ss_udl(w_kn_m: float, span_m: float, ec_mpa: float, i_mm4: float) -> float:\n    \"\"\"Simply supported, UDL: delta = 5wL^4 / (384EI). Returns mm.\"\"\"\n    if span_m < 0 or w_kn_m < 0:\n        raise ValueError(\"span_m and w_kn_m must be >= 0\")\n    if ec_mpa <= 0:\n        raise ValueError(\"ec_mpa must be > 0\")\n    i_mm4 = _second_moment_mm4(i_mm4)\n    w_n_mm = w_kn_m  # kN/m = N/mm\n    l_mm = span_m * 1e3\n    return round((5 * w_n_mm * l_mm**4) / (384 * ec_mpa * i_mm4), 2)\n",
+        "id": "beam_deflection_ss_udl",
+        "inputs": [
+          {
+            "annotation": "float",
+            "name": "w_kn_m",
+            "required": true
+          },
+          {
+            "annotation": "float",
+            "name": "span_m",
+            "required": true
+          },
+          {
+            "annotation": "float",
+            "name": "ec_mpa",
+            "required": true
+          },
+          {
+            "annotation": "float",
+            "name": "i_mm4",
+            "required": true
+          }
+        ],
+        "preconditions": [
+          "span_m and w_kn_m must be >= 0",
+          "ec_mpa must be > 0",
+          "i_mm4 must be > 0",
+          "i_mm4 below the mm4 floor is refused as a metres-to-the-fourth unit mix-up"
+        ]
+      },
+      "id": "beam_deflection_ss_udl",
+      "repo": "bopoadz-del/The_Fork",
+      "source_relpath": "formulas/from-source/beam_deflection_ss_udl.yaml"
+    },
+    {
+      "content_hash": "b6abfad2275470e6dddbdddf18e9c1d5b1314dd4b802c23e1c04491553fcdd33",
+      "definition": {
+        "computes": "Compare C60+I-Beam vs C80+rebar for composite columns.",
+        "expression": "def composite_column_design(\n    axial_load_kn: float, column_diameter_mm: float,\n    concrete_grade_n_mm2: float = 60.0,\n    use_i_beam: bool = True, i_beam_weight_t: float = 0.0,\n) -> Dict[str, Any]:\n    \"\"\"Compare C60+I-Beam vs C80+rebar for composite columns.\"\"\"\n    if column_diameter_mm <= 0:\n        raise ValueError(\"column_diameter_mm must be > 0\")\n    if axial_load_kn < 0 or concrete_grade_n_mm2 <= 0:\n        raise ValueError(\"axial_load_kn must be >= 0 and concrete_grade_n_mm2 must be > 0\")\n    col_area = math.pi * (column_diameter_mm / 2)**2\n    cap_a = col_area * concrete_grade_n_mm2 / 1000 * (1.10 if use_i_beam and i_beam_weight_t > 0 else 1.0)\n    upgraded = min(concrete_grade_n_mm2 * 1.33, 80.0)\n    cap_b = col_area * upgraded / 1000 * 0.95\n    return {\n        \"option_a\": {\"type\": f\"C{concrete_grade_n_mm2:.0f}+I-Beam\", \"capacity_kn\": round(cap_a, 0),\n                     \"is_safe\": cap_a >= axial_load_kn},\n        \"option_b\": {\"type\": f\"C{upgraded:.0f}+rebar\", \"capacity_kn\": round(cap_b, 0),\n                     \"is_safe\": cap_b >= axial_load_kn},\n        \"recommended\": \"B\" if cap_b >= axial_load_kn and not (cap_a >= axial_load_kn) else (\n            \"A or B\" if cap_a >= axial_load_kn and cap_b >= axial_load_kn else \"A\" if cap_a >= axial_load_kn else \"NEITHER\"),\n    }\n",
+        "id": "composite_column_design",
+        "inputs": [
+          {
+            "annotation": "float",
+            "name": "axial_load_kn",
+            "required": true
+          },
+          {
+            "annotation": "float",
+            "name": "column_diameter_mm",
+            "required": true
+          },
+          {
+            "annotation": "float",
+            "default": 60.0,
+            "name": "concrete_grade_n_mm2",
+            "required": false
+          },
+          {
+            "annotation": "bool",
+            "default": true,
+            "name": "use_i_beam",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 0.0,
+            "name": "i_beam_weight_t",
+            "required": false
+          }
+        ],
+        "preconditions": [
+          "column_diameter_mm must be > 0",
+          "axial_load_kn must be >= 0 and concrete_grade_n_mm2 must be > 0"
+        ]
+      },
+      "id": "composite_column_design",
+      "repo": "bopoadz-del/The_Fork",
+      "source_relpath": "formulas/from-source/composite_column_design.yaml"
+    },
+    {
+      "citation": "Nurse-Saul; ACI 209R; ACI 209",
+      "content_hash": "01788f8f8240796962bbdde052759ba03bf87c6046d92e114b7e70fbb4e4caaa",
+      "definition": {
+        "citation": "Nurse-Saul; ACI 209R; ACI 209",
+        "citation_quotes": [
+          "Nurse-Saul maturity + ACI 209 Type I moist strength gain.",
+          "(ACI 209R)"
+        ],
+        "computes": "Nurse-Saul maturity + ACI 209 Type I moist strength gain.",
+        "expression": "def concrete_maturity_strength(\n    temperature_history_c: List[float],\n    time_intervals_hours: List[float],\n    datum_temperature: float = -10.0,\n    strength_28d_n_mm2: float = 40.0,\n    reference_temperature_c: float = 20.0,\n    gain_a: float = 4.0,\n    gain_b: float = 0.85,\n) -> Dict[str, Any]:\n    \"\"\"Nurse-Saul maturity + ACI 209 Type I moist strength gain.\n\n    MI = sum(max(0, T - T0) * dt)  (T0 = -10 °C by default).\n    Equivalent age te (hours) = MI / (Tref - T0); te_days = te / 24.\n    f(t)/f28 = te_days / (a + b*te_days)  with a=4, b=0.85 (ACI 209R).\n    \"\"\"\n    if not temperature_history_c or not time_intervals_hours:\n        return {\n            \"error\": \"temperature_history_c and time_intervals_hours are required and must be non-empty.\",\n        }\n    if len(temperature_history_c) != len(time_intervals_hours):\n        return {\n            \"error\": \"temperature_history_c and time_intervals_hours must have the same length.\",\n        }\n    if any(float(dt) <= 0 for dt in time_intervals_hours):\n        return {\"error\": \"time_intervals_hours must all be > 0.\"}\n    if strength_28d_n_mm2 <= 0:\n        return {\"error\": \"strength_28d_n_mm2 must be > 0.\"}\n    te_denom = float(reference_temperature_c) - float(datum_temperature)\n    if te_denom <= 0:\n        return {\"error\": \"reference_temperature_c must be greater than datum_temperature.\"}\n\n    mi = sum(\n        max(0.0, float(t) - float(datum_temperature)) * float(dt)\n        for t, dt in zip(temperature_history_c, time_intervals_hours)\n    )\n    te_days = (mi / te_denom) / 24.0\n    denom = gain_a + gain_b * te_days\n    ratio = (te_days / denom) if denom > 0 else 0.0\n    ratio = min(max(ratio, 0.0), 1.0)\n    return {\n        \"maturity_index_c_hrs\": round(mi, 0),\n        \"equivalent_age_days\": round(te_days, 3),\n        \"predicted_strength_n_mm2\": round(strength_28d_n_mm2 * ratio, 1),\n        \"percent_of_28d\": round(ratio * 100, 1),\n    }\n",
+        "id": "concrete_maturity_strength",
+        "inputs": [
+          {
+            "annotation": "List[float]",
+            "name": "temperature_history_c",
+            "required": true
+          },
+          {
+            "annotation": "List[float]",
+            "name": "time_intervals_hours",
+            "required": true
+          },
+          {
+            "annotation": "float",
+            "default": "-10.0",
+            "name": "datum_temperature",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 40.0,
+            "name": "strength_28d_n_mm2",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 20.0,
+            "name": "reference_temperature_c",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 4.0,
+            "name": "gain_a",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 0.85,
+            "name": "gain_b",
+            "required": false
+          }
+        ],
+        "preconditions": [
+          "temperature_history_c and time_intervals_hours are required and must be non-empty.",
+          "temperature_history_c and time_intervals_hours must have the same length.",
+          "time_intervals_hours must all be > 0.",
+          "strength_28d_n_mm2 must be > 0.",
+          "reference_temperature_c must be greater than datum_temperature."
+        ]
+      },
+      "excluded_routing_statements": [
+        "The source names Nurse-Saul, ACI 209R, and ACI 209"
+      ],
+      "id": "concrete_maturity_strength",
+      "repo": "bopoadz-del/The_Fork",
+      "source_relpath": "formulas/from-source/concrete_maturity_strength.yaml"
+    },
+    {
+      "content_hash": "a200c7065bcef45690f2bc778dd998ce96331b0e0fec72bce073bef8bf1df244",
+      "definition": {
+        "computes": "Mix design by Specific Gravity (absolute volume method).",
+        "expression": "def concrete_mix_design_sg(\n    w_c_ratio: float,\n    cement_sg: float = 3.15,\n    fine_agg_sg: float = 2.67,\n    coarse_agg_sg: float = 2.54,\n    fine_agg_ratio: float = 2.0,\n    coarse_agg_ratio: float = 4.0,\n    dune_sand_pct: float = 0.0,\n) -> Dict[str, float]:\n    \"\"\"Mix design by Specific Gravity (absolute volume method).\n    W/(SGw) + C/(SGc) + F/(SGf) + Cr/(SGcr) = 1.0 m3.\"\"\"\n    if w_c_ratio <= 0:\n        raise ValueError(\"w_c_ratio must be > 0\")\n    if min(cement_sg, fine_agg_sg, coarse_agg_sg) <= 0:\n        raise ValueError(\"specific gravities must be > 0\")\n    if fine_agg_ratio < 0 or coarse_agg_ratio < 0:\n        raise ValueError(\"aggregate ratios must be >= 0\")\n    if float(dune_sand_pct) != 0.0:\n        raise ValueError(\n            \"dune_sand_pct is not applied in the absolute-volume mix \"\n            \"(no dune-sand SG is defined). Omit it or pass 0.\"\n        )\n    cement_tonnes = 1.0 / (w_c_ratio / 1.0 + 1.0 / cement_sg + fine_agg_ratio / fine_agg_sg + coarse_agg_ratio / coarse_agg_sg)\n    cement_kg = round(cement_tonnes * 1000, 0)\n    water_litres = round(cement_kg * w_c_ratio, 0)\n    fine_kg = round(cement_kg * fine_agg_ratio, 0)\n    coarse_kg = round(cement_kg * coarse_agg_ratio, 0)\n    return {\n        \"w_c_ratio\": w_c_ratio,\n        \"cement_kg_m3\": cement_kg,\n        \"water_litres_m3\": water_litres,\n        \"fine_aggregate_kg_m3\": fine_kg,\n        \"coarse_aggregate_kg_m3\": coarse_kg,\n        \"total_weight_kg_m3\": cement_kg + water_litres + fine_kg + coarse_kg,\n        \"proportions\": f\"1:{int(fine_agg_ratio)}:{coarse_agg_ratio}\",\n    }\n",
+        "id": "concrete_mix_design_sg",
+        "inputs": [
+          {
+            "annotation": "float",
+            "name": "w_c_ratio",
+            "required": true
+          },
+          {
+            "annotation": "float",
+            "default": 3.15,
+            "name": "cement_sg",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 2.67,
+            "name": "fine_agg_sg",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 2.54,
+            "name": "coarse_agg_sg",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 2.0,
+            "name": "fine_agg_ratio",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 4.0,
+            "name": "coarse_agg_ratio",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 0.0,
+            "name": "dune_sand_pct",
+            "required": false
+          }
+        ],
+        "preconditions": [
+          "w_c_ratio must be > 0",
+          "specific gravities must be > 0",
+          "aggregate ratios must be >= 0",
+          "dune_sand_pct is not applied in the absolute-volume mix (no dune-sand SG is defined). Omit it or pass 0."
+        ]
+      },
+      "id": "concrete_mix_design_sg",
+      "repo": "bopoadz-del/The_Fork",
+      "source_relpath": "formulas/from-source/concrete_mix_design_sg.yaml"
+    },
+    {
+      "content_hash": "9d44549445e8393b2317f6813f7de24daa7ef2790b19c44cdf52c6f35cf133f0",
+      "definition": {
+        "computes": "Slip-forming mix: 1:2:2.6, W/C=0.42, slump=150 +/- 30 mm.",
+        "expression": "def concrete_mix_slip_form(**_kwargs: Any) -> Dict[str, Any]:\n    \"\"\"Slip-forming mix: 1:2:2.6, W/C=0.42, slump=150 +/- 30 mm.\n\n    Extra kwargs are ignored. Documented constants stay locked — live\n    probes send slump/w_c next to the name; forwarding them would\n    TypeError a zero-arg signature (tool_error / cause).\n    \"\"\"\n    mix = concrete_mix_design_sg(w_c_ratio=0.42, fine_agg_ratio=2.0, coarse_agg_ratio=2.6)\n    mix[\"slump_mm\"] = \"150 +/- 30\"\n    mix[\"retarder_20c_lit_m3\"] = 3.8\n    mix[\"retarder_10c_lit_m3\"] = 2.9\n    mix[\"max_concrete_temp_c\"] = 32\n    mix[\"cube_strength_n_mm2\"] = \"50-55 @ 28 days\"\n    return mix\n",
+        "id": "concrete_mix_slip_form",
+        "inputs": [
+          {
+            "annotation": "Any",
+            "kind": "varkw",
+            "name": "_kwargs",
+            "required": false
+          }
+        ],
+        "preconditions": []
+      },
+      "id": "concrete_mix_slip_form",
+      "repo": "bopoadz-del/The_Fork",
+      "source_relpath": "formulas/from-source/concrete_mix_slip_form.yaml"
+    },
+    {
+      "content_hash": "33e560460836472b14009c13fbd96346f13173ebc1e1747b2ff8a3b5b96ef20e",
+      "definition": {
+        "computes": "Mass concrete limits: core <= 70C, delta_T <= 20C.",
+        "expression": "def concrete_thermal_cracking_check(core_temp_c: float, surface_temp_c: float) -> Dict[str, Any]:\n    \"\"\"Mass concrete limits: core <= 70C, delta_T <= 20C.\"\"\"\n    delta_t = core_temp_c - surface_temp_c\n    core_ok = core_temp_c <= 70\n    delta_ok = delta_t <= 20\n    notes = []\n    if not core_ok: notes.append(f\"Core temp {core_temp_c}C > limit 70C\")\n    if not delta_ok: notes.append(f\"Delta T = {delta_t}C > limit 20C\")\n    if core_ok and delta_ok: notes.append(f\"OK - core={core_temp_c}C, dT={delta_t}C\")\n    return {\n        \"core_temp_c\": core_temp_c, \"surface_temp_c\": surface_temp_c,\n        \"delta_t_c\": round(delta_t, 1), \"core_ok\": core_ok, \"delta_ok\": delta_ok,\n        \"thermal_cracking_risk\": not (core_ok and delta_ok), \"notes\": notes,\n    }\n",
+        "id": "concrete_thermal_cracking_check",
+        "inputs": [
+          {
+            "annotation": "float",
+            "name": "core_temp_c",
+            "required": true
+          },
+          {
+            "annotation": "float",
+            "name": "surface_temp_c",
+            "required": true
+          }
+        ],
+        "preconditions": []
+      },
+      "id": "concrete_thermal_cracking_check",
+      "repo": "bopoadz-del/The_Fork",
+      "source_relpath": "formulas/from-source/concrete_thermal_cracking_check.yaml"
+    },
+    {
+      "content_hash": "e987c414d41b503c83132cc935c2ba8cdb745e8a2687247fb31d702c0ab78e83",
+      "definition": {
+        "computes": "Full concrete cost build-up (SAR/m3).",
+        "expression": "def cost_buildup_concrete(\n    quantity_m3: float,\n    cement_kg_m3: float = 400,\n    cement_price_sar_t: float = 190,\n    aggregate_price_sar_t: float = 29,\n    water_price_sar_m3: float = 10,\n    microsilica_kg_m3: float = 12,\n    microsilica_price_sar_kg: float = 1.5,\n    plasticizer_lit_m3: float = 5,\n    plasticizer_price_sar_lit: float = 2.4,\n    plant_cost_sar_m3: float = 39.2,\n    labour_cost_sar_m3: float = 8.0,\n    erection_sar_m3: float = 3.0,\n    power_sar_m3: float = 2.5,\n    indirect_sar_m3: float = 4.0,\n    indirect_pct: float = 0.18,\n    markup_pct: float = 0.15,\n    waste_pct: float = 0.03,\n) -> Dict[str, Any]:\n    \"\"\"Full concrete cost build-up (SAR/m3).\n\n    Waste is a material allowance (batching loss), same as\n    ``cost_buildup_rebar``. Plant, labour, erection, power and the\n    indirect SAR/m3 line are not wasted. The indirect percent is applied\n    once, on that direct cost. Selling price is\n\n        direct × (1 + indirect_pct) / (1 − markup_pct)\n\n    Documented batch masses (not caller inputs): combined aggregate\n    1839 kg/m3, mixing water 160 L/m3 (= 0.16 m3).\n    \"\"\"\n    if quantity_m3 < 0:\n        raise ValueError(\"quantity_m3 must be >= 0\")\n    cement_cost = (cement_kg_m3 / 1000) * cement_price_sar_t\n    aggregate_cost = (1839 / 1000) * aggregate_price_sar_t  # ~1839 kg/m3 combined\n    water_cost = (160 / 1000) * water_price_sar_m3  # 160 L/m3 = 0.16 m3\n    material_cost = (\n        cement_cost\n        + aggregate_cost\n        + water_cost\n        + (microsilica_kg_m3 * microsilica_price_sar_kg)\n        + (plasticizer_lit_m3 * plasticizer_price_sar_lit)\n    )\n    wasted_material = material_cost * (1 + waste_pct)\n    direct = (\n        wasted_material\n        + plant_cost_sar_m3\n        + labour_cost_sar_m3\n        + erection_sar_m3\n        + power_sar_m3\n        + indirect_sar_m3\n    )\n    selling = direct * (1 + indirect_pct) / (1 - markup_pct)\n    selling_r = round(selling, 2)\n    total_r = round(selling_r * quantity_m3, 0)\n    return {\n        \"material_cost_sar_m3\": round(material_cost, 2),\n        \"direct_cost_sar_m3\": round(direct, 2),\n        \"selling_price_sar_m3\": selling_r,\n        \"total_project_value_sar\": total_r,\n        \"note\": (\n            f\"Material {material_cost:.2f} SAR/m3 × (1+{waste_pct:g} waste) \"\n            f\"= {wasted_material:.2f}; direct {direct:.2f} SAR/m3 \"\n            f\"(plant, labour, erection, power and the indirect line are \"\n            f\"not wasted); selling {selling_r:.2f} SAR/m3 \"\n            f\"= direct × (1+{indirect_pct:g}) / (1-{markup_pct:g}); \"\n            f\"total {total_r:.0f} SAR for {quantity_m3:g} m3.\"\n        ),\n    }\n",
+        "id": "cost_buildup_concrete",
+        "inputs": [
+          {
+            "annotation": "float",
+            "name": "quantity_m3",
+            "required": true
+          },
+          {
+            "annotation": "float",
+            "default": 400,
+            "name": "cement_kg_m3",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 190,
+            "name": "cement_price_sar_t",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 29,
+            "name": "aggregate_price_sar_t",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 10,
+            "name": "water_price_sar_m3",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 12,
+            "name": "microsilica_kg_m3",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 1.5,
+            "name": "microsilica_price_sar_kg",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 5,
+            "name": "plasticizer_lit_m3",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 2.4,
+            "name": "plasticizer_price_sar_lit",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 39.2,
+            "name": "plant_cost_sar_m3",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 8.0,
+            "name": "labour_cost_sar_m3",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 3.0,
+            "name": "erection_sar_m3",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 2.5,
+            "name": "power_sar_m3",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 4.0,
+            "name": "indirect_sar_m3",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 0.18,
+            "name": "indirect_pct",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 0.15,
+            "name": "markup_pct",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 0.03,
+            "name": "waste_pct",
+            "required": false
+          }
+        ],
+        "preconditions": [
+          "quantity_m3 must be >= 0"
+        ]
+      },
+      "id": "cost_buildup_concrete",
+      "repo": "bopoadz-del/The_Fork",
+      "source_relpath": "formulas/from-source/cost_buildup_concrete.yaml"
+    },
+    {
+      "content_hash": "c4709263e53d47d3ab904923a5d80b7305f0a2faaf5bedea62bea98c1de6c074",
+      "definition": {
+        "computes": "Formwork cost build-up (SAR/m2).",
+        "expression": "def cost_buildup_formwork(\n    area_m2: float,\n    shuttering_supply_sar_m2: float = 55,\n    scaffolding_sar_m2_day: float = 2.15,\n    cycle_days: int = 10,\n    labour_mhr_m2: float = 9,\n    labour_rate_sar_hr: float = 4.1,\n    crane_rate_sar_hr: float = 134.6,\n    crane_output_m2_hr: float = 30,\n    indirect_pct: float = 0.18,\n    markup_pct: float = 0.15,\n) -> Dict[str, float]:\n    \"\"\"Formwork cost build-up (SAR/m2).\"\"\"\n    if area_m2 < 0:\n        raise ValueError(\"area_m2 must be >= 0\")\n    if crane_output_m2_hr <= 0:\n        raise ValueError(\"crane_output_m2_hr must be > 0\")\n    shuttering = shuttering_supply_sar_m2 / 6  # 6 uses\n    scaffolding = scaffolding_sar_m2_day * cycle_days\n    material = shuttering + scaffolding\n    labour = labour_mhr_m2 * labour_rate_sar_hr\n    equipment = crane_rate_sar_hr / crane_output_m2_hr\n    direct = material + labour + equipment\n    with_markup = direct * (1 + indirect_pct) / (1 - markup_pct)\n    return {\n        \"shuttering_sar_m2\": round(shuttering, 2),\n        \"scaffolding_sar_m2\": round(scaffolding, 2),\n        \"material_sar_m2\": round(material, 2),\n        \"labour_sar_m2\": round(labour, 2),\n        \"selling_price_sar_m2\": round(with_markup, 2),\n        \"total_for_area_sar\": round(with_markup * area_m2, 0),\n    }\n",
+        "id": "cost_buildup_formwork",
+        "inputs": [
+          {
+            "annotation": "float",
+            "name": "area_m2",
+            "required": true
+          },
+          {
+            "annotation": "float",
+            "default": 55,
+            "name": "shuttering_supply_sar_m2",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 2.15,
+            "name": "scaffolding_sar_m2_day",
+            "required": false
+          },
+          {
+            "annotation": "int",
+            "default": 10,
+            "name": "cycle_days",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 9,
+            "name": "labour_mhr_m2",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 4.1,
+            "name": "labour_rate_sar_hr",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 134.6,
+            "name": "crane_rate_sar_hr",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 30,
+            "name": "crane_output_m2_hr",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 0.18,
+            "name": "indirect_pct",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 0.15,
+            "name": "markup_pct",
+            "required": false
+          }
+        ],
+        "preconditions": [
+          "area_m2 must be >= 0",
+          "crane_output_m2_hr must be > 0"
+        ]
+      },
+      "id": "cost_buildup_formwork",
+      "repo": "bopoadz-del/The_Fork",
+      "source_relpath": "formulas/from-source/cost_buildup_formwork.yaml"
+    },
+    {
+      "content_hash": "ba1c1e13b9cbb034f47991b70bc7a6e39d9cf9b4aca0fdbbc354fb205f139679",
+      "definition": {
+        "computes": "Rebar cost build-up (SAR/Tonne).",
+        "expression": "def cost_buildup_rebar(\n    quantity_kg: float,\n    material_price_sar_t: float = 2600,\n    labour_mhr_t: float = 90,\n    labour_rate_sar_hr: float = 4.1,\n    crane_hr_t: float = 2,\n    crane_rate_sar_hr: float = 134.6,\n    waste_pct: float = 0.10,\n    indirect_pct: float = 0.18,\n    markup_pct: float = 0.15,\n) -> Dict[str, float]:\n    \"\"\"Rebar cost build-up (SAR/Tonne).\"\"\"\n    if quantity_kg <= 0:\n        raise ValueError(\"quantity_kg must be > 0\")\n    qty_t = quantity_kg / 1000\n    material = qty_t * material_price_sar_t * (1 + waste_pct)\n    labour = qty_t * labour_mhr_t * labour_rate_sar_hr\n    equipment = qty_t * crane_hr_t * crane_rate_sar_hr\n    direct = material + labour + equipment\n    with_markup = direct * (1 + indirect_pct) / (1 - markup_pct)\n    sell_t = round(with_markup / qty_t, 0) if qty_t > 0 else 0\n    return {\n        \"material_sar_t\": round(material / qty_t, 0) if qty_t > 0 else 0,\n        \"labour_sar_t\": round(labour / qty_t, 0) if qty_t > 0 else 0,\n        \"equipment_sar_t\": round(equipment / qty_t, 0) if qty_t > 0 else 0,\n        \"selling_price_sar_t\": sell_t,\n        \"total_project_value_sar\": round(sell_t * qty_t, 0) if qty_t > 0 else 0,\n    }\n",
+        "id": "cost_buildup_rebar",
+        "inputs": [
+          {
+            "annotation": "float",
+            "name": "quantity_kg",
+            "required": true
+          },
+          {
+            "annotation": "float",
+            "default": 2600,
+            "name": "material_price_sar_t",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 90,
+            "name": "labour_mhr_t",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 4.1,
+            "name": "labour_rate_sar_hr",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 2,
+            "name": "crane_hr_t",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 134.6,
+            "name": "crane_rate_sar_hr",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 0.1,
+            "name": "waste_pct",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 0.18,
+            "name": "indirect_pct",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 0.15,
+            "name": "markup_pct",
+            "required": false
+          }
+        ],
+        "preconditions": [
+          "quantity_kg must be > 0"
+        ]
+      },
+      "id": "cost_buildup_rebar",
+      "repo": "bopoadz-del/The_Fork",
+      "source_relpath": "formulas/from-source/cost_buildup_rebar.yaml"
+    },
+    {
+      "content_hash": "190101138c15dc89da8191ff12ff176dd3b6c2eeae644d88f806eceedcbf8ed9",
+      "definition": {
+        "computes": "Estimate total crane project cost including operator and riggers.",
+        "expression": "def crane_cost_estimate(\n    num_cranes: int,\n    crane_capacity_tons: float,\n    duration_months: int,\n    include_operator: bool = True,\n    include_riggers: bool = True,\n    remote_area_factor: float = 1.0,\n) -> Dict[str, float]:\n    \"\"\"\n    Estimate total crane project cost including operator and riggers.\n\n    Args:\n        num_cranes: Number of cranes\n        crane_capacity_tons: Capacity per crane\n        duration_months: Project duration in months\n        include_operator: Add operator cost (default True)\n        include_riggers: Add rigger cost (default True)\n        remote_area_factor: Multiplier for remote sites (default 1.0, oil/gas = 1.3-1.5)\n\n    Returns:\n        Dict with breakdown\n    \"\"\"\n    if num_cranes < 0 or duration_months < 0:\n        raise ValueError(\"num_cranes and duration_months must be >= 0\")\n    if crane_capacity_tons <= 0:\n        raise ValueError(\"crane_capacity_tons must be > 0\")\n    if remote_area_factor < 0:\n        raise ValueError(\"remote_area_factor must be >= 0\")\n    rate_table = {25: 8000, 30: 10000, 50: 18000, 100: 30000, 200: 70000, 300: 120000}\n    closest = min(rate_table.keys(), key=lambda c: abs(c - crane_capacity_tons))\n    dry_hire_monthly = rate_table.get(closest, 30000)\n\n    # Operator: ~3,500 SAR/month per crane\n    operator_monthly = 3500 if include_operator else 0\n    # Riggers (2 per crane): ~2,800 SAR/month each\n    riggers_monthly = 5600 if include_riggers else 0\n\n    per_crane_monthly = (dry_hire_monthly + operator_monthly + riggers_monthly) * remote_area_factor\n    total_project_cost = per_crane_monthly * num_cranes * duration_months\n    mobilization = num_cranes * dry_hire_monthly * 0.5  # ~50% of monthly rate per crane\n    demobilization = mobilization * 0.75\n\n    return {\n        \"num_cranes\": num_cranes,\n        \"crane_capacity_tons\": crane_capacity_tons,\n        \"duration_months\": duration_months,\n        \"dry_hire_sar_month\": dry_hire_monthly,\n        \"operator_sar_month\": operator_monthly,\n        \"riggers_sar_month\": riggers_monthly,\n        \"remote_area_factor\": remote_area_factor,\n        \"per_crane_monthly_sar\": round(per_crane_monthly, 0),\n        \"total_project_cost_sar\": round(total_project_cost, 0),\n        \"mobilization_sar\": round(mobilization, 0),\n        \"demobilization_sar\": round(demobilization, 0),\n        \"grand_total_sar\": round(total_project_cost + mobilization + demobilization, 0),\n    }\n",
+        "id": "crane_cost_estimate",
+        "inputs": [
+          {
+            "annotation": "int",
+            "name": "num_cranes",
+            "required": true
+          },
+          {
+            "annotation": "float",
+            "name": "crane_capacity_tons",
+            "required": true
+          },
+          {
+            "annotation": "int",
+            "name": "duration_months",
+            "required": true
+          },
+          {
+            "annotation": "bool",
+            "default": true,
+            "name": "include_operator",
+            "required": false
+          },
+          {
+            "annotation": "bool",
+            "default": true,
+            "name": "include_riggers",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 1.0,
+            "name": "remote_area_factor",
+            "required": false
+          }
+        ],
+        "preconditions": [
+          "num_cranes and duration_months must be >= 0",
+          "crane_capacity_tons must be > 0",
+          "remote_area_factor must be >= 0"
+        ]
+      },
+      "id": "crane_cost_estimate",
+      "repo": "bopoadz-del/The_Fork",
+      "source_relpath": "formulas/from-source/crane_cost_estimate.yaml"
+    },
+    {
+      "content_hash": "1d2c2f67a629f651a5f57a169c78987d22c010c228c97dbae3eaa9b1b19a486e",
+      "definition": {
+        "computes": "Determine number of cranes needed to service construction lifting demand.",
+        "expression": "def crane_planning(\n    total_lift_demand_tons: float,\n    crane_capacity_tons: float,\n    utilization_pct: float = 65.0,\n    shifts_per_day: int = 2,\n    hours_per_shift: float = 9.5,\n    cycle_time_minutes: float = 20.0,\n    working_days: int = 26,\n) -> Dict[str, Any]:\n    \"\"\"\n    Determine number of cranes needed to service construction lifting demand.\n\n    Formula:\n        lifts_per_hour = 60 / cycle_time\n        daily_capacity_per_crane = capacity x (util/100) x lifts_per_hour x hours x shifts\n        num_cranes = ceil(total_demand / (daily_capacity x working_days))\n\n    Typical crane rental rates (GCC, dry hire without operator):\n        25-30 MT:  8,000-12,000 SAR/month\n        50 MT:     15,000-20,000 SAR/month\n        100 MT:    25,000-35,000 SAR/month\n        200 MT:    60,000-80,000 SAR/month\n        300+ MT:   100,000+ SAR/month\n\n    Args:\n        total_lift_demand_tons: Total tonnage to be lifted over the period\n        crane_capacity_tons: Single crane rated capacity (MT)\n        utilization_pct: Effective utilization (default 65%)\n        shifts_per_day: Number of shifts (default 2)\n        hours_per_shift: Hours per shift (default 9.5)\n        cycle_time_minutes: Average cycle time per lift (default 20 min)\n        working_days: Working days per month (default 26)\n\n    Returns:\n        Dict with crane count, monthly cost, and capacity analysis\n    \"\"\"\n    if total_lift_demand_tons < 0:\n        raise ValueError(\"total_lift_demand_tons must be >= 0\")\n    if crane_capacity_tons <= 0 or cycle_time_minutes <= 0 or working_days <= 0:\n        raise ValueError(\"crane_capacity_tons, cycle_time_minutes and working_days must be > 0\")\n    if hours_per_shift <= 0 or shifts_per_day <= 0:\n        raise ValueError(\"hours_per_shift and shifts_per_day must be > 0\")\n    lifts_per_hour = 60.0 / cycle_time_minutes\n    effective_capacity_per_lift = crane_capacity_tons * (utilization_pct / 100.0)\n    daily_lifts_per_crane = lifts_per_hour * hours_per_shift * shifts_per_day\n    daily_tonnage_per_crane = effective_capacity_per_lift * daily_lifts_per_crane\n\n    total_working_days = working_days  # Assume 1 month period; scale for longer\n    total_capacity_per_crane = daily_tonnage_per_crane * total_working_days\n\n    num_cranes = math.ceil(total_lift_demand_tons / total_capacity_per_crane) if total_capacity_per_crane > 0 else 0\n\n    # Monthly rental rate estimate (SAR/month, dry hire)\n    rate_table = {\n        25: 8000, 30: 10000, 50: 18000, 100: 30000,\n        200: 70000, 300: 120000, 500: 200000,\n    }\n    # Interpolate or find closest\n    closest_cap = min(rate_table.keys(), key=lambda c: abs(c - crane_capacity_tons))\n    monthly_rate = rate_table.get(closest_cap, 30000)\n\n    total_monthly_cost = num_cranes * monthly_rate\n\n    return {\n        \"total_lift_demand_tons\": total_lift_demand_tons,\n        \"crane_capacity_tons\": crane_capacity_tons,\n        \"utilization_pct\": utilization_pct,\n        \"shifts_per_day\": shifts_per_day,\n        \"hours_per_shift\": hours_per_shift,\n        \"cycle_time_minutes\": cycle_time_minutes,\n        \"lifts_per_hour_per_crane\": round(lifts_per_hour, 1),\n        \"daily_tonnage_per_crane\": round(daily_tonnage_per_crane, 1),\n        \"cranes_required\": num_cranes,\n        \"monthly_rate_sar\": monthly_rate,\n        \"total_monthly_cost_sar\": total_monthly_cost,\n        \"notes\": [\n            f\"Each {crane_capacity_tons}T crane handles {daily_tonnage_per_crane:.1f} tons/day\",\n            f\"At {utilization_pct}% utilization, {lifts_per_hour:.1f} lifts/hr, {cycle_time_minutes}min cycle\",\n            f\"Require {num_cranes} crane(s) @ {monthly_rate:,} SAR/month each\",\n            f\"Total crane cost: {total_monthly_cost:,} SAR/month\",\n        ],\n    }\n",
+        "id": "crane_planning",
+        "inputs": [
+          {
+            "annotation": "float",
+            "name": "total_lift_demand_tons",
+            "required": true
+          },
+          {
+            "annotation": "float",
+            "name": "crane_capacity_tons",
+            "required": true
+          },
+          {
+            "annotation": "float",
+            "default": 65.0,
+            "name": "utilization_pct",
+            "required": false
+          },
+          {
+            "annotation": "int",
+            "default": 2,
+            "name": "shifts_per_day",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 9.5,
+            "name": "hours_per_shift",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 20.0,
+            "name": "cycle_time_minutes",
+            "required": false
+          },
+          {
+            "annotation": "int",
+            "default": 26,
+            "name": "working_days",
+            "required": false
+          }
+        ],
+        "preconditions": [
+          "total_lift_demand_tons must be >= 0",
+          "crane_capacity_tons, cycle_time_minutes and working_days must be > 0",
+          "hours_per_shift and shifts_per_day must be > 0"
+        ]
+      },
+      "id": "crane_planning",
+      "repo": "bopoadz-del/The_Fork",
+      "source_relpath": "formulas/from-source/crane_planning.yaml"
+    },
+    {
+      "content_hash": "2fd13a289b4eb580e2476e9ac0a1e711a36bdd3ff04279fbb0bb10231d6da2f8",
+      "definition": {
+        "computes": "Check if dewatering can stop — FOS = counter-weight / uplift >= 1.25.",
+        "expression": "def dewatering_uplift_check(\n    water_depth: float,\n    raft_thickness: float,\n    floor_count: int,\n    floor_thickness: float = 0.3,\n    concrete_unit_weight: float = 2.5,\n    water_unit_weight: float = 1.0,\n    required_fos: float = 1.25,\n) -> DewateringResult:\n    \"\"\"Check if dewatering can stop — FOS = counter-weight / uplift >= 1.25.\"\"\"\n    if water_depth < 0:\n        raise ValueError(\"water_depth must be >= 0\")\n    if raft_thickness < 0 or floor_count < 0 or floor_thickness < 0:\n        raise ValueError(\"raft_thickness, floor_count and floor_thickness must be >= 0\")\n    if concrete_unit_weight <= 0 or water_unit_weight <= 0 or required_fos <= 0:\n        raise ValueError(\"unit weights and required_fos must be > 0\")\n    uplift = water_depth * water_unit_weight\n    raft_weight = raft_thickness * concrete_unit_weight\n    floor_weight = floor_count * floor_thickness * concrete_unit_weight\n    counter_weight = raft_weight + floor_weight\n    fos = counter_weight / uplift if uplift > 0 else float(\"inf\")\n\n    notes = [\n        f\"Uplift = {water_depth} x {water_unit_weight} = {uplift:.3f} T/m2\",\n        f\"Counter = {raft_weight:.3f} + {floor_weight:.3f} = {counter_weight:.3f} T/m2\",\n        f\"FOS = {fos:.3f} (required: {required_fos})\",\n    ]\n    can_stop = fos >= required_fos\n    if can_stop:\n        notes.append(f\"OK - dewatering CAN stop at {floor_count} floors\")\n    else:\n        notes.append(f\"NG - dewatering CANNOT stop, FOS {fos:.3f} < {required_fos}\")\n        notes.append(\"Tension piles required to anchor against uplift\")\n\n    min_counter = uplift * required_fos\n    add_floor = floor_thickness * concrete_unit_weight\n    min_floors = max(0, math.ceil((min_counter - raft_weight) / add_floor))\n    notes.append(f\"Minimum floors to stop dewatering: {min_floors}\")\n\n    return DewateringResult(\n        uplift_force_t_m2=round(uplift, 3),\n        counter_weight_t_m2=round(counter_weight, 3),\n        fos=round(fos, 3),\n        can_stop=can_stop,\n        needs_tension_piles=not can_stop,\n        min_floors_for_stop=min_floors,\n        notes=notes,\n    )\n",
+        "id": "dewatering_uplift_check",
+        "inputs": [
+          {
+            "annotation": "float",
+            "name": "water_depth",
+            "required": true
+          },
+          {
+            "annotation": "float",
+            "name": "raft_thickness",
+            "required": true
+          },
+          {
+            "annotation": "int",
+            "name": "floor_count",
+            "required": true
+          },
+          {
+            "annotation": "float",
+            "default": 0.3,
+            "name": "floor_thickness",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 2.5,
+            "name": "concrete_unit_weight",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 1.0,
+            "name": "water_unit_weight",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 1.25,
+            "name": "required_fos",
+            "required": false
+          }
+        ],
+        "preconditions": [
+          "water_depth must be >= 0",
+          "raft_thickness, floor_count and floor_thickness must be >= 0",
+          "unit weights and required_fos must be > 0"
+        ]
+      },
+      "id": "dewatering_uplift_check",
+      "repo": "bopoadz-del/The_Fork",
+      "source_relpath": "formulas/from-source/dewatering_uplift_check.yaml"
+    },
+    {
+      "content_hash": "272f613e59feb7c6c01ffa96b2ae1d7fcd7deb072515d22d363507c75e38f721",
+      "definition": {
+        "computes": "Well point spacing by soil type. Multi-stage: 5m/stage, max 3 stages (15m).",
+        "expression": "def dewatering_well_point_spacing(\n    soil_permeability_m_s: float,\n    required_drawdown_m: float,\n    well_point_diameter_m: float = 0.05,\n) -> Dict[str, Any]:\n    \"\"\"Well point spacing by soil type. Multi-stage: 5m/stage, max 3 stages (15m).\"\"\"\n    if soil_permeability_m_s <= 0:\n        raise ValueError(\"soil_permeability_m_s must be > 0\")\n    if required_drawdown_m < 0:\n        raise ValueError(\"required_drawdown_m must be >= 0\")\n    if soil_permeability_m_s > 1e-3:\n        spacing_m, soil_type = 1.5, \"coarse sand/gravel\"\n    elif soil_permeability_m_s > 1e-4:\n        spacing_m, soil_type = 1.2, \"medium sand\"\n    elif soil_permeability_m_s > 1e-5:\n        spacing_m, soil_type = 0.9, \"fine sand\"\n    else:\n        spacing_m, soil_type = 0.6, \"silty sand - consider vacuum well points\"\n\n    stages = math.ceil(required_drawdown_m / 5.0)\n    notes = [f\"Soil: {soil_type}\", f\"Spacing: {spacing_m}m\", f\"Stages: {stages}\"]\n    if stages > 3:\n        notes.append(\"Exceeds 3-stage limit (15m) - use deep well system\")\n\n    return {\n        \"soil_type\": soil_type,\n        \"permeability_m_s\": soil_permeability_m_s,\n        \"required_drawdown_m\": required_drawdown_m,\n        \"stages_needed\": stages,\n        \"max_depth_capacity_m\": stages * 5.0,\n        \"well_point_spacing_m\": spacing_m,\n        \"well_point_diameter_m\": well_point_diameter_m,\n        \"notes\": notes,\n    }\n",
+        "id": "dewatering_well_point_spacing",
+        "inputs": [
+          {
+            "annotation": "float",
+            "name": "soil_permeability_m_s",
+            "required": true
+          },
+          {
+            "annotation": "float",
+            "name": "required_drawdown_m",
+            "required": true
+          },
+          {
+            "annotation": "float",
+            "default": 0.05,
+            "name": "well_point_diameter_m",
+            "required": false
+          }
+        ],
+        "preconditions": [
+          "soil_permeability_m_s must be > 0",
+          "required_drawdown_m must be >= 0"
+        ]
+      },
+      "id": "dewatering_well_point_spacing",
+      "repo": "bopoadz-del/The_Fork",
+      "source_relpath": "formulas/from-source/dewatering_well_point_spacing.yaml"
+    },
+    {
+      "content_hash": "774f9dc569eb0842a59cef5cc35b988a76feb82153822d84726e22f8caffd95e",
+      "definition": {
+        "computes": "Concrete volume for diaphragm wall panels with 10% tremie waste.",
+        "expression": "def diaphragm_wall_panel_volume(\n    panel_length: float, wall_thickness: float,\n    excavation_depth: float, panel_count: int = 1,\n) -> Dict[str, float]:\n    \"\"\"Concrete volume for diaphragm wall panels with 10% tremie waste.\"\"\"\n    if panel_length <= 0 or wall_thickness <= 0 or excavation_depth <= 0:\n        raise ValueError(\"panel_length, wall_thickness and excavation_depth must be > 0\")\n    if panel_count <= 0:\n        raise ValueError(\"panel_count must be > 0\")\n    vol = panel_length * wall_thickness * excavation_depth\n    total = vol * panel_count\n    return {\n        \"panel_count\": panel_count,\n        \"volume_per_panel_m3\": round(vol, 2),\n        \"total_volume_m3\": round(total, 2),\n        \"volume_with_waste_m3\": round(total * 1.10, 2),\n        \"waste_factor\": 1.10,\n    }\n",
+        "id": "diaphragm_wall_panel_volume",
+        "inputs": [
+          {
+            "annotation": "float",
+            "name": "panel_length",
+            "required": true
+          },
+          {
+            "annotation": "float",
+            "name": "wall_thickness",
+            "required": true
+          },
+          {
+            "annotation": "float",
+            "name": "excavation_depth",
+            "required": true
+          },
+          {
+            "annotation": "int",
+            "default": 1,
+            "name": "panel_count",
+            "required": false
+          }
+        ],
+        "preconditions": [
+          "panel_length, wall_thickness and excavation_depth must be > 0",
+          "panel_count must be > 0"
+        ]
+      },
+      "id": "diaphragm_wall_panel_volume",
+      "repo": "bopoadz-del/The_Fork",
+      "source_relpath": "formulas/from-source/diaphragm_wall_panel_volume.yaml"
+    },
+    {
+      "content_hash": "8fc4af8930aaf3feb630bc32452775a48b3a1dcd4fcd3f87c939c15eec10f8ea",
+      "definition": {
+        "computes": "Electrical programme: 1st fix -> 2nd fix -> test -> commission -> handover.",
+        "expression": "def electrical_installation_sequence(\n    floor_area_m2: float, num_floors: int = 1,\n) -> Dict[str, Any]:\n    \"\"\"Electrical programme: 1st fix -> 2nd fix -> test -> commission -> handover.\"\"\"\n    if floor_area_m2 <= 0 or num_floors <= 0:\n        raise ValueError(\"floor_area_m2 and num_floors must be > 0\")\n    total = floor_area_m2 * num_floors\n    rates = {\"1st_fix_conduit_boxes\": 50, \"2nd_fix_equipment_panels\": 75,\n             \"cabling_testing\": 100, \"final_test_temp_power\": 100,\n             \"authority_inspection\": 50, \"final_fix_fittings\": 75,\n             \"commissioning\": 30}\n    stages = {k: math.ceil(total / v) for k, v in rates.items()}\n    return {\"total_area_m2\": total, \"stages\": stages, \"total_days\": sum(stages.values())}\n",
+        "id": "electrical_installation_sequence",
+        "inputs": [
+          {
+            "annotation": "float",
+            "name": "floor_area_m2",
+            "required": true
+          },
+          {
+            "annotation": "int",
+            "default": 1,
+            "name": "num_floors",
+            "required": false
+          }
+        ],
+        "preconditions": [
+          "floor_area_m2 and num_floors must be > 0"
+        ]
+      },
+      "id": "electrical_installation_sequence",
+      "repo": "bopoadz-del/The_Fork",
+      "source_relpath": "formulas/from-source/electrical_installation_sequence.yaml"
+    },
+    {
+      "content_hash": "8f44b6b8d934791a6755e4c99f3aff97b4482d18a55a77ff37a442d897dc3148",
+      "definition": {
+        "computes": "FM = (cumulative % retained on all sieves) / 100.",
+        "expression": "def fineness_modulus(sieve_retained_percentages: List[float]) -> float:\n    \"\"\"FM = (cumulative % retained on all sieves) / 100.\"\"\"\n    if not sieve_retained_percentages:\n        return 0.0\n    return round(sum(sieve_retained_percentages) / 100.0, 2)\n",
+        "id": "fineness_modulus",
+        "inputs": [
+          {
+            "annotation": "List[float]",
+            "name": "sieve_retained_percentages",
+            "required": true
+          }
+        ],
+        "preconditions": []
+      },
+      "id": "fineness_modulus",
+      "repo": "bopoadz-del/The_Fork",
+      "source_relpath": "formulas/from-source/fineness_modulus.yaml"
+    },
+    {
+      "citation": "BS 8110; CIRIA",
+      "content_hash": "17352676b247be5e9f04ffd0ff3427c1cede76db5d18d402518fdc2727bcabf3",
+      "definition": {
+        "citation": "BS 8110; CIRIA",
+        "citation_quotes": [
+          "Safe formwork striking per BS 8110 + CIRIA + cube test data."
+        ],
+        "computes": "Safe formwork striking per BS 8110 + CIRIA + cube test data.",
+        "expression": "def formwork_striking_time(\n    concrete_strength_7h: float = 7.0,\n    design_required_strength: float = 0.332,\n    ciria_surface_strength: float = 3.0,\n    bs8110_minimum_hours: float = 12.0,\n    proposed_hours: float = 8.0,\n) -> FormworkStrikingResult:\n    \"\"\"Safe formwork striking per BS 8110 + CIRIA + cube test data.\"\"\"\n    notes = [\n        f\"BS 8110: min {bs8110_minimum_hours}h for wall formwork\",\n        f\"CIRIA: need >= {ciria_surface_strength} N/mm2 for surface protection\",\n        f\"Design check: required = {design_required_strength} N/mm2\",\n        f\"Cube test: {concrete_strength_7h} N/mm2 at 7 hours\",\n    ]\n    if concrete_strength_7h >= ciria_surface_strength:\n        notes.append(f\"OK - {concrete_strength_7h} >= CIRIA min {ciria_surface_strength}\")\n    else:\n        notes.append(f\"NG - {concrete_strength_7h} < CIRIA min {ciria_surface_strength}\")\n    strength_ok = (\n        concrete_strength_7h >= ciria_surface_strength\n        and concrete_strength_7h >= design_required_strength\n    )\n    based_on = \"test_data\" if strength_ok else \"insufficient\"\n    recommended_hours = (\n        proposed_hours if strength_ok else max(proposed_hours, bs8110_minimum_hours)\n    )\n    notes.append(f\"Recommended: {recommended_hours}h after pour\")\n    return FormworkStrikingResult(\n        recommended_hours=recommended_hours,\n        bs8110_minimum_hours=bs8110_minimum_hours,\n        ciria_minimum_strength_n_mm2=ciria_surface_strength,\n        design_required_strength_n_mm2=design_required_strength,\n        actual_early_strength_n_mm2=concrete_strength_7h,\n        based_on=based_on,\n        notes=notes,\n    )\n",
+        "id": "formwork_striking_time",
+        "inputs": [
+          {
+            "annotation": "float",
+            "default": 7.0,
+            "name": "concrete_strength_7h",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 0.332,
+            "name": "design_required_strength",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 3.0,
+            "name": "ciria_surface_strength",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 12.0,
+            "name": "bs8110_minimum_hours",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 8.0,
+            "name": "proposed_hours",
+            "required": false
+          }
+        ],
+        "preconditions": []
+      },
+      "excluded_routing_statements": [
+        "The source names BS 8110 and CIRIA"
+      ],
+      "id": "formwork_striking_time",
+      "repo": "bopoadz-del/The_Fork",
+      "source_relpath": "formulas/from-source/formwork_striking_time.yaml"
+    },
+    {
+      "content_hash": "3a376a31fa7afedeee3cec21bc36bbd5f876692b91bc918944f82a2de2a7538d",
+      "definition": {
+        "computes": "q = P/A, FOS vs soil capacity.",
+        "expression": "def foundation_bearing_pressure(\n    foundation_width_m: float, foundation_length_m: float,\n    column_load_kn: float, soil_bearing_capacity_kn_m2: float,\n    foundation_depth_m: float = 0.0,\n) -> Dict[str, float]:\n    \"\"\"q = P/A, FOS vs soil capacity.\"\"\"\n    if foundation_width_m <= 0 or foundation_length_m <= 0:\n        return {\"error\": \"foundation_width_m and foundation_length_m must be > 0\"}\n    area = foundation_width_m * foundation_length_m\n    q = column_load_kn / area\n    net_q = q - foundation_depth_m * 18\n    fos = soil_bearing_capacity_kn_m2 / net_q if net_q > 0 else float(\"inf\")\n    return {\n        \"bearing_pressure_kn_m2\": round(q, 2),\n        \"net_pressure_kn_m2\": round(net_q, 2),\n        \"fos_against_bearing\": round(fos, 2),\n        \"bearing_ok\": fos >= 2.0,\n    }\n",
+        "id": "foundation_bearing_pressure",
+        "inputs": [
+          {
+            "annotation": "float",
+            "name": "foundation_width_m",
+            "required": true
+          },
+          {
+            "annotation": "float",
+            "name": "foundation_length_m",
+            "required": true
+          },
+          {
+            "annotation": "float",
+            "name": "column_load_kn",
+            "required": true
+          },
+          {
+            "annotation": "float",
+            "name": "soil_bearing_capacity_kn_m2",
+            "required": true
+          },
+          {
+            "annotation": "float",
+            "default": 0.0,
+            "name": "foundation_depth_m",
+            "required": false
+          }
+        ],
+        "preconditions": [
+          "foundation_width_m and foundation_length_m must be > 0"
+        ]
+      },
+      "id": "foundation_bearing_pressure",
+      "repo": "bopoadz-del/The_Fork",
+      "source_relpath": "formulas/from-source/foundation_bearing_pressure.yaml"
+    },
+    {
+      "content_hash": "c87642a6b296ce6ac7f57d57c6abc114ed54c95625687384dd405d3d61c845f5",
+      "definition": {
+        "computes": "Grouting for PT: 0.5 N/mm2 (5 kg/cm2 = 75 PSI). 35 N/mm2 @ 28d, >=20 @ 7d.",
+        "expression": "def grout_pressure_calc(\n    tendon_duct_diameter_mm: float,\n    required_pressure_n_mm2: float = 0.5,\n    strength_28d_n_mm2: float = 35.0,\n    strength_7d_n_mm2: float = 20.0,\n    mixing_time_minutes: float = 2.0,\n) -> Dict[str, float]:\n    \"\"\"Grouting for PT: 0.5 N/mm2 (5 kg/cm2 = 75 PSI). 35 N/mm2 @ 28d, >=20 @ 7d.\"\"\"\n    if tendon_duct_diameter_mm <= 0:\n        return {\"error\": \"tendon_duct_diameter_mm must be > 0\"}\n    area_mm2 = math.pi * (tendon_duct_diameter_mm / 2)**2\n    return {\n        \"duct_area_mm2\": round(area_mm2, 2),\n        \"grout_volume_l_m\": round(area_mm2 * 1000 / 1e6, 3),\n        \"pressure_n_mm2\": required_pressure_n_mm2,\n        \"pressure_kg_cm2\": round(required_pressure_n_mm2 * 10.197, 1),\n        \"pressure_psi\": round(required_pressure_n_mm2 * 145.038, 0),\n        \"strength_28d_n_mm2\": strength_28d_n_mm2,\n        \"strength_7d_n_mm2\": strength_7d_n_mm2,\n        \"mixing_time_min\": mixing_time_minutes,\n    }\n",
+        "id": "grout_pressure_calc",
+        "inputs": [
+          {
+            "annotation": "float",
+            "name": "tendon_duct_diameter_mm",
+            "required": true
+          },
+          {
+            "annotation": "float",
+            "default": 0.5,
+            "name": "required_pressure_n_mm2",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 35.0,
+            "name": "strength_28d_n_mm2",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 20.0,
+            "name": "strength_7d_n_mm2",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 2.0,
+            "name": "mixing_time_minutes",
+            "required": false
+          }
+        ],
+        "preconditions": [
+          "tendon_duct_diameter_mm must be > 0"
+        ]
+      },
+      "id": "grout_pressure_calc",
+      "repo": "bopoadz-del/The_Fork",
+      "source_relpath": "formulas/from-source/grout_pressure_calc.yaml"
+    },
+    {
+      "content_hash": "dd7960f7b9ebb16be6623c9b242af036150f26455eeda97854e81a94ef33457a",
+      "definition": {
+        "computes": "Mobilization cost estimate for construction site setup.",
+        "expression": "def mobilization_cost_estimate(\n    num_personnel: int,\n    duration_months: int,\n    camp_type: str = \"rented\",  # \"rented\", \"self_operated\", \"hotel\"\n    include_offices: bool = True,\n    include_camp: bool = True,\n    include_transport: bool = True,\n    include_safety_medical: bool = True,\n    remote_area_factor: float = 1.35,\n) -> Dict[str, Any]:\n    \"\"\"\n    Mobilization cost estimate for construction site setup.\n\n    Covers: offices, camp/accommodation, transport, safety/medical, IT,\n    warehouse equipment, demobilization.\n\n    Args:\n        num_personnel: Total site personnel count\n        duration_months: Project duration in months\n        camp_type: \"rented\" | \"self_operated\" | \"hotel\"\n        remote_area_factor: 1.0 urban, 1.35 remote, 1.5 very remote\n    \"\"\"\n    # Per-person monthly rates (SAR)\n    office_per_person = 350 if include_offices else 0\n\n    if camp_type == \"rented\":\n        camp_per_person = 2800\n    elif camp_type == \"self_operated\":\n        camp_per_person = 1800\n    else:  # hotel\n        camp_per_person = 4500\n\n    transport_per_person = 220 if include_transport else 0\n    safety_medical_per_person = 150 if include_safety_medical else 0\n\n    total_monthly = (office_per_person + camp_per_person + transport_per_person +\n                     safety_medical_per_person) * num_personnel * remote_area_factor\n\n    # Fixed costs\n    office_setup = 450000 if include_offices else 0  # Furniture, fencing, parking\n    camp_setup = 60000   # Plumbing, electrical, fuel station\n    demobilization = 280000\n    safety_setup = 40000  # PPE, signs, training, badging system\n\n    # IT costs\n    it_costs = num_personnel * 85 * duration_months  # ~85 SAR/person/month\n\n    # Warehouse equipment (forklift, crane for laydown). Factor applied once in fixed.\n    warehouse_equip = 35000\n\n    recurring = total_monthly * duration_months\n    fixed = (office_setup + camp_setup + demobilization + safety_setup +\n             it_costs + warehouse_equip) * remote_area_factor\n\n    grand_total = recurring + fixed\n\n    return {\n        \"num_personnel\": num_personnel,\n        \"duration_months\": duration_months,\n        \"camp_type\": camp_type,\n        \"remote_area_factor\": remote_area_factor,\n        \"note\": NOTE_REMOTE_AREA,\n        \"breakdown\": {\n            \"offices_sar\": round(office_setup * remote_area_factor, 0),\n            \"camp_sar\": round((camp_setup + camp_per_person * num_personnel * duration_months) * remote_area_factor, 0),\n            \"transport_sar\": round(transport_per_person * num_personnel * duration_months * remote_area_factor, 0),\n            \"safety_medical_sar\": round((safety_setup + safety_medical_per_person * num_personnel * duration_months) * remote_area_factor, 0),\n            \"it_sar\": round(it_costs * remote_area_factor, 0),\n            \"warehouse_equipment_sar\": round(warehouse_equip * remote_area_factor, 0),\n            \"demobilization_sar\": round(demobilization * remote_area_factor, 0),\n        },\n        \"recurring_monthly_sar\": round(total_monthly, 0),\n        \"total_recurring_sar\": round(recurring, 0),\n        \"total_fixed_sar\": round(fixed, 0),\n        \"grand_total_sar\": round(grand_total, 0),\n    }\n",
+        "id": "mobilization_cost_estimate",
+        "inputs": [
+          {
+            "annotation": "int",
+            "name": "num_personnel",
+            "required": true
+          },
+          {
+            "annotation": "int",
+            "name": "duration_months",
+            "required": true
+          },
+          {
+            "annotation": "str",
+            "default": "rented",
+            "name": "camp_type",
+            "required": false
+          },
+          {
+            "annotation": "bool",
+            "default": true,
+            "name": "include_offices",
+            "required": false
+          },
+          {
+            "annotation": "bool",
+            "default": true,
+            "name": "include_camp",
+            "required": false
+          },
+          {
+            "annotation": "bool",
+            "default": true,
+            "name": "include_transport",
+            "required": false
+          },
+          {
+            "annotation": "bool",
+            "default": true,
+            "name": "include_safety_medical",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 1.35,
+            "name": "remote_area_factor",
+            "required": false
+          }
+        ],
+        "preconditions": []
+      },
+      "id": "mobilization_cost_estimate",
+      "repo": "bopoadz-del/The_Fork",
+      "source_relpath": "formulas/from-source/mobilization_cost_estimate.yaml"
+    },
+    {
+      "citation": "ACI 318-19 Eq. 19.2.2.1b",
+      "content_hash": "f08202d04fdbe45a0115e78b722c36f714ec939732299061484ee7ad95bdfe37",
+      "definition": {
+        "citation": "ACI 318-19 Eq. 19.2.2.1b",
+        "citation_quotes": [
+          "ACI 318-19 Eq. 19.2.2.1b"
+        ],
+        "computes": "Concrete modulus of elasticity, with its unit stated.",
+        "expression": "def modulus_of_elasticity_concrete(\n    fck_n_mm2: float, code: str = \"metric_technical\",\n) -> dict:\n    \"\"\"Concrete modulus of elasticity, with its unit stated.\n\n    Two forms, because they are different numbers and a reader cannot tell\n    them apart from a bare float:\n\n    * ``metric_technical`` (default, unchanged): Ec = 15000 sqrt(f'c) with\n      f'c in kg/cm2 -- for C35 that is 280,624 kg/cm2.\n    * ``aci``: ACI 318-19 Eq. 19.2.2.1b SI form, Ec = 4700 sqrt(f'c) in MPa\n      -- for C35, 27,806 MPa.\n\n    Live T12: this returned the bare float 280624.0. The answer stated the ACI\n    formula and its substitution correctly, then printed \"28,062 MPa\" -- the\n    kg/cm2 figure divided by 10 instead of converted (x0.0980665 = 27,520),\n    and neither number is the 27,806 the ACI form gives. The value now carries\n    its unit, and the MPa conversion is done here rather than guessed.\n    \"\"\"\n    # Not _norm_code: that helper defaults every unknown string to ACI,\n    # which would silently change this function's default form.\n    fck = float(fck_n_mm2)\n    if _is_aci_code(code):\n        ec_mpa = round(4700 * math.sqrt(fck), 0)\n        return {\n            \"value\": ec_mpa,\n            \"unit\": \"MPa\",\n            \"standard\": \"ACI 318-19 Eq. 19.2.2.1b (SI): 4700*sqrt(f'c)\",\n        }\n    ec_kg_cm2 = round(15000 * math.sqrt(fck * 10), 0)\n    return {\n        \"value\": ec_kg_cm2,\n        \"unit\": \"kg/cm2\",\n        \"value_mpa\": round(ec_kg_cm2 * 0.0980665, 0),\n        \"standard\": \"15000*sqrt(f'c) with f'c in kg/cm2 (metric-technical form)\",\n    }\n",
+        "id": "modulus_of_elasticity_concrete",
+        "inputs": [
+          {
+            "annotation": "float",
+            "name": "fck_n_mm2",
+            "required": true
+          },
+          {
+            "annotation": "str",
+            "default": "metric_technical",
+            "name": "code",
+            "required": false
+          }
+        ],
+        "preconditions": []
+      },
+      "excluded_routing_statements": [
+        "The source names ACI 318-19 Eq. 19.2.2.1b"
+      ],
+      "id": "modulus_of_elasticity_concrete",
+      "repo": "bopoadz-del/The_Fork",
+      "source_relpath": "formulas/from-source/modulus_of_elasticity_concrete.yaml"
+    },
+    {
+      "citation": "ACI 318-19 Eq. 19.2.3.1",
+      "content_hash": "cbe387c968414748c4ec11cca243bdc17c85183480d38e29f3fe7c7fc27581c9",
+      "definition": {
+        "citation": "ACI 318-19 Eq. 19.2.3.1",
+        "citation_quotes": [
+          "ACI 318-19 Eq. 19.2.3.1"
+        ],
+        "computes": "Tensile strength. Two forms, and the caller's code decides which.",
+        "expression": "def modulus_of_rupture(fck_n_mm2: float, code: str = \"metric_technical\") -> Dict[str, float]:\n    \"\"\"Tensile strength. Two forms, and the caller's code decides which.\n\n    * ``metric_technical`` (default, unchanged): fr = 2.4 sqrt(f'c) with f'c\n      in kg/cm2, plus the split-cylinder figure -- for C30 that is 4.157 MPa.\n    * ``aci``: ACI 318-19 Eq. 19.2.3.1, fr = 0.62 sqrt(f'c) in MPa (normal\n      weight, lambda = 1.0) -- for C30, 3.40 MPa.\n\n    Live E12, asked as a follow-up naming ACI 318-19 for f'c = 30: this\n    returned 4.157 and the operator was shown 4.16 MPa. The sibling\n    ``modulus_of_elasticity_concrete`` had already been given this parameter;\n    this one was left behind, so an ACI question got the metric-technical\n    answer with no sign that the code had been ignored.\n    \"\"\"\n    # Not _norm_code: it defaults every unknown string to ACI, which would\n    # silently change this function's default form.\n    fck = float(fck_n_mm2)\n    if _is_aci_code(code):\n        fr_mpa = round(0.62 * math.sqrt(fck), 3)\n        return {\n            \"fck_n_mm2\": fck_n_mm2,\n            \"value\": fr_mpa,\n            \"unit\": \"MPa\",\n            \"modulus_of_rupture_n_mm2\": fr_mpa,\n            \"standard\": \"ACI 318-19 Eq. 19.2.3.1: 0.62*sqrt(f'c) MPa, normal weight\",\n        }\n    fck_kg = fck * 10\n    fr = 2.4 * math.sqrt(fck_kg) / 10\n    ft_aci = 1.78 * math.sqrt(fck_kg) / 10\n    return {\n        \"fck_n_mm2\": fck_n_mm2,\n        \"value\": round(fr, 3),\n        \"unit\": \"MPa\",\n        \"modulus_of_rupture_n_mm2\": round(fr, 3),\n        \"split_cylinder_aci_n_mm2\": round(ft_aci, 3),\n        \"tensile_pct_of_compressive\": round(ft_aci / fck_n_mm2 * 100, 1),\n        \"standard\": \"2.4*sqrt(f'c) with f'c in kg/cm2 (metric-technical form)\",\n    }\n",
+        "id": "modulus_of_rupture",
+        "inputs": [
+          {
+            "annotation": "float",
+            "name": "fck_n_mm2",
+            "required": true
+          },
+          {
+            "annotation": "str",
+            "default": "metric_technical",
+            "name": "code",
+            "required": false
+          }
+        ],
+        "preconditions": []
+      },
+      "excluded_routing_statements": [
+        "The source names ACI 318-19 Eq. 19.2.3.1"
+      ],
+      "id": "modulus_of_rupture",
+      "repo": "bopoadz-del/The_Fork",
+      "source_relpath": "formulas/from-source/modulus_of_rupture.yaml"
+    },
+    {
+      "content_hash": "c4dac6be820e10640a053f42b8593aafb059bd17c929ba4c1664af022b2cb95f",
+      "definition": {
+        "computes": "Plumbing flow: submittal -> procure -> 1st/2nd fix -> connect -> handover.",
+        "expression": "def plumbing_flow_programme(floor_area_m2: float, num_floors: int = 1) -> Dict[str, Any]:\n    \"\"\"Plumbing flow: submittal -> procure -> 1st/2nd fix -> connect -> handover.\"\"\"\n    total = floor_area_m2 * num_floors\n    stages = [\n        (\"material_submittal\", 7), (\"procurement\", 21),\n        (\"1st_fix_marking_piping\", max(1, math.ceil(total / 40))),\n        (\"2nd_fix_sanitary_fittings\", max(1, math.ceil(total / 60))),\n        (\"final_fix_pumps_tanks\", max(1, math.ceil(total / 80))),\n        (\"water_connection\", 7),\n        (\"testing_commissioning\", max(1, math.ceil(total / 50))),\n        (\"handover\", 3),\n    ]\n    result = {\"stages\": {}, \"total_days\": 0}\n    cum = 0\n    for name, days in stages:\n        cum += days\n        result[\"stages\"][name] = {\"days\": days, \"cumulative_days\": cum}\n    result[\"total_days\"] = cum\n    return result\n",
+        "id": "plumbing_flow_programme",
+        "inputs": [
+          {
+            "annotation": "float",
+            "name": "floor_area_m2",
+            "required": true
+          },
+          {
+            "annotation": "int",
+            "default": 1,
+            "name": "num_floors",
+            "required": false
+          }
+        ],
+        "preconditions": []
+      },
+      "id": "plumbing_flow_programme",
+      "repo": "bopoadz-del/The_Fork",
+      "source_relpath": "formulas/from-source/plumbing_flow_programme.yaml"
+    },
+    {
+      "citation": "ASTM A416; EN 10138",
+      "content_hash": "16181c04772d242b7926aef92db3f6112ecd724cbf36dae48a8c06109fd3059c",
+      "definition": {
+        "citation": "ASTM A416; EN 10138",
+        "citation_quotes": [
+          "ASTM A416 / EN 10138"
+        ],
+        "computes": "PT force: P = w x L^2 / (8 x e), balancing 75% of DL.",
+        "expression": "def post_tensioning_force(\n    span_m: float, slab_thickness_m: float, live_load_kn_m2: float,\n    dead_load_kn_m2: Optional[float] = None,\n    tendon_stress_n_mm2: float = 1300.0,\n    tendon_diameter_mm: float = 12.7,\n    eccentricity_ratio: float = 0.15,\n) -> Dict[str, Any]:\n    \"\"\"PT force: P = w x L^2 / (8 x e), balancing 75% of DL.\"\"\"\n    if dead_load_kn_m2 is None:\n        dead_load_kn_m2 = slab_thickness_m * 25\n    e = eccentricity_ratio * slab_thickness_m\n    balanced = dead_load_kn_m2 * 0.75\n    force_kn = balanced * span_m**2 / (8 * e) if e > 0 else 0\n    area_mm2 = (force_kn * 1000) / tendon_stress_n_mm2\n    # 7-wire strand fill ≈ 0.78 (ASTM A416 / EN 10138: 12.7 mm → 98.7 mm²).\n    strand_area = 0.78 * math.pi * (tendon_diameter_mm / 2)**2\n    strands = math.ceil(area_mm2 / strand_area) if strand_area > 0 else 0\n    return {\n        \"tendon_force_kn\": round(force_kn, 1),\n        \"tendon_area_mm2\": round(area_mm2, 1),\n        \"num_strands\": strands,\n        \"balanced_load_kn_m\": round(balanced, 2),\n        \"eccentricity_mm\": round(e * 1000, 1),\n        \"cable_profile\": f\"parabolic, e={e*1000:.0f}mm midspan\",\n    }\n",
+        "id": "post_tensioning_force",
+        "inputs": [
+          {
+            "annotation": "float",
+            "name": "span_m",
+            "required": true
+          },
+          {
+            "annotation": "float",
+            "name": "slab_thickness_m",
+            "required": true
+          },
+          {
+            "annotation": "float",
+            "name": "live_load_kn_m2",
+            "required": true
+          },
+          {
+            "annotation": "Optional[float]",
+            "default": null,
+            "name": "dead_load_kn_m2",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 1300.0,
+            "name": "tendon_stress_n_mm2",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 12.7,
+            "name": "tendon_diameter_mm",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 0.15,
+            "name": "eccentricity_ratio",
+            "required": false
+          }
+        ],
+        "preconditions": []
+      },
+      "excluded_routing_statements": [
+        "The source names ASTM A416 and EN 10138"
+      ],
+      "id": "post_tensioning_force",
+      "repo": "bopoadz-del/The_Fork",
+      "source_relpath": "formulas/from-source/post_tensioning_force.yaml"
+    },
+    {
+      "content_hash": "184b3341f06eb9e469b1a8252b3269ccaf477615c06e541d56f744da82cd5ec9",
+      "definition": {
+        "computes": "Crane lift check: effective = (beam + rigging) x 1.25 dynamic.",
+        "expression": "def precast_beam_erection_check(\n    beam_weight_t: float, beam_length_m: float,\n    crane_capacity_t: float, lift_radius_m: float,\n    rigging_weight_t: float = 0.5, dynamic_factor: float = 1.25,\n) -> Dict[str, Any]:\n    \"\"\"Crane lift check: effective = (beam + rigging) x 1.25 dynamic.\"\"\"\n    effective = (beam_weight_t + rigging_weight_t) * dynamic_factor\n    util = effective / crane_capacity_t * 100\n    return {\n        \"effective_lift_weight_t\": round(effective, 2),\n        \"utilization_pct\": round(util, 1),\n        \"is_safe\": util <= 100,\n    }\n",
+        "id": "precast_beam_erection_check",
+        "inputs": [
+          {
+            "annotation": "float",
+            "name": "beam_weight_t",
+            "required": true
+          },
+          {
+            "annotation": "float",
+            "name": "beam_length_m",
+            "required": true
+          },
+          {
+            "annotation": "float",
+            "name": "crane_capacity_t",
+            "required": true
+          },
+          {
+            "annotation": "float",
+            "name": "lift_radius_m",
+            "required": true
+          },
+          {
+            "annotation": "float",
+            "default": 0.5,
+            "name": "rigging_weight_t",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 1.25,
+            "name": "dynamic_factor",
+            "required": false
+          }
+        ],
+        "preconditions": []
+      },
+      "id": "precast_beam_erection_check",
+      "repo": "bopoadz-del/The_Fork",
+      "source_relpath": "formulas/from-source/precast_beam_erection_check.yaml"
+    },
+    {
+      "content_hash": "f33cbd01d755f471f4a5bbd347486da48c218fe1baf066357716b6d8cf89b63f",
+      "definition": {
+        "computes": "Shear stress: v = V/(b x d) in N/mm2.",
+        "expression": "def shear_stress_check(v_kn: float, b_mm: float, d_mm: float) -> Dict[str, float]:\n    \"\"\"Shear stress: v = V/(b x d) in N/mm2.\"\"\"\n    return {\n        \"shear_force_kn\": v_kn, \"width_mm\": b_mm, \"effective_depth_mm\": d_mm,\n        \"shear_stress_n_mm2\": round((v_kn * 1000) / (b_mm * d_mm), 3),\n    }\n",
+        "id": "shear_stress_check",
+        "inputs": [
+          {
+            "annotation": "float",
+            "name": "v_kn",
+            "required": true
+          },
+          {
+            "annotation": "float",
+            "name": "b_mm",
+            "required": true
+          },
+          {
+            "annotation": "float",
+            "name": "d_mm",
+            "required": true
+          }
+        ],
+        "preconditions": []
+      },
+      "id": "shear_stress_check",
+      "repo": "bopoadz-del/The_Fork",
+      "source_relpath": "formulas/from-source/shear_stress_check.yaml"
+    },
+    {
+      "content_hash": "960701f276c56e58ceaf96dea732fb8d72bfb3f4306104cd6ba165cc56d1b0bf",
+      "definition": {
+        "computes": "Supervision manpower based on quantities.",
+        "expression": "def supervision_ratio(\n    concrete_m3: float = 0,\n    structural_steel_t: float = 0,\n    piping_dia_inch: float = 0,\n    electrical_cable_km: float = 0,\n    area_m2: float = 0,\n) -> Dict[str, Any]:\n    \"\"\"\n    Supervision manpower based on quantities.\n    Rules of thumb:\n      - 1 civil supervisor per 30,000-40,000 m3 concrete\n      - 1 structural supervisor per 2,000-3,000 T steel\n      - 1 piping supervisor per 15,000-20,000 dia-inch\n      - 1 electrical supervisor per 50-80 km cable\n    \"\"\"\n    civil_sup = math.ceil(concrete_m3 / 35000) if concrete_m3 > 0 else 0\n    steel_sup = math.ceil(structural_steel_t / 2500) if structural_steel_t > 0 else 0\n    piping_sup = math.ceil(piping_dia_inch / 17500) if piping_dia_inch > 0 else 0\n    elec_sup = math.ceil(electrical_cable_km / 65) if electrical_cable_km > 0 else 0\n    general_sup = math.ceil(area_m2 / 20000) if area_m2 > 0 else 0\n\n    total_sup = civil_sup + steel_sup + piping_sup + elec_sup + general_sup\n    hse_officers = max(2, math.ceil(total_sup / 8))  # 1 HSE per 8 supervisors\n    document_controllers = max(1, math.ceil(total_sup / 15))\n\n    return {\n        \"civil_supervisors\": civil_sup,\n        \"structural_supervisors\": steel_sup,\n        \"piping_supervisors\": piping_sup,\n        \"electrical_supervisors\": elec_sup,\n        \"general_supervisors\": general_sup,\n        \"total_supervisors\": total_sup,\n        \"hse_officers\": hse_officers,\n        \"document_controllers\": document_controllers,\n        \"total_supervision_staff\": total_sup + hse_officers + document_controllers,\n        \"notes\": [\n            f\"1 civil supervisor per ~35,000 m3 concrete\",\n            f\"1 structural supervisor per ~2,500 T steel\",\n            f\"1 piping supervisor per ~17,500 dia-inch\",\n            f\"1 electrical supervisor per ~65 km cable\",\n            f\"1 HSE officer per 8 supervisors\",\n        ],\n    }\n",
+        "id": "supervision_ratio",
+        "inputs": [
+          {
+            "annotation": "float",
+            "default": 0,
+            "name": "concrete_m3",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 0,
+            "name": "structural_steel_t",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 0,
+            "name": "piping_dia_inch",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 0,
+            "name": "electrical_cable_km",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": 0,
+            "name": "area_m2",
+            "required": false
+          }
+        ],
+        "preconditions": []
+      },
+      "id": "supervision_ratio",
+      "repo": "bopoadz-del/The_Fork",
+      "source_relpath": "formulas/from-source/supervision_ratio.yaml"
+    },
+    {
+      "content_hash": "ffc0f6937d7529b3095633f2496f447d3f15d70dcf9dfb219430f60c6f98ab55",
+      "definition": {
+        "computes": "Convert shrinkage strain to equivalent temperature drop: delta_t = epsilon_sh / alpha_c.",
+        "expression": "def thermal_shrinkage_equivalence(shrinkage_strain: float = 0.0002, alpha_c: float = 10e-6) -> Dict[str, float]:\n    \"\"\"Convert shrinkage strain to equivalent temperature drop: delta_t = epsilon_sh / alpha_c.\"\"\"\n    return {\n        \"shrinkage_strain\": shrinkage_strain,\n        \"equivalent_temp_drop_c\": round(shrinkage_strain / alpha_c, 1),\n    }\n",
+        "id": "thermal_shrinkage_equivalence",
+        "inputs": [
+          {
+            "annotation": "float",
+            "default": 0.0002,
+            "name": "shrinkage_strain",
+            "required": false
+          },
+          {
+            "annotation": "float",
+            "default": "1e-05",
+            "name": "alpha_c",
+            "required": false
+          }
+        ],
+        "preconditions": []
+      },
+      "id": "thermal_shrinkage_equivalence",
+      "repo": "bopoadz-del/The_Fork",
+      "source_relpath": "formulas/from-source/thermal_shrinkage_equivalence.yaml"
+    },
+    {
+      "content_hash": "df8a9723cdce5abde076cc487bc4ff3acf36b5e6ec61a41542bf98c1f11d328a",
+      "definition": {
+        "computes": "Unit weight: RC = 2500 kg/m3, plain = 2400 kg/m3 (range 2330-2470).",
+        "expression": "def unit_weight_concrete(reinforced: bool = True) -> Dict[str, float]:\n    \"\"\"Unit weight: RC = 2500 kg/m3, plain = 2400 kg/m3 (range 2330-2470).\"\"\"\n    if reinforced:\n        return {\"unit_weight_kg_m3\": 2500, \"type\": \"Reinforced Concrete\"}\n    return {\"unit_weight_kg_m3\": 2400, \"type\": \"Plain Concrete\", \"range_kg_m3\": (2330, 2470)}\n",
+        "id": "unit_weight_concrete",
+        "inputs": [
+          {
+            "annotation": "bool",
+            "default": true,
+            "name": "reinforced",
+            "required": false
+          }
+        ],
+        "preconditions": []
+      },
+      "id": "unit_weight_concrete",
+      "repo": "bopoadz-del/The_Fork",
+      "source_relpath": "formulas/from-source/unit_weight_concrete.yaml"
+    },
+    {
+      "content_hash": "ada11aa5bbb88afa94930a11b5d9308c2f2e83ae49a0b547c2955592d7026491",
+      "definition": {
+        "computes": "Wind on climbing formwork: q = 0.613 x V^2, F = q x A, M = F x h/2.",
+        "expression": "def wind_load_on_formwork(\n    wind_velocity_m_s: float, formwork_area_m2: float,\n    formwork_height_m: float, formwork_width_m: float,\n    shape_factor: float = 1.0,\n) -> Dict[str, float]:\n    \"\"\"Wind on climbing formwork: q = 0.613 x V^2, F = q x A, M = F x h/2.\"\"\"\n    q = 0.613 * wind_velocity_m_s**2\n    force_n = q * formwork_area_m2 * shape_factor\n    moment_n_m = force_n * (formwork_height_m / 2)\n    z = formwork_width_m * formwork_height_m**2 / 6\n    return {\n        \"wind_pressure_kpa\": round(q / 1000, 3),\n        \"wind_force_kn\": round(force_n / 1000, 3),\n        \"overturning_moment_kn_m\": round(moment_n_m / 1000, 3),\n        \"bending_stress_n_m2\": round(moment_n_m / z, 2) if z > 0 else 0,\n    }\n",
+        "id": "wind_load_on_formwork",
+        "inputs": [
+          {
+            "annotation": "float",
+            "name": "wind_velocity_m_s",
+            "required": true
+          },
+          {
+            "annotation": "float",
+            "name": "formwork_area_m2",
+            "required": true
+          },
+          {
+            "annotation": "float",
+            "name": "formwork_height_m",
+            "required": true
+          },
+          {
+            "annotation": "float",
+            "name": "formwork_width_m",
+            "required": true
+          },
+          {
+            "annotation": "float",
+            "default": 1.0,
+            "name": "shape_factor",
+            "required": false
+          }
+        ],
+        "preconditions": []
+      },
+      "id": "wind_load_on_formwork",
+      "repo": "bopoadz-del/The_Fork",
+      "source_relpath": "formulas/from-source/wind_load_on_formwork.yaml"
+    }
+  ]
+}
