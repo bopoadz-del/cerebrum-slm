@@ -172,6 +172,8 @@ def test_owned_sources_do_not_embed_a_key():
         root / "configs",
         root / "eval" / "baselines",
         root / "eval" / "graders",
+        root / "eval",
+        root / "scripts" / "eval",
     ]
     assignment = "TINKER_" + "API_KEY="
     secret_prefix = "s" + "k-"

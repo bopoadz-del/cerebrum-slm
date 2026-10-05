@@ -1,5 +1,5 @@
-"""Shared stop for baselines that wait on the sealed split."""
+"""Shared stop for baselines that are not sampled again."""
 
 
 class BaselineNotRun(RuntimeError):
-    """The untuned and prompt-only baselines are not run yet."""
+    """The untuned and prompt-only baselines are not sampled from this package."""
