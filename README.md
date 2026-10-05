@@ -52,6 +52,18 @@ Training files are `*.jsonl` and `*.json` under `data/`, except `data/raw/`, `da
 
 No training run is started by CI or by `--dry-run`. CI does not generate pairs. `data/eval/` stays sealed and is not read by the training entry point.
 
+## Document-type router
+
+Adapter for one document-type label. The label set is `configs/router/labels.json`. Code loads it and does not assign a label from text, a filename, or a project name. The target is that label only.
+
+Place a JSONL or CSV export in `data/raw/router/` (gitignored). Until that file is present, import, seal, and the dry-run split stop with `WALL: label export` and do not invent rows. The dry run writes no pairs. The seal writes project and item hashes to `docs/router/sealed-project.md` and does not put document text in that file. Contract: `docs/router/README.md`.
+
+```bash
+PYTHONPATH=scripts python -m router.import_export
+PYTHONPATH=scripts python -m router.seal
+PYTHONPATH=scripts python -m router.split
+```
+
 ## Local run
 
 ```bash

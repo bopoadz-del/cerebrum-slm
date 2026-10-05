@@ -11,3 +11,8 @@ dist/
 build/
 .coverage
 htmlcov/
+
+# External router label exports, and any later dump that still holds document text.
+data/raw/router/*
+!data/raw/router/README.md
+data/router/

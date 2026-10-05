@@ -1,0 +1,21 @@
+{
+  "eval_dir": "data/eval/router",
+  "fields": {
+    "filename": ["filename", "file_name"],
+    "label": ["label", "document_type", "doc_type"],
+    "project_id": ["project_id", "project"],
+    "sha256": ["sha256", "content_sha256"],
+    "text": ["text", "content", "body", "document_text"]
+  },
+  "holdout_denominator": 100,
+  "holdout_numerator": 15,
+  "input_template": "filename: {filename}\n{prefix}",
+  "labels_file": "configs/router/labels.json",
+  "max_input_tokens": 512,
+  "raw_dir": "data/raw/router",
+  "seal_doc": "docs/router/sealed-project.md",
+  "seal_rule": "largest_then_lowest_project_sha256",
+  "sealed_artifact": "items.jsonl",
+  "task": "document_type",
+  "token_unit": "whitespace"
+}
