@@ -43,3 +43,7 @@ Used once, after the data change, with the same format.
 The script renders with the tokenizer from `TrainingClient.get_tokenizer()`, calling `apply_chat_template(..., enable_thinking=False)`. That is the same Qwen3 chat template the sampling client uses. If the rendered prompt is not a prefix of the full conversation, the run stops instead of guessing the assistant span.
 
 Before any step, the entry point re-checks the train file: every row is a train-split pair, the manifest count matches, `fact_count` is 0, and no assistant turn carries a number with a unit, a currency amount, a clause plus an edition, a brand, or a site name. That check uses the existing split terms. It does not open the sealed eval tree. The sealed-hash comparison stays in CI, which is the gate allowed to read that tree.
+
+## Run 4 loss weights
+
+scripts/train/train_lora.py weights original confirmed parents at ORIGINAL_LOSS_WEIGHT = 3.0 on assistant tokens and keeps paraphrase / hard-negative examples at 1.0. This is a per-example loss weight, not row duplication. Phase-1 rebuild caps paraphrases at 3 per parent (stable hash order).

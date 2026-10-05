@@ -95,7 +95,7 @@
     "train": {
       "data/sources/temporary-works/temporary_works_pairs.jsonl": 24,
       "hard_negative": 25,
-      "paraphrase": 1864
+      "paraphrase": 699
     }
   },
   "split_counts": {

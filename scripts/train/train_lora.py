@@ -43,6 +43,7 @@ EVAL_SYSTEM_PROMPT = "eval/baselines/prompt_only_system_prompt.txt"
 FORMULA_REGISTRY = "data/retrieval/formula_registry.json"
 INSTRUCT_ID = "Qwen/Qwen3-8B"
 API_KEY_ENV = "TINKER_API_KEY"
+ORIGINAL_LOSS_WEIGHT = 3.0  # originals weighted x3 vs paraphrases/hard-negatives
 
 _CONFIG_KEYS = {
     "base_model",
@@ -93,6 +94,7 @@ class TrainPair:
     assistant: str
     pair_type: str = ""
     formula_id: str = ""
+    aug: str = ""
 
 
 @dataclass(frozen=True)
@@ -262,6 +264,7 @@ def render_pairs(
                 assistant=target,
                 pair_type=pair.pair_type,
                 formula_id=pair.formula_id,
+                aug=pair.aug,
             )
         )
     if root is not None:
@@ -358,8 +361,9 @@ def supervised_tokens(
     messages: list[dict[str, str]],
     *,
     enable_thinking: bool,
+    example_weight: float = 1.0,
 ) -> tuple[list[int], list[int], list[float]]:
-    """Shift-by-one datum. Loss weight is 1 on the final assistant turn only."""
+    """Shift-by-one datum. Assistant tokens carry example_weight (originals use 3.0)."""
     if not messages or messages[-1]["role"] != "assistant":
         raise TrainRefused("conversation must end with an assistant turn")
     if any(message["role"] == "assistant" for message in messages[:-1]):
@@ -383,12 +387,15 @@ def supervised_tokens(
     completion = full[len(prompt) :]
     if not completion or len(full) < 2:
         raise TrainRefused("assistant turn produced no tokens")
-    weights = [0.0] * (len(prompt) - 1) + [1.0] * len(completion)
+    if not isinstance(example_weight, (int, float)) or isinstance(example_weight, bool) or float(example_weight) <= 0:
+        raise TrainRefused("example_weight must be > 0")
+    weight = float(example_weight)
+    weights = [0.0] * (len(prompt) - 1) + [weight] * len(completion)
     inputs = full[:-1]
     targets = full[1:]
     if len(weights) != len(inputs) or len(targets) != len(inputs):
         raise TrainRefused("loss mask does not align with the shifted sequence")
-    if not any(weight == 1.0 for weight in weights):
+    if not any(w > 0.0 for w in weights):
         raise TrainRefused("loss mask has no assistant token")
     return inputs, targets, weights
 
@@ -496,10 +503,14 @@ def _fit(client: Any, types: Any, config: dict[str, Any], pairs: list[TrainPair]
     limit = int(config["max_sequence_length"])
     thinking = bool(config["enable_thinking"])
     for pair in pairs:
+        # Originals (empty aug) get ORIGINAL_LOSS_WEIGHT; paraphrases and
+        # hard negatives stay at 1.0. Per-example weight, not duplication.
+        example_weight = ORIGINAL_LOSS_WEIGHT if not pair.aug else 1.0
         inputs, targets, weights = supervised_tokens(
             tokenizer,
             messages_for(pair),
             enable_thinking=thinking,
+            example_weight=example_weight,
         )
         length = len(inputs) + 1
         if length > limit:
@@ -604,6 +615,7 @@ def _parse_pairs(raw: str) -> list[TrainPair]:
             raise TrainRefused(f"line {lineno}: meta.split must be train")
         pair_type = meta.get("pair_type")
         formula_id = meta.get("formula_id")
+        aug = meta.get("aug")
         pairs.append(
             TrainPair(
                 line=lineno,
@@ -612,6 +624,7 @@ def _parse_pairs(raw: str) -> list[TrainPair]:
                 assistant=assistant,
                 pair_type=pair_type.strip() if isinstance(pair_type, str) else "",
                 formula_id=formula_id.strip() if isinstance(formula_id, str) else "",
+                aug=aug.strip() if isinstance(aug, str) else "",
             )
         )
     return pairs
