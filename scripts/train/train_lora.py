@@ -395,7 +395,7 @@ def supervised_tokens(
     targets = full[1:]
     if len(weights) != len(inputs) or len(targets) != len(inputs):
         raise TrainRefused("loss mask does not align with the shifted sequence")
-    if not any(weight == 1.0 for weight in weights):
+    if not any(w > 0.0 for w in weights):
         raise TrainRefused("loss mask has no assistant token")
     return inputs, targets, weights
 

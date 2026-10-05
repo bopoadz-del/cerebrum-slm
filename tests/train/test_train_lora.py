@@ -372,8 +372,9 @@ def test_run_training_uses_the_sdk_calls_and_saves_the_named_checkpoint() -> Non
     assert loss_fn == "cross_entropy"
     assert len(batch) == 1
     weights = batch[0].loss_fn_inputs["weights"]
-    assert 1.0 in weights
-    assert all(weight in {0.0, 1.0} for weight in weights)
+    from train.train_lora import ORIGINAL_LOSS_WEIGHT
+    assert ORIGINAL_LOSS_WEIGHT in weights
+    assert all(weight in {0.0, ORIGINAL_LOSS_WEIGHT} for weight in weights)
     assert sdk.client.optims[0].kwargs["learning_rate"] == pytest.approx(0.00005)
     assert sdk.client.saves == [
         ("state", "posture-qwen3-8b-lora"),
@@ -493,6 +494,21 @@ class _MetricsFuture(_Future):
     metrics = {"loss:sum": 6.0}
 
 
+
+def test_originals_use_triple_loss_weight_paraphrases_stay_unit() -> None:
+    from train.train_lora import ORIGINAL_LOSS_WEIGHT
+
+    original = TrainPair(line=1, system="", user="What is missing?", assistant="Name the missing input.")
+    paraphrase = TrainPair(
+        line=2, system="", user="What is missing?", assistant="Name the missing input.", aug="paraphrase"
+    )
+    tok = _Tokenizer()
+    _, _, w_o = supervised_tokens(tok, messages_for(original), enable_thinking=False, example_weight=ORIGINAL_LOSS_WEIGHT)
+    _, _, w_p = supervised_tokens(tok, messages_for(paraphrase), enable_thinking=False, example_weight=1.0)
+    assert ORIGINAL_LOSS_WEIGHT in w_o and 1.0 not in w_o
+    assert 1.0 in w_p and ORIGINAL_LOSS_WEIGHT not in w_p
+
+
 def test_loss_log_does_not_iterate_sdk_tensors() -> None:
     pair = TrainPair(line=1, system="", user="What is missing?", assistant="Name the missing input.")
     sdk = _SDK()
@@ -502,4 +518,6 @@ def test_loss_log_does_not_iterate_sdk_tensors() -> None:
     [record] = result.losses
     assert record["loss_weight_tokens"] > 0
     assert record["loss_sum"] == 6.0
-    assert record["loss_mean_per_token"] == pytest.approx(6.0 / record["loss_weight_tokens"])
+    assert record["loss_mean_per_token"] == pytest.approx(
+        round(6.0 / record["loss_weight_tokens"], 6)
+    )
