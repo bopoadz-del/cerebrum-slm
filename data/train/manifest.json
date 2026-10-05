@@ -1,4 +1,12 @@
 {
+  "build": "scripts/data/build_phase1.py",
+  "by_source": {
+    "hard_negatives": 25,
+    "intake_derived": 0,
+    "original_confirmed_train": 209,
+    "paraphrase_children": 1864,
+    "temporary_works_train": 24
+  },
   "by_stratum": {
     "concrete_structures": 24,
     "construction_site": 21,
@@ -6,21 +14,39 @@
     "governance": 0,
     "mech_water_epc": 22,
     "plant_fleet_maintenance": 28,
-    "rates": 3
+    "rates": 3,
+    "temporary_works_interface": 24
   },
-  "count": 209,
-  "dedupe": {
-    "candidate_exact_collapsed": 38,
-    "formula_key_preferred": 94,
-    "regression_exact_collapsed": 0,
-    "sealed_overlap_removed": 0
-  },
+  "count": 2122,
   "fact_count": 0,
+  "hard_negative_stats": {
+    "built": 25,
+    "dup": 0,
+    "no_registry_record": 1,
+    "refuse_parents": 26,
+    "sealed_overlap": 0
+  },
+  "paraphrase_stats": {
+    "blank": 0,
+    "dup": 8,
+    "kept": 1864,
+    "new_fact": 1,
+    "offered": 2106,
+    "sealed_overlap": 0,
+    "split_fact": 0
+  },
+  "parents_under_min_children": 0,
   "schema": [
     "system",
     "user",
     "assistant",
     "meta"
   ],
-  "source_zip_sha256": "1dfd42e871d6fa4228566b408a2e0b30ef1388121980867bef4e8ed68aeb2665"
+  "source_zip_sha256": "1dfd42e871d6fa4228566b408a2e0b30ef1388121980867bef4e8ed68aeb2665",
+  "sources": {
+    "paraphrases_sha256": "a5b7ca59b6bbcc07ef688d995c8c80d16c9670d5a2119ea984c5f56b69a3d127",
+    "raw_zip_sha256": "1dfd42e871d6fa4228566b408a2e0b30ef1388121980867bef4e8ed68aeb2665",
+    "registry_sha256": "f0019e0840f68ffd9da923ff4c4756062652c50f1cb8df0a1c434a67918cd7b6",
+    "temporary_works_sha256": "1b2ff4b3dbbbfb541660b6027a795f7db4146632f27c467b9f7b55e11274d2ce"
+  }
 }
