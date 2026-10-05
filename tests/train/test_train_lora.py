@@ -473,3 +473,33 @@ def test_epoch_checkpoints_are_saved_when_there_is_more_than_one_epoch() -> None
     assert len(result.epoch_sampler_paths) == 2
     assert result.steps == 2
     assert [record["epoch"] for record in result.losses] == [1, 2]
+
+
+class _TensorData:
+    """Stands in for the SDK tensor wrapper: not iterable, like tinker TensorData."""
+
+    def __init__(self, values) -> None:
+        self._values = list(values)
+
+
+class _TensorTypes(_Types):
+    class Datum:
+        def __init__(self, model_input, loss_fn_inputs) -> None:
+            self.model_input = model_input
+            self.loss_fn_inputs = {key: _TensorData(value) for key, value in loss_fn_inputs.items()}
+
+
+class _MetricsFuture(_Future):
+    metrics = {"loss:sum": 6.0}
+
+
+def test_loss_log_does_not_iterate_sdk_tensors() -> None:
+    pair = TrainPair(line=1, system="", user="What is missing?", assistant="Name the missing input.")
+    sdk = _SDK()
+    sdk.types = _TensorTypes()
+    sdk.client.forward_backward = lambda data, loss_fn, loss_fn_config=None: _MetricsFuture()
+    result = run_training(_lora(), [pair], sdk=sdk)
+    [record] = result.losses
+    assert record["loss_weight_tokens"] > 0
+    assert record["loss_sum"] == 6.0
+    assert record["loss_mean_per_token"] == pytest.approx(6.0 / record["loss_weight_tokens"])
