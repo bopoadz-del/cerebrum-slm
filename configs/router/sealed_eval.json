@@ -1,0 +1,14 @@
+{
+  "n": 60,
+  "per_label": 5,
+  "agreement_threshold": 0.8,
+  "majority_class_fail": true,
+  "labels_file": "configs/router/labels.json",
+  "teacher": {
+    "provider": null,
+    "model": null,
+    "temperature": null,
+    "confidence_floor": null
+  },
+  "note": "Sealed documents must be from a project that is not in the Fork pool and labelled by a different author than the training labels."
+}

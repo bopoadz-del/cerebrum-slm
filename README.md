@@ -52,6 +52,10 @@ Training files are `*.jsonl` and `*.json` under `data/`, except `data/raw/`, `da
 
 No training run is started by CI or by `--dry-run`. CI does not generate pairs. `data/eval/` stays sealed and is not read by the training entry point.
 
+## Router labels
+
+The document-type label set is `configs/router/labels.json`. Sealed eval waits on an owner corpus outside the Fork pool (`data/sealed/router/`). The raw Fork export is a document pool, not training labels (pull request #25). Teacher, human sample, and count commands are scaffolds and do not write training pairs. See `docs/router/LABELS.md`.
+
 ## Local run
 
 ```bash
