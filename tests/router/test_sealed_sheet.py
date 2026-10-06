@@ -19,9 +19,10 @@ def test_sealed_config_matches_the_label_file(repo_root: Path) -> None:
     assert config["n"] == config["per_label"] * len(labels)
     assert config["majority_class_fail"] is True
     assert config["agreement_threshold"] == 0.8
-    assert config["teacher"]["provider"] is None
-    assert config["teacher"]["model"] is None
-    assert config["teacher"]["confidence_floor"] is None
+    assert config["teacher"]["provider"] == "tinker"
+    assert config["teacher"]["model"] == "Qwen/Qwen3-8B"
+    assert config["teacher"]["temperature"] == 0
+    assert config["teacher"]["confidence_floor"] == 0.7
     assert "Master Folder" in config["note"]
     assert "practitioner" in config["note"]
     assert config["labels_file"] == "configs/router/labels.json"

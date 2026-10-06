@@ -95,8 +95,8 @@ def filter_for_train(
 def label_rows(rows: list[dict], labels: list[str], respond) -> list[dict]:
     """Call respond(messages) for each content row. respond is injected by tests.
 
-    The result keeps doc_id when the source had one, so a later sheet can join.
-    Filename, project id, and Fork type are not copied onto the result.
+    The result keeps doc_id and project_id so a later split can group projects.
+    Those fields are not sent to the teacher. Filename and Fork type are not copied.
     """
     labelled: list[dict] = []
     for row in rows:
@@ -106,6 +106,14 @@ def label_rows(rows: list[dict], labels: list[str], respond) -> list[dict]:
         parsed = parse_teacher_response(respond(messages), labels)
         if isinstance(row.get("doc_id"), str):
             parsed["doc_id"] = row["doc_id"]
+        if isinstance(row.get("project_id"), str):
+            parsed["project_id"] = row["project_id"]
+        sha = row.get("content_sha256")
+        if isinstance(sha, str) and sha.strip():
+            parsed["file_sha256"] = sha.strip()
+        excerpt = model_user_text(row)
+        if excerpt is not None:
+            parsed["excerpt"] = excerpt
         labelled.append(parsed)
     return labelled
 
@@ -162,8 +170,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--write",
         action="store_true",
-        help="Refused until a sealed owner corpus exists and a teacher client is configured.",
+        help="Label the pool from content. Does not wait for a sealed sheet. Refuses the sealed tree.",
     )
+    parser.add_argument("--output", type=Path, default=None)
     parser.add_argument("--root", type=Path, default=None)
     args = parser.parse_args(argv)
     root = (args.root or repo_root()).resolve()
@@ -172,9 +181,12 @@ def main(argv: list[str] | None = None) -> int:
         config = load_sealed_config(root / "configs" / "router" / "sealed_eval.json")
         rows = _load_input(args.input, root)
         if args.write:
-            _refuse_write(root)
-        report = dry_run_report(rows, labels)
-        report["confidence_floor"] = confidence_floor(config)
+            _refuse_pool_write(root, args.input)
+            report = write_pool_labels(root, rows, labels, config, args.output)
+        else:
+            report = dry_run_report(rows, labels)
+            report["confidence_floor"] = confidence_floor(config)
+            report["teacher_model"] = config["teacher"]["model"]
     except RouterWall as exc:
         print(str(exc))
         return 2
@@ -182,13 +194,87 @@ def main(argv: list[str] | None = None) -> int:
     return 0
 
 
-def _refuse_write(root: Path) -> None:
-    config = load_sealed_config(root / "configs" / "router" / "sealed_eval.json")
-    sealed = root / config["sealed_labels"]
-    # Size only. Do not parse sealed rows or model output.
-    if not sealed.is_file() or sealed.stat().st_size == 0:
-        raise RouterWall("WALL: sealed eval labels are absent; refusing to write training labels")
-    raise RouterWall("WALL: teacher client is not configured; refusing to write training labels")
+def _refuse_pool_write(root: Path, input_path: Path | None) -> None:
+    """Pool labelling does not wait for the sealed file. The sealed set itself is refused."""
+    if input_path is None:
+        raise RouterWall("WALL: no pool to label")
+    refuse_sealed_input(input_path, root)
+    if not key_is_set():
+        raise RouterWall(
+            "WALL: TINKER_API_KEY is not set; the owner key file was not reachable "
+            "and the environment has no key. Teacher labelling did not run."
+        )
+
+
+def write_pool_labels(root: Path, rows: list[dict], labels: list[str], config: dict, output: Path | None) -> dict:
+    """Label prepared pool rows. Caller has already required a key and a pool path."""
+    from router.isolation import load_exclusions
+    from router.prepare_pool import prepare_pool
+
+    prepared = prepare_pool(rows, load_exclusions(root / config["sealed_labels"]))
+    model = config["teacher"]["model"]
+    if not isinstance(model, str) or not model.strip():
+        raise RouterWall("WALL: teacher model is unset")
+    temperature = config["teacher"]["temperature"]
+    if isinstance(temperature, bool) or not isinstance(temperature, (int, float)):
+        temperature = 0
+    labelled = label_rows(prepared.rows, labels, tinker_teacher(model, float(temperature)))
+    floor = confidence_floor(config)
+    kept = filter_for_train(labelled, labels, floor)
+    dest = output or (root / "data" / "router" / "teacher_labels.jsonl")
+    refuse_sealed_input(dest, root)
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    payload = "".join(json.dumps(row, ensure_ascii=False) + "\n" for row in kept)
+    dest.write_text(payload, encoding="utf-8")
+    return {
+        "status": "labelled",
+        "teacher_model": model,
+        "input_rows": prepared.input_rows,
+        "empty_text": prepared.empty_text,
+        "duplicate_doc_ids": prepared.duplicate_doc_ids,
+        "sealed_overlaps": prepared.sealed_overlaps,
+        "labelled": len(labelled),
+        "kept": len(kept),
+        "excluded": len(labelled) - len(kept),
+        "wrote": True,
+        "output": dest.name,
+    }
+
+
+def tinker_teacher(model: str, temperature: float):
+    """One completion from the fixed teacher. The API key is never printed."""
+    import tinker
+    from tinker import types
+
+    service = tinker.ServiceClient()
+    client = service.create_sampling_client(base_model=model)
+    tokenizer = client.get_tokenizer()
+    params = types.SamplingParams(max_tokens=128, temperature=temperature, top_p=1, seed=0)
+
+    def respond(messages: list[dict[str, str]]) -> str:
+        try:
+            text = tokenizer.apply_chat_template(
+                messages,
+                tokenize=False,
+                add_generation_prompt=True,
+                enable_thinking=False,
+            )
+        except TypeError:
+            text = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+        encoded = tokenizer.encode(text)
+        if hasattr(encoded, "ids"):
+            encoded = encoded.ids
+        result = client.sample(
+            prompt=types.ModelInput.from_ints([int(token) for token in encoded]),
+            num_samples=1,
+            sampling_params=params,
+        ).result()
+        try:
+            return tokenizer.decode(result.sequences[0].tokens, skip_special_tokens=True)
+        except TypeError:
+            return tokenizer.decode(result.sequences[0].tokens)
+
+    return respond
 
 
 def _json_object(text: str) -> dict:

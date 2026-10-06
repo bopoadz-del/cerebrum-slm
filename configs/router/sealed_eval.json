@@ -9,10 +9,10 @@
   "agreement_file": "data/eval/router_unseen/agreement.json",
   "sha256sums": "data/eval/router_unseen/SHA256SUMS",
   "teacher": {
-    "provider": null,
-    "model": null,
-    "temperature": null,
-    "confidence_floor": null
+    "provider": "tinker",
+    "model": "Qwen/Qwen3-8B",
+    "temperature": 0,
+    "confidence_floor": 0.7
   },
   "note": "Sealed documents come from Master Folder (or another corpus not yet used as training labels) and are labelled by a practitioner."
 }

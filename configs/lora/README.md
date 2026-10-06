@@ -47,3 +47,7 @@ Before any step, the entry point re-checks the train file: every row is a train-
 ## Run 4 loss weights
 
 scripts/train/train_lora.py weights original confirmed parents at ORIGINAL_LOSS_WEIGHT = 3.0 on assistant tokens and keeps paraphrase / hard-negative examples at 1.0. This is a per-example loss weight, not row duplication. Phase-1 rebuild caps paraphrases at 3 per parent (stable hash order).
+
+## Router run: `qwen3-4b-router-r16.json`
+
+Separate from the posture adapter. Entry point: `scripts/router/train_router.py`. The configured base was `Qwen/Qwen3-4B`. Tinker rejected that id, so the landed run used `Qwen/Qwen3.5-4B`. Rank 16, alpha 16, two epochs, 168 steps, batch 16, max sequence 3072, seed 0. Learning rate 0.000473, the same audited rate as the posture rank-16 run, under the 0.0005 cap. MLP and attention on, unembed off. The assistant target is the content label only. The sealed router file is not a training input and is not scored by this entry point. A run without `TINKER_API_KEY` stops before any client is constructed.
