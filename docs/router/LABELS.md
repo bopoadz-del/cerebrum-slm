@@ -16,8 +16,10 @@ Holding out one Fork project is an extra in-pool check only. It is not the seale
 
 A training split refuses a pool row whose document sha256 or project is already in `data/eval/router_unseen/sealed_labels.jsonl`. The training entry point does not read `data/eval/`.
 
-## Scaffold
+## Training path
 
-`scripts/router/teacher_label.py` dry-runs. It does not write training labels and it does not call a teacher API. `scripts/router/human_sample.py` draws a stratified sheet from content labels that already exist, including rare labels, without cloning rows. `scripts/router/report_counts.py` counts those labels. `scripts/router/majority_gate.py` fails a predictor that returns the majority label for every row, including when that predictor's accuracy is 1.
+`scripts/router/teacher_label.py` labels a pool from content when a key is set. It still refuses `data/sealed/` and `data/eval/router_unseen/`. An empty sealed file does not block the pool. `scripts/router/human_sample.py` draws a stratified sheet from content labels that already exist, including rare labels, without cloning rows. `scripts/router/report_counts.py` counts those labels. `scripts/router/majority_gate.py` fails a predictor that returns the majority label for every row, including when that predictor's accuracy is 1.
 
-Teacher labelling has not been run. Human review has no labelled sample yet. No adapter is trained. The sealed set has not been scored.
+Human stratified agreement is PENDING_OWNER (`data/router/human_sample_PENDING_OWNER.csv` is a header only). By owner order, training proceeds before that check. The override is recorded in `configs/router/train.json`. It does not change the agreement gate.
+
+The fixed teacher is `Qwen/Qwen3-8B` at temperature 0. The student is a Qwen3-4B LoRA, rank 16, two epochs (`configs/lora/qwen3-4b-router-r16.json`). This run did not label and did not train: the Tinker key was not available. The checkpoint in `configs/serve/router-epoch2.json` is null. The sealed set has not been scored. Counts and the wall are in `docs/router/DATASET_CARD.md`.

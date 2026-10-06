@@ -1,0 +1,13 @@
+{
+  "artifact_id": "router-qwen3-4b-lora-r16-epoch2",
+  "base_model": "Qwen/Qwen3-4B",
+  "rank": 16,
+  "epochs": 2,
+  "checkpoint": null,
+  "status": "not_trained",
+  "wall": "WALL: TINKER_API_KEY is not set; the owner key file was not reachable and the environment has no key. Teacher labelling and LoRA training did not run.",
+  "labels_file": "configs/router/labels.json",
+  "input": "first_512_tokens of document content",
+  "sealed_scoring": false,
+  "api_key_env": "TINKER_API_KEY"
+}

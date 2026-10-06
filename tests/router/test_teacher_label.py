@@ -82,12 +82,32 @@ def test_mocked_teacher_does_not_copy_filename(tmp_path: Path) -> None:
         return '{"label": "alpha-mark", "reason": "from text", "confidence": 0.8}'
 
     rows = label_rows(
-        [{"doc_id": "d1", "filename": "drawing.pdf", "excerpt": "body text"}],
+        [
+            {
+                "doc_id": "d1",
+                "filename": "drawing.pdf",
+                "excerpt": "body text",
+                "project_id": "project-keep",
+                "content_sha256": "abc123",
+                "fork_declared_type": "document",
+            }
+        ],
         labels,
         respond,
     )
-    assert rows == [{"label": "alpha-mark", "reason": "from text", "confidence": 0.8, "doc_id": "d1"}]
+    assert rows == [
+        {
+            "label": "alpha-mark",
+            "reason": "from text",
+            "confidence": 0.8,
+            "doc_id": "d1",
+            "project_id": "project-keep",
+            "file_sha256": "abc123",
+            "excerpt": "body text",
+        }
+    ]
     assert "filename" not in rows[0]
+    assert "fork_declared_type" not in rows[0]
 
 
 def test_dry_run_prints_no_secret_and_writes_nothing(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, repo_root: Path) -> None:
