@@ -15,6 +15,7 @@ from pathlib import Path
 from router.content import model_user_text
 from router.guard import RouterWall, refuse_sealed_input
 from router.labels import confidence_floor, load_labels, load_sealed_config, repo_root
+from router.parse_label import canonical_label
 from router.sheet import UNSURE
 
 _CARD = Path("docs/router/DATASET_CARD.md")
@@ -51,14 +52,18 @@ def messages_for(row: dict, labels: list[str]) -> list[dict[str, str]] | None:
 
 
 def parse_teacher_response(text: str, labels: list[str]) -> dict:
-    """One label from the file, or unsure. Anything else becomes unsure."""
+    """One label from the file, or unsure. Anything else becomes unsure.
+
+    An exact case-insensitive alias is stored as its canonical label. The
+    router model and a baseline use the same map via ``canonical_label``.
+    """
     payload = _json_object(text)
     raw_label = payload.get("label")
-    allowed = set(labels)
-    if raw_label == UNSURE or raw_label not in allowed:
+    matched = canonical_label(raw_label, labels) if isinstance(raw_label, str) else None
+    if raw_label == UNSURE or matched is None:
         label = UNSURE
     else:
-        label = raw_label
+        label = matched
     reason = payload.get("reason")
     if not isinstance(reason, str):
         reason = ""

@@ -1,20 +1,34 @@
 # Sealed router gate
 
-This gate is registered before any scoring of `data/eval/router_unseen/`. `sealed_scoring` is false. This file is not a score.
+Version 2 is the active rule. It is registered for the next fresh sealed set. It does not rescore `data/eval/router_unseen/`. `sealed_scoring` is false. The v5 sealed set is spent. It was scored once under version 1, and that recorded result stays:
 
-The val gate in `scripts/router/majority_gate.py` and `scripts/router/val_metrics.py` is unchanged. This gate is separate and applies only to the sealed rows.
+sealed gate: FAIL (gate defect: condition (b) unsatisfiable as written); router NOT marked passed.
+
+The router is not marked passed. Version 2 applies only to a future fresh sealed set. The v5 predictions are not re-graded under version 2, and they are not re-parsed with the label-alias parser. This file is not a score.
+
+The val gate in `scripts/router/majority_gate.py` and `scripts/router/val_metrics.py` is unchanged. This gate is separate and applies to sealed rows of a future set.
+
+The machine-readable field is `sealed_gate` in `configs/router/sealed_eval.json`. `sealed_gate.version` is 2. `sealed_gate.applies_to` is `future_fresh_sealed_set`.
+
+## Version 2
 
 The model passes only if both checks below are true. Any other result is a fail. A tie does not pass.
 
 The same rule is `RULE` in `scripts/router/sealed_gate.py`:
 
-The model passes only if macro recall beats every constant single-label predictor on the sealed rows, and each of those constant predictors fails the existing majority gate. Macro recall is the mean of per-label recall over labels present in the sealed rows. The constant predictors include always-drawing, the training majority, and always-report, the sealed-set majority. A tie does not beat a constant predictor. The majority gate is scripts/router/majority_gate.py with majority_class_fail left unchanged. sealed_scoring stays false.
+Version 2. The model passes only if macro recall beats every constant single-label predictor on the sealed rows, and each of those constant predictors fails the existing majority-gate thresholds on its own. Each constant is evaluated per label, not only when that label is the set majority. Macro recall is the mean of per-label recall over labels present in the sealed rows. The constant predictors include always-drawing, the training majority, and always-report, the sealed-set majority. A tie does not beat a constant predictor. The majority gate is scripts/router/majority_gate.py with majority_class_fail left unchanged. The val gate is unchanged. sealed_scoring stays false. Version 2 applies only to a future fresh sealed set. The v5 sealed set stays FAIL under version 1 and is not re-scored.
 
-1. Macro recall on the sealed rows is strictly greater than the macro recall of every constant single-label predictor. A constant single-label predictor emits one declared label on every sealed row. That set includes always-`drawing` (the training majority) and always-`report` (the sealed-set majority).
-2. Each of those constant predictors fails the existing majority gate. The gate is `scripts/router/majority_gate.py` with `majority_class_fail` left true, the value in `configs/router/sealed_eval.json`. That function fails a predictor when every prediction is the majority label on the rows being scored. Ties use the order in `configs/router/labels.json`.
+1. Macro recall on the sealed rows is strictly greater than the macro recall of every constant single-label predictor. A constant single-label predictor emits one declared label on every sealed row. That set includes always-`drawing` (the training majority) and always-`report` (the sealed-set majority on v5). The comparison covers every declared label.
+2. Each of those constant predictors, on its own, fails the existing majority-gate thresholds. The check is per constant, and it covers a label that is not the set majority. For each declared label L, `majority_gate.evaluate` runs on a row set whose gold labels are all L and whose predictions are all L, with `majority_class_fail` left as configured (`true` in `configs/router/sealed_eval.json`). That is the same failure the val gate uses: every prediction is the majority label, including when accuracy is 1.
 
 Macro recall is the mean of per-label recall over labels present in the sealed rows. A label with no sealed row is left out of the mean. Per-label recall is `router.val_metrics.per_label_recall`.
 
-The machine-readable field is `sealed_gate` in `configs/router/sealed_eval.json`.
-
 The sealed labels are the owner's ticks. This gate does not read a proposal file and does not change a label.
+
+## Version 1 (history)
+
+Version 1 was the rule when the v5 sealed set was scored. The result of that score stays FAIL. The text below is the version 1 rule, kept as history. The active rule is version 2 above.
+
+The model passes only if macro recall beats every constant single-label predictor on the sealed rows, and each of those constant predictors fails the existing majority gate. Macro recall is the mean of per-label recall over labels present in the sealed rows. The constant predictors include always-drawing, the training majority, and always-report, the sealed-set majority. A tie does not beat a constant predictor. The majority gate is scripts/router/majority_gate.py with majority_class_fail left unchanged. sealed_scoring stays false.
+
+Version 1 called `majority_gate.evaluate` on the real sealed gold for each constant predictor. That function fails a predictor when every prediction is the majority label of those rows. The set-majority constant is the one that fails. On v5 that label is `report`. The other eleven constants pass that call, so condition (b) cannot be met on a set with more than one label. The recorded v5 result is that gate defect. Version 2 leaves the recorded result in place.

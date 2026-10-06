@@ -363,12 +363,10 @@ def _complete(client, tokenizer, types, messages: list[dict], params) -> str:
 
 
 def _as_label(text: str, labels: list[str]) -> str:
-    from router.teacher_label import parse_teacher_response
+    """Router-model output. The teacher and a baseline use this same parser."""
+    from router.parse_label import parse_router_output
 
-    cleaned = " ".join(text.split())
-    if cleaned in labels:
-        return cleaned
-    return parse_teacher_response(text, labels)["label"]
+    return parse_router_output(text, labels)
 
 
 def _key_present() -> bool:

@@ -4,13 +4,26 @@ The label set is `configs/router/labels.json`. Code loads that file. It does not
 
 A label comes from document content. A filename, a folder, a document id, and a project id are not labels.
 
+## Output aliases
+
+The router output parser maps an exact case-insensitive alias onto one canonical label. The match is the whole string after whitespace is collapsed. There is no fuzzy match. The label docs name no other alias.
+
+| alias | canonical |
+| --- | --- |
+| change order | VO/CO |
+| variation order | VO/CO |
+| variation | VO/CO |
+| CO | VO/CO |
+
+The router model, the teacher, and a baseline share that parser (`scripts/router/parse_label.py`). The v5 sealed predictions were not re-parsed. The three v5 outputs that said `change order` stay recorded as misses.
+
 ## Raw pool
 
 Pull request #25 (`data/router-labels`) is the raw document pool. That file is not training data. `fork_declared_type` is the stored Fork type, kept as a reference column. Nothing trains on it. Rows that still carry `fork_declared_type` or `declared_type` are unlabelled.
 
 ## Sealed eval
 
-The v5 sealed set is 64 public-web documents, labelled by the owner. The blank 60-row sheet and the owner line stay in `data/sealed/router/`. The sealed labels are `data/eval/router_unseen/sealed_labels.jsonl` (`configs/router/sealed_eval.json`). `file_sha256` and `project` (`web_public` for this seal) are exclusion keys, not labels. The sealed set was scored once. `sealed_scoring` stays false. sealed gate: FAIL (gate defect: condition (b) unsatisfiable as written); router NOT marked passed. The gate definition is `docs/router/SEALED_GATE.md`.
+The v5 sealed set is 64 public-web documents, labelled by the owner. The blank 60-row sheet and the owner line stay in `data/sealed/router/`. The sealed labels are `data/eval/router_unseen/sealed_labels.jsonl` (`configs/router/sealed_eval.json`). `file_sha256` and `project` (`web_public` for this seal) are exclusion keys, not labels. The sealed set was scored once under sealed gate version 1. `sealed_scoring` stays false. sealed gate: FAIL (gate defect: condition (b) unsatisfiable as written); router NOT marked passed. Version 2 in `docs/router/SEALED_GATE.md` applies only to a future fresh sealed set. The v5 predictions were not re-scored or re-graded.
 
 Holding out one Fork project is an extra in-pool check only. It is not the sealed set.
 

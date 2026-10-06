@@ -1,8 +1,9 @@
-"""Sealed-set gate. Registered before any scoring.
+"""Sealed-set gate, version 2.
 
 This module does not read ``data/eval/`` and does not score a checkpoint.
 The val gate in ``majority_gate.py`` is unchanged. Callers pass gold and
-predictions in memory.
+predictions in memory. Version 2 applies only to a future fresh sealed set.
+The spent v5 set is not re-scored here.
 """
 
 from __future__ import annotations
@@ -10,7 +11,7 @@ from __future__ import annotations
 from router.majority_gate import evaluate
 from router.val_metrics import per_label_recall
 
-RULE = (
+RULE_V1 = (
     "The model passes only if macro recall beats every constant single-label "
     "predictor on the sealed rows, and each of those constant predictors fails "
     "the existing majority gate. Macro recall is the mean of per-label recall "
@@ -19,6 +20,21 @@ RULE = (
     "majority. A tie does not beat a constant predictor. The majority gate is "
     "scripts/router/majority_gate.py with majority_class_fail left unchanged. "
     "sealed_scoring stays false."
+)
+
+RULE = (
+    "Version 2. The model passes only if macro recall beats every constant "
+    "single-label predictor on the sealed rows, and each of those constant "
+    "predictors fails the existing majority-gate thresholds on its own. Each "
+    "constant is evaluated per label, not only when that label is the set "
+    "majority. Macro recall is the mean of per-label recall over labels "
+    "present in the sealed rows. The constant predictors include always-drawing, "
+    "the training majority, and always-report, the sealed-set majority. A tie "
+    "does not beat a constant predictor. The majority gate is "
+    "scripts/router/majority_gate.py with majority_class_fail left unchanged. "
+    "The val gate is unchanged. sealed_scoring stays false. Version 2 applies "
+    "only to a future fresh sealed set. The v5 sealed set stays FAIL under "
+    "version 1 and is not re-scored."
 )
 
 
@@ -38,7 +54,7 @@ def evaluate_sealed_gate(
     *,
     majority_class_fail: bool,
 ) -> dict:
-    """Apply the pre-registered sealed rule. Writes nothing."""
+    """Apply sealed gate version 2. Writes nothing."""
     if not labels or not gold or len(gold) != len(pred):
         return {
             "passed": False,
@@ -54,13 +70,12 @@ def evaluate_sealed_gate(
         constant = [label] * len(gold)
         baseline = macro_recall(gold, constant, labels)
         beats[label] = model is not None and baseline is not None and model > baseline
-        gate = evaluate(
-            gold,
-            constant,
+        constant_fails[label] = _constant_fails_on_its_own(
+            label,
+            len(gold),
+            labels,
             majority_class_fail=majority_class_fail,
-            order=labels,
         )
-        constant_fails[label] = gate.passed is False
     beats_every = all(beats.values())
     constants_fail = all(constant_fails.values())
     passed = beats_every and constants_fail
@@ -71,3 +86,24 @@ def evaluate_sealed_gate(
         "beats_every_constant": beats_every,
         "every_constant_fails_majority_gate": constants_fail,
     }
+
+
+def _constant_fails_on_its_own(
+    label: str,
+    n: int,
+    order: list[str],
+    *,
+    majority_class_fail: bool,
+) -> bool:
+    """Apply the val majority-gate threshold to this constant by itself.
+
+    ``majority_gate.evaluate`` fails a predictor when every prediction is the
+    majority label of the rows it is given. On a row set whose gold is all
+    ``label``, the constant predictor of ``label`` is that majority predictor,
+    so it fails when ``majority_class_fail`` is true. Version 1 called
+    ``evaluate`` on the real sealed gold instead, which fails only the
+    set-majority constant.
+    """
+    own = [label] * n
+    gate = evaluate(own, own, majority_class_fail=majority_class_fail, order=order)
+    return gate.passed is False
