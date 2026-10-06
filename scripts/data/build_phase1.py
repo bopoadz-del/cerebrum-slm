@@ -147,12 +147,24 @@ def max_sealed_overlap(text: str, sealed: list[str]) -> float:
     return max((token_overlap(text, other) for other in sealed), default=0.0)
 
 
+def _refuse_router_sealed(rows: list[dict]) -> list[dict]:
+    """Same exclusion as the split: a sealed doc sha256 or project cannot be trained."""
+    from router.isolation import load_exclusions, require_isolated
+
+    sealed = root_sealed_labels()
+    return require_isolated(rows, load_exclusions(sealed))
+
+
+def root_sealed_labels() -> Path:
+    return ROOT / "data" / "eval" / "router_unseen" / "sealed_labels.jsonl"
+
+
 def base_parents(root: Path) -> tuple[list[dict], str]:
     """Train and held-out rows ``apply_split`` writes from the raw archive."""
     with tempfile.TemporaryDirectory() as tmp:
         summary = split.apply_split(root / RAW_ZIP, Path(tmp))
         rows = _read_jsonl(Path(tmp) / "data/train/pairs.jsonl") + _read_jsonl(Path(tmp) / "data/held_out/pairs.jsonl")
-    return rows, summary["held_out_domain"]
+    return _refuse_router_sealed(rows), summary["held_out_domain"]
 
 
 def temporary_works_parents(root: Path) -> list[dict]:
@@ -168,7 +180,7 @@ def temporary_works_parents(root: Path) -> list[dict]:
         chat["meta"]["source_relpath"] = TEMPORARY_WORKS.as_posix()
         chat["meta"]["source_origin"] = "owner_reviewed_local"
         rows.append(chat)
-    return rows
+    return _refuse_router_sealed(rows)
 
 
 def strip_parent(row: dict) -> dict:

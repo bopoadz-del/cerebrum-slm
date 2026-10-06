@@ -1,0 +1,18 @@
+{
+  "n": 60,
+  "per_label": 5,
+  "agreement_threshold": 0.8,
+  "majority_class_fail": true,
+  "labels_file": "configs/router/labels.json",
+  "sealed_dir": "data/eval/router_unseen",
+  "sealed_labels": "data/eval/router_unseen/sealed_labels.jsonl",
+  "agreement_file": "data/eval/router_unseen/agreement.json",
+  "sha256sums": "data/eval/router_unseen/SHA256SUMS",
+  "teacher": {
+    "provider": null,
+    "model": null,
+    "temperature": null,
+    "confidence_floor": null
+  },
+  "note": "Sealed documents come from Master Folder (or another corpus not yet used as training labels) and are labelled by a practitioner."
+}
