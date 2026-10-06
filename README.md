@@ -54,7 +54,7 @@ No training run is started by CI or by `--dry-run`. CI does not generate pairs. 
 
 ## Router labels
 
-The document-type label set is `configs/router/labels.json`. Sealed eval waits on 60 documents from Master Folder, or another corpus not yet used as training labels (`data/sealed/router/`). The raw Fork export is a document pool, not training labels (pull request #25). Teacher, human sample, and count commands are scaffolds and do not write training pairs. See `docs/router/LABELS.md`.
+The document-type label set is `configs/router/labels.json`. Sealed eval waits on 60 documents from Master Folder, or another corpus not yet used as training labels. The blank sheet is `data/sealed/router/`. Sealed labels are written to `data/eval/router_unseen/` and are empty until the owner sheet returns. The raw Fork export is a document pool, not training labels (pull request #25). Teacher, human sample, and count commands are scaffolds and do not write training pairs. See `docs/router/LABELS.md`.
 
 ## Local run
 

@@ -20,6 +20,7 @@ import hashlib
 import json
 import re
 import shutil
+import sys
 import zipfile
 from collections import defaultdict
 from pathlib import Path
@@ -597,6 +598,21 @@ def _strip_internal(pair: dict[str, Any], split: str, holdout: str | None = None
     }
 
 
+def _refuse_router_sealed(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Refuse a training row whose document sha256 or project is in the router seal.
+
+    The seal lives under data/eval and is read here, before any pair is written.
+    The keys are exclusion keys. They do not assign a label.
+    """
+    scripts = Path(__file__).resolve().parents[1]
+    if str(scripts) not in sys.path:
+        sys.path.insert(0, str(scripts))
+    from router.isolation import load_exclusions, require_isolated
+
+    sealed = Path(__file__).resolve().parents[2] / "data" / "eval" / "router_unseen" / "sealed_labels.jsonl"
+    return require_isolated(rows, load_exclusions(sealed))
+
+
 def _prepare_output(root: Path) -> None:
     for relative in _OWNED:
         target = root / relative
@@ -640,7 +656,7 @@ def apply_split(zip_path: Path, out_root: Path) -> dict[str, Any]:
             sealed_overlap += 1
             continue
         kept_candidates.append(pair)
-    candidates = kept_candidates
+    candidates = _refuse_router_sealed(kept_candidates)
     dedupe_stats = {
         "candidate_exact_collapsed": candidate_collapsed,
         "formula_key_preferred": formula_preferred,

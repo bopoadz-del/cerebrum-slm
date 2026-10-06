@@ -25,6 +25,8 @@ def test_sealed_config_matches_the_label_file(repo_root: Path) -> None:
     assert "Master Folder" in config["note"]
     assert "practitioner" in config["note"]
     assert config["labels_file"] == "configs/router/labels.json"
+    assert config["sealed_dir"] == "data/eval/router_unseen"
+    assert config["sealed_labels"] == "data/eval/router_unseen/sealed_labels.jsonl"
 
 
 def test_in_pool_holdout_is_not_the_sealed_set(repo_root: Path) -> None:
@@ -36,10 +38,12 @@ def test_in_pool_holdout_is_not_the_sealed_set(repo_root: Path) -> None:
 def test_owner_line_and_empty_drop_zone(repo_root: Path) -> None:
     readme = (repo_root / "data" / "sealed" / "router" / "README.md").read_text(encoding="utf-8")
     assert OWNER_LINE in readme.splitlines()
-    drop = repo_root / "data" / "sealed" / "router" / "sealed_labels.jsonl"
+    drop = repo_root / "data" / "eval" / "router_unseen" / "sealed_labels.jsonl"
     assert drop.is_file()
     assert drop.read_bytes() == b""
     assert (repo_root / "data" / "sealed" / "router" / ".gitkeep").is_file()
+    pointer = (repo_root / "data" / "sealed" / "router" / "README.md").read_text(encoding="utf-8")
+    assert "data/eval/router_unseen/sealed_labels.jsonl" in pointer
 
 
 def test_labelling_sheet_is_sixty_blank_rows(repo_root: Path) -> None:

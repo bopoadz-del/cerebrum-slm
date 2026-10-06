@@ -183,7 +183,8 @@ def main(argv: list[str] | None = None) -> int:
 
 
 def _refuse_write(root: Path) -> None:
-    sealed = root / "data" / "sealed" / "router" / "sealed_labels.jsonl"
+    config = load_sealed_config(root / "configs" / "router" / "sealed_eval.json")
+    sealed = root / config["sealed_labels"]
     # Size only. Do not parse sealed rows or model output.
     if not sealed.is_file() or sealed.stat().st_size == 0:
         raise RouterWall("WALL: sealed eval labels are absent; refusing to write training labels")

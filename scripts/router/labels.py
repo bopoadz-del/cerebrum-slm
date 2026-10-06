@@ -68,6 +68,10 @@ def load_sealed_config(path: Path | None = None) -> dict:
     note = data.get("note")
     if not isinstance(note, str) or not note.strip():
         raise LabelConfigError("sealed eval config needs a note")
+    for key in ("sealed_dir", "sealed_labels"):
+        value = data.get(key)
+        if not isinstance(value, str) or not value.strip():
+            raise LabelConfigError(f"{key} must be a path")
     return data
 
 

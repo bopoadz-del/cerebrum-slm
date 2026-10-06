@@ -12,9 +12,18 @@ class RouterWall(Exception):
 
 
 def refuse_sealed_input(path: Path, root: Path | None = None) -> None:
-    base = ((root or repo_root()) / "data" / "sealed").resolve()
+    base = (root or repo_root()).resolve()
+    sealed_roots = (
+        (base / "data" / "sealed").resolve(),
+        (base / "data" / "eval" / "router_unseen").resolve(),
+    )
     try:
-        path.resolve().relative_to(base)
-    except ValueError:
-        return
-    raise RouterWall("WALL: sealed corpus")
+        resolved = path.resolve()
+    except OSError:
+        resolved = path
+    for sealed in sealed_roots:
+        try:
+            resolved.relative_to(sealed)
+        except ValueError:
+            continue
+        raise RouterWall("WALL: sealed corpus")
