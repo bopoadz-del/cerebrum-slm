@@ -5,7 +5,7 @@ Pool: 6580 input -> 140 empty, 813 duplicate doc_id -> 5627 labelled. Kept (on-l
 
 Split v2 (driver/split_v2.py): held out by group, stratified. The group key is a document series taken from the filename (stand-in for the folder, which the pool doesn't have). Groups are merged when rows share a filename, an excerpt or a sha. project_id is not part of the key. Seed 20261006. 537 groups: 27 in val, 0 in both.
 Train 1334 (3872 before cap; drawing capped from 3138 to 600, seed 20261006, train only). Val 683 (15.0%), not changed.
-Sealed isolation: router.isolation.require_isolated (sealed file empty, so 0 excluded). The sealed set was not scored.
+Sealed isolation: router.isolation.require_isolated (sealed file empty at split time, so 0 excluded). The sealed set was scored once later; see below.
 
 Model: Qwen/Qwen3.5-4B LoRA r16 (alpha 16), 2 epochs, lr 4.73e-4, batch 16, seed 0, 168 steps. max_sequence_length raised from 2048 to 3072 for this run only.
 Tinker training run: b0857111-57c4-56f6-bf9b-ed3f8021826b:train:0
@@ -37,4 +37,15 @@ Walls:
 - v1 project split (split_projects.py) gave 4533/22. After dedupe, two project ids hold 99.6% of rows and share the same filenames. Replaced by v2.
 - Val is small for VO/CO (1), claim (1), payment certificate (2), transmittal (3) and submittal (4), so those recalls are noisy.
 - No CloudAgent tool in this session. Nothing was committed to PR #27.
-- Human agreement is still PENDING_OWNER. This run trained before that check, by owner order.
+- Human agreement is done (0.875, kappa 0.864). This run trained before that check, by owner order.
+
+## Sealed score (once)
+
+Scored once. Files: `docs/router/runs/v2/sealed/`. Macro recall 0.715. Accuracy 0.672 (43/64). Every constant predictor scores macro 0.083. Condition (a) holds: the model beats all 12 constants. Condition (b) fails.
+
+sealed gate: FAIL (gate defect: condition (b) unsatisfiable as written); router NOT marked passed.
+
+`PRE_RUN_NOTE.txt` logged the defect before any sealed prediction. The majority check fails only the constant equal to the sealed-set majority (`report`). The other 11 constants pass it, so condition (b) cannot be met. The gate definition, the parser, and the scores were not changed after the run.
+
+VO/CO recall is 0/5. 3 outputs said 'change order', which the val parser maps to unsure, and they were not remapped.
+

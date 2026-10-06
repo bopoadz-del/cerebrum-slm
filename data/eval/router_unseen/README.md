@@ -8,4 +8,4 @@ v5 seal: 64 public-web rows, owner-labelled, agreement 0.875, kappa 0.864. `scri
 
 Isolation: `router.isolation.require_isolated(load_exclusions(sealed_labels.jsonl))` passed on `data/router/train.jsonl` (1334), `data/router/val.jsonl` (683), and `data/router/teacher_labels.jsonl` (4555). Rejected 0 rows in each file.
 
-The blank practitioner sheet stays in `data/sealed/router/`. The sealed set has not been scored. The pre-registered gate is `docs/router/SEALED_GATE.md`.
+The blank practitioner sheet stays in `data/sealed/router/`. The sealed set was scored once. The record is `docs/router/runs/v2/sealed/`. `sealed_scoring` stays false. sealed gate: FAIL (gate defect: condition (b) unsatisfiable as written); router NOT marked passed. The pre-registered gate is `docs/router/SEALED_GATE.md`.

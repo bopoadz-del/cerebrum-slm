@@ -19,6 +19,8 @@
     "majority_class_fail": true,
     "val_gate_unchanged": true
   },
+  "sealed_scored": true,
+  "sealed_gate_result": "sealed gate: FAIL (gate defect: condition (b) unsatisfiable as written); router NOT marked passed",
   "teacher": {
     "provider": "tinker",
     "model": "Qwen/Qwen3-8B",
