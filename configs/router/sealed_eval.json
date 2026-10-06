@@ -9,6 +9,8 @@
   "agreement_file": "data/eval/router_unseen/agreement.json",
   "sha256sums": "data/eval/router_unseen/SHA256SUMS",
   "sealed_gate": {
+    "version": 2,
+    "applies_to": "future_fresh_sealed_set",
     "sealed_scoring": false,
     "doc": "docs/router/SEALED_GATE.md",
     "metric": "macro_recall",

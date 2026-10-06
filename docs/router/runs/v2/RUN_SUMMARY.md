@@ -45,7 +45,7 @@ Scored once. Files: `docs/router/runs/v2/sealed/`. Macro recall 0.715. Accuracy 
 
 sealed gate: FAIL (gate defect: condition (b) unsatisfiable as written); router NOT marked passed.
 
-`PRE_RUN_NOTE.txt` logged the defect before any sealed prediction. The majority check fails only the constant equal to the sealed-set majority (`report`). The other 11 constants pass it, so condition (b) cannot be met. The gate definition, the parser, and the scores were not changed after the run.
+`PRE_RUN_NOTE.txt` logged the defect before any sealed prediction. The majority check fails only the constant equal to the sealed-set majority (`report`). The other 11 constants pass it, so condition (b) cannot be met. The gate definition, the parser, and the scores were not changed after the run. Sealed gate version 2 applies only to a future fresh sealed set. These v5 scores were not recomputed under version 2 or the label-alias parser.
 
 VO/CO recall is 0/5. 3 outputs said 'change order', which the val parser maps to unsure, and they were not remapped.
 

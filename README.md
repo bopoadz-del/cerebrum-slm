@@ -54,7 +54,7 @@ No training run is started by CI or by `--dry-run`. CI does not generate pairs. 
 
 ## Router labels
 
-The document-type label set is `configs/router/labels.json`. The v5 sealed set is 64 owner-labelled public-web rows in `data/eval/router_unseen/`. The blank sheet remains `data/sealed/router/`. The raw Fork export is a document pool, not training labels (pull request #25). A teacher pass and a Qwen3.5-4B LoRA are recorded in `docs/router/DATASET_CARD.md`. Tinker does not serve `Qwen/Qwen3-4B`. Human agreement is done (0.875, kappa 0.864), and training proceeded before that check. The sealed set was scored once. sealed gate: FAIL (gate defect: condition (b) unsatisfiable as written); router NOT marked passed. `sealed_scoring` stays false. See `docs/router/LABELS.md`.
+The document-type label set is `configs/router/labels.json`. The v5 sealed set is 64 owner-labelled public-web rows in `data/eval/router_unseen/`. The blank sheet remains `data/sealed/router/`. The raw Fork export is a document pool, not training labels (pull request #25). A teacher pass and a Qwen3.5-4B LoRA are recorded in `docs/router/DATASET_CARD.md`. Tinker does not serve `Qwen/Qwen3-4B`. Human agreement is done (0.875, kappa 0.864), and training proceeded before that check. The sealed set was scored once. sealed gate: FAIL (gate defect: condition (b) unsatisfiable as written); router NOT marked passed. `sealed_scoring` stays false. Sealed gate version 2 applies only to a future fresh sealed set. The v5 result is unchanged. See `docs/router/LABELS.md`.
 
 ## Local run
 
