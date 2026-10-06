@@ -36,12 +36,13 @@ def test_in_pool_holdout_is_not_the_sealed_set(repo_root: Path) -> None:
     assert "It is not the sealed set." in text
 
 
-def test_owner_line_and_empty_drop_zone(repo_root: Path) -> None:
+def test_owner_line_and_sealed_drop_zone(repo_root: Path) -> None:
     readme = (repo_root / "data" / "sealed" / "router" / "README.md").read_text(encoding="utf-8")
     assert OWNER_LINE in readme.splitlines()
     drop = repo_root / "data" / "eval" / "router_unseen" / "sealed_labels.jsonl"
     assert drop.is_file()
-    assert drop.read_bytes() == b""
+    rows = [line for line in drop.read_text(encoding="utf-8").splitlines() if line.strip()]
+    assert len(rows) == 64
     assert (repo_root / "data" / "sealed" / "router" / ".gitkeep").is_file()
     pointer = (repo_root / "data" / "sealed" / "router" / "README.md").read_text(encoding="utf-8")
     assert "data/eval/router_unseen/sealed_labels.jsonl" in pointer

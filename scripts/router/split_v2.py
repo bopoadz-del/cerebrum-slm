@@ -265,8 +265,7 @@ def split_examples(
         "groups_val": len(val_groups),
         "group_overlap": 0,
         "sealed_isolation": (
-            "router.isolation.require_isolated on all examples "
-            "(sealed_labels.jsonl empty, 0 excluded); sealed set not scored"
+            "router.isolation.require_isolated on all examples; sealed set not scored"
         ),
         "train_rows_before_cap": train_before,
         "train_rows": len(train),

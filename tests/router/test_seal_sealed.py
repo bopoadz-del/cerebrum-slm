@@ -8,7 +8,7 @@ import pytest
 from router.guard import RouterWall
 from router.isolation import load_exclusions, rejected_rows, split_training_pool
 from router.labels import load_labels
-from router.seal_sealed import agreement, corpus_project, seal_sheet
+from router.seal_sealed import agreement, corpus_project, main, seal_sheet
 
 
 def _sheet(path: Path, labels: list[str], rows: list[dict[str, str]]) -> None:
@@ -214,12 +214,39 @@ def test_xlsx_without_a_label_sheet_keeps_the_header_wall(tmp_path: Path, repo_r
     assert not (out / "sealed_labels.jsonl").exists()
 
 
-def test_committed_seal_is_empty(repo_root: Path) -> None:
-    path = repo_root / "data" / "eval" / "router_unseen" / "sealed_labels.jsonl"
-    assert path.read_bytes() == b""
-    listed = (repo_root / "data" / "eval" / "router_unseen" / "SHA256SUMS").read_text(encoding="utf-8")
+def test_committed_v5_seal(repo_root: Path) -> None:
+    labels = load_labels(repo_root / "configs" / "router" / "labels.json")
+    directory = repo_root / "data" / "eval" / "router_unseen"
+    rows = [
+        json.loads(line)
+        for line in (directory / "sealed_labels.jsonl").read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+    assert len(rows) == 64
+    assert len({row["sheet_id"] for row in rows}) == 64
+    for row in rows:
+        assert set(row) == {
+            "sheet_id",
+            "label",
+            "file_sha256",
+            "project",
+            "isolation_key",
+            "source_url",
+        }
+        assert row["label"] in labels
+        assert row["project"] == "web_public"
+        assert row["isolation_key"] == "web_public"
+        assert len(row["file_sha256"]) == 64
+        assert row["source_url"].startswith("http")
+    blob = (directory / "sealed_labels.jsonl").read_text(encoding="utf-8")
+    assert "proposed_label" not in blob
+    stats = json.loads((directory / "agreement.json").read_text(encoding="utf-8"))
+    assert stats["compared"] == 64
+    assert stats["overall"] == 0.875
+    assert stats["note"] == "Agreement does not change sealed labels."
+    listed = (directory / "SHA256SUMS").read_text(encoding="utf-8")
     assert "sealed_labels.jsonl" in listed
-    assert "agreement.json" not in listed
+    assert "agreement.json" in listed
 
 
 def test_sealed_doc_or_project_is_rejected(tmp_path: Path) -> None:
@@ -239,6 +266,243 @@ def test_sealed_doc_or_project_is_rejected(tmp_path: Path) -> None:
     with pytest.raises(RouterWall, match="sealed doc or project"):
         split_training_pool(pool, sealed)
     assert split_training_pool([pool[0]], sealed) == [pool[0]]
+
+
+def _id_sheet(path: Path, labels: list[str], rows: list[dict[str, str]]) -> None:
+    columns = ["id", "document", *labels, "unsure", "notes"]
+    lines = [",".join(columns)]
+    for row in rows:
+        lines.append(",".join(row.get(column, "") for column in columns))
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def test_id_column_is_the_sheet_id_and_document_text_is_omitted(tmp_path: Path, repo_root: Path) -> None:
+    labels = load_labels(repo_root / "configs" / "router" / "labels.json")
+    sheet = tmp_path / "sheet.csv"
+    _id_sheet(
+        sheet,
+        labels,
+        [
+            {
+                "id": "S5-001",
+                "document": "SECRET-BODY",
+                "notes": "SECRET-NOTE",
+                labels[0]: "x",
+            }
+        ],
+    )
+    out = tmp_path / "sealed"
+    seal_sheet(sheet, out, labels)
+    stored = json.loads((out / "sealed_labels.jsonl").read_text(encoding="utf-8"))
+    assert stored["sheet_id"] == "S5-001"
+    assert stored["label"] == labels[0]
+    blob = (out / "sealed_labels.jsonl").read_text(encoding="utf-8")
+    assert "SECRET-BODY" not in blob
+    assert "SECRET-NOTE" not in blob
+    assert "document" not in stored
+
+
+def test_sheets_merge_and_duplicate_ids_write_nothing(tmp_path: Path, repo_root: Path) -> None:
+    labels = load_labels(repo_root / "configs" / "router" / "labels.json")
+    first = tmp_path / "a.csv"
+    second = tmp_path / "b.csv"
+    _id_sheet(first, labels, [{"id": "S5-001", labels[1]: "x"}])
+    _id_sheet(second, labels, [{"id": "S5-002", labels[2]: "x"}])
+    out = tmp_path / "sealed"
+    report = seal_sheet([first, second], out, labels)
+    assert report["sealed"] == 2
+    stored = [json.loads(line) for line in (out / "sealed_labels.jsonl").read_text(encoding="utf-8").splitlines()]
+    assert [row["sheet_id"] for row in stored] == ["S5-001", "S5-002"]
+    duplicate = tmp_path / "dup.csv"
+    _id_sheet(duplicate, labels, [{"id": "S5-001", labels[3]: "x"}])
+    blocked = tmp_path / "blocked"
+    with pytest.raises(RouterWall, match="duplicate sheet id S5-001"):
+        seal_sheet([first, duplicate], blocked, labels)
+    assert not (blocked / "sealed_labels.jsonl").exists()
+
+
+def test_meta_adds_isolation_fields_and_never_a_label(tmp_path: Path, repo_root: Path) -> None:
+    labels = load_labels(repo_root / "configs" / "router" / "labels.json")
+    owner = labels[0]
+    other = labels[1]
+    sheet = tmp_path / "sheet.csv"
+    _sheet(
+        sheet,
+        labels,
+        [
+            {
+                "sheet_id": "S5-001",
+                "excerpt": "body",
+                "source_path": "Master Folder/pack/file.pdf",
+                "file_sha256": "f" * 64,
+                owner: "x",
+            }
+        ],
+    )
+    meta = tmp_path / "meta.jsonl"
+    meta.write_text(
+        json.dumps(
+            {
+                "id": "S5-001",
+                "sheet_id": "S5-001",
+                "proposed_label": other,
+                "label": other,
+                "content_sha256": "ab" * 32,
+                "isolation_key": "web_public",
+                "source_url": "https://example.com/doc",
+                "text": "HIDDEN-TEXT",
+                "source_path": "https://example.com/doc",
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    out = tmp_path / "sealed"
+    report = seal_sheet(sheet, out, labels, meta=[meta])
+    assert report["sealed"] == 1
+    stored = json.loads((out / "sealed_labels.jsonl").read_text(encoding="utf-8"))
+    assert stored == {
+        "sheet_id": "S5-001",
+        "label": owner,
+        "file_sha256": "ab" * 32,
+        "project": "web_public",
+        "isolation_key": "web_public",
+        "source_url": "https://example.com/doc",
+        "excerpt": "body",
+    }
+    blob = (out / "sealed_labels.jsonl").read_text(encoding="utf-8")
+    assert other not in blob
+    assert "HIDDEN-TEXT" not in blob
+    assert "Master Folder" not in blob
+    assert "proposed_label" not in blob
+    assert not (out / "agreement.json").exists()
+
+
+def test_agreement_uses_proposed_and_not_meta(tmp_path: Path, repo_root: Path) -> None:
+    labels = load_labels(repo_root / "configs" / "router" / "labels.json")
+    owner = labels[3]
+    other = labels[4]
+    sheet = tmp_path / "sheet.csv"
+    _id_sheet(sheet, labels, [{"id": "S5-009", owner: "x"}])
+    meta = tmp_path / "meta.jsonl"
+    meta.write_text(
+        json.dumps(
+            {
+                "sheet_id": "S5-009",
+                "proposed_label": owner,
+                "content_sha256": "cd" * 32,
+                "isolation_key": "web_public",
+                "source_url": "https://example.com/a",
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    proposed = tmp_path / "proposed.jsonl"
+    proposed.write_text(
+        json.dumps({"sheet_id": "S5-009", "proposed_label": other}) + "\n",
+        encoding="utf-8",
+    )
+    out = tmp_path / "sealed"
+    seal_sheet(sheet, out, labels, proposed=proposed, meta=[meta])
+    stored = json.loads((out / "sealed_labels.jsonl").read_text(encoding="utf-8"))
+    assert stored["label"] == owner
+    stats = json.loads((out / "agreement.json").read_text(encoding="utf-8"))
+    assert stats["overall"] == 0.0
+    assert stats["compared"] == 1
+
+
+def test_duplicate_meta_id_writes_nothing(tmp_path: Path, repo_root: Path) -> None:
+    labels = load_labels(repo_root / "configs" / "router" / "labels.json")
+    sheet = tmp_path / "sheet.csv"
+    _id_sheet(sheet, labels, [{"id": "S5-001", labels[0]: "x"}])
+    meta = tmp_path / "meta.jsonl"
+    line = json.dumps(
+        {
+            "sheet_id": "S5-001",
+            "content_sha256": "aa" * 32,
+            "isolation_key": "web_public",
+            "source_url": "https://example.com/a",
+        }
+    )
+    meta.write_text(line + "\n" + line + "\n", encoding="utf-8")
+    out = tmp_path / "sealed"
+    with pytest.raises(RouterWall, match="duplicate meta id S5-001"):
+        seal_sheet(sheet, out, labels, meta=[meta])
+    assert not (out / "sealed_labels.jsonl").exists()
+
+
+def test_cli_accepts_repeatable_sheet_and_meta(tmp_path: Path, repo_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    labels = load_labels(repo_root / "configs" / "router" / "labels.json")
+    first = tmp_path / "a.csv"
+    second = tmp_path / "b.csv"
+    _id_sheet(first, labels, [{"id": "S5-001", labels[0]: "x"}])
+    _id_sheet(second, labels, [{"id": "S5-002", labels[1]: "x"}])
+    meta_a = tmp_path / "meta-a.jsonl"
+    meta_b = tmp_path / "meta-b.jsonl"
+    meta_a.write_text(
+        json.dumps(
+            {
+                "id": "S5-001",
+                "content_sha256": "11" * 32,
+                "isolation_key": "web_public",
+                "source_url": "https://example.com/1",
+                "proposed_label": labels[2],
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    meta_b.write_text(
+        json.dumps(
+            {
+                "sheet_id": "S5-002",
+                "content_sha256": "22" * 32,
+                "isolation_key": "web_public",
+                "source_url": "https://example.com/2",
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    proposed = tmp_path / "proposed.jsonl"
+    proposed.write_text(
+        "\n".join(
+            [
+                json.dumps({"sheet_id": "S5-001", "proposed_label": labels[0]}),
+                json.dumps({"sheet_id": "S5-002", "proposed_label": labels[2]}),
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    out = tmp_path / "sealed"
+    code = main(
+        [
+            "--sheet",
+            str(first),
+            "--sheet",
+            str(second),
+            "--meta",
+            str(meta_a),
+            "--meta",
+            str(meta_b),
+            "--proposed",
+            str(proposed),
+            "--output-dir",
+            str(out),
+            "--root",
+            str(repo_root),
+        ]
+    )
+    assert code == 0
+    assert "WALL" not in capsys.readouterr().out
+    stored = [json.loads(line) for line in (out / "sealed_labels.jsonl").read_text(encoding="utf-8").splitlines()]
+    assert [row["label"] for row in stored] == [labels[0], labels[1]]
+    assert [row["file_sha256"] for row in stored] == ["11" * 32, "22" * 32]
+    assert all(row["project"] == "web_public" for row in stored)
+    stats = json.loads((out / "agreement.json").read_text(encoding="utf-8"))
+    assert stats["overall"] == 0.5
 
 
 def test_corpus_project_ignores_a_bare_filename() -> None:

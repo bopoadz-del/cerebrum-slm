@@ -10,6 +10,6 @@ Checkpoint: `tinker://b0857111-57c4-56f6-bf9b-ed3f8021826b:train:0/sampler_weigh
 
 Epoch 2 val accuracy is 0.906. The majority-class gate passes because the model is not a constant predictor. The constant `drawing` baseline fails that gate. Per-label recall is in `docs/router/DATASET_CARD.md`.
 
-The sealed set `data/eval/router_unseen/sealed_labels.jsonl` is empty and was not scored. Scoring happens once, after the owner sheet is sealed.
+The sealed set `data/eval/router_unseen/sealed_labels.jsonl` is the v5 owner seal (64 rows) and was not scored. Scoring waits on `docs/router/SEALED_GATE.md`. `sealed_scoring` stays false.
 
 Human stratified agreement is PENDING_OWNER. Training proceeded before that check by owner order. The majority-class gate and the agreement threshold are unchanged.
