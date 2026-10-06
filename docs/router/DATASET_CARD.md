@@ -6,7 +6,7 @@ Model version: Qwen/Qwen3-8B
 
 The fixed teacher is `Qwen/Qwen3-8B`, provider `tinker`, temperature `0`. The laptop run used that model on the pool.
 
-The prompt is the template `_PROMPT` in `scripts/router/teacher_label.py`. `{label_list}` is filled from `configs/router/labels.json` at call time. The template is:
+The recorded teacher pass used the template below. `{label_list}` was filled from the label file at call time. The current builder in `scripts/router/teacher_label.py` loads definitions, "Is not" lines, regional names, notes, and the design rules from `configs/router/label_set_v8.json` at call time. Parsing rules are fixed now, before any v8 scores exist. The recorded template is:
 
 ```
 You assign one document-type label from the document text only.

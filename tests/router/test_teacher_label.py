@@ -4,7 +4,6 @@ from pathlib import Path
 import pytest
 
 from router.guard import RouterWall
-from router.labels import load_labels
 from router.teacher_label import (
     dry_run_report,
     eligible_for_train,
@@ -19,13 +18,67 @@ from router.teacher_label import (
 
 
 def test_prompt_uses_the_file_and_not_a_label_outside_it(tmp_path: Path) -> None:
-    path = tmp_path / "labels.json"
-    path.write_text(json.dumps({"labels": ["alpha-mark", "beta-mark"], "task": "document_type"}), encoding="utf-8")
-    labels = load_labels(path)
-    prompt = prompt_for(labels)
+    path = tmp_path / "label_set.json"
+    path.write_text(
+        json.dumps(
+            {
+                "design_rules": ["Use the document text only."],
+                "labels": [
+                    {
+                        "label": "alpha-mark",
+                        "definition": "Alpha means alpha.",
+                        "is_not": "Not beta.",
+                        "regional_names_text": None,
+                        "notes": [],
+                    },
+                    {
+                        "label": "beta-mark",
+                        "definition": "Beta means beta.",
+                        "is_not": "Not alpha.",
+                        "regional_names_text": "beta form",
+                        "notes": ["Combined forms: alpha stays alpha."],
+                    },
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    prompt = prompt_for(["alpha-mark", "beta-mark"], path=path)
     assert "alpha-mark" in prompt
     assert "beta-mark" in prompt
+    assert "Alpha means alpha." in prompt
+    assert "Not beta." in prompt
+    assert "beta form" in prompt
+    assert "Combined forms: alpha stays alpha." in prompt
+    assert "Use the document text only." in prompt
     assert "RFI" not in prompt
+    assert '{"label": "<one list entry or unsure>", "reason": "<one line>", "confidence": 0}' in prompt
+    assert "Use only the document text in the next message." in prompt
+
+
+def test_prompt_loads_the_approved_label_set_at_call_time(repo_root: Path, tmp_path: Path) -> None:
+    data = json.loads((repo_root / "configs" / "router" / "label_set_v8.json").read_text(encoding="utf-8"))
+    names = [item["label"] for item in data["labels"]]
+    prompt = prompt_for(names)
+    for rule in data["design_rules"]:
+        assert rule in prompt
+    for item in data["labels"]:
+        assert item["definition"] in prompt
+        assert item["is_not"] in prompt
+        regional = item["regional_names_text"]
+        if isinstance(regional, str):
+            assert regional in prompt
+        for note in item["notes"]:
+            assert note in prompt
+    mutated = json.loads(json.dumps(data))
+    mutated["labels"][0]["definition"] = "UNIQUE-DEFINITION-TOKEN"
+    mutated["design_rules"][0] = "UNIQUE-RULE-TOKEN"
+    path = tmp_path / "label_set.json"
+    path.write_text(json.dumps(mutated), encoding="utf-8")
+    replacement = prompt_for(path=path)
+    assert "UNIQUE-DEFINITION-TOKEN" in replacement
+    assert "UNIQUE-RULE-TOKEN" in replacement
+    assert data["labels"][0]["definition"] not in replacement
 
 
 def test_messages_carry_excerpt_only() -> None:

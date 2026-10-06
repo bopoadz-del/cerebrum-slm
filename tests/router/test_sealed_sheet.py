@@ -12,7 +12,7 @@ OWNER_LINE = (
 
 
 def test_sealed_config_matches_the_label_file(repo_root: Path) -> None:
-    labels = load_labels(repo_root / "configs" / "router" / "labels.json")
+    labels = load_labels(repo_root / "configs" / "router" / "labels_v5.json")
     config = load_sealed_config(repo_root / "configs" / "router" / "sealed_eval.json")
     assert config["n"] == 60
     assert config["per_label"] == 5
@@ -49,7 +49,7 @@ def test_owner_line_and_sealed_drop_zone(repo_root: Path) -> None:
 
 
 def test_labelling_sheet_is_sixty_blank_rows(repo_root: Path) -> None:
-    labels = load_labels(repo_root / "configs" / "router" / "labels.json")
+    labels = load_labels(repo_root / "configs" / "router" / "labels_v5.json")
     path = repo_root / "data" / "sealed" / "router" / "labelling_sheet.csv"
     with path.open(encoding="utf-8", newline="") as handle:
         rows = list(csv.reader(handle))

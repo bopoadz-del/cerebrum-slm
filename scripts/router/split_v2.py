@@ -285,7 +285,12 @@ def split_examples(
 
 
 def load_isolated_examples(root: Path, labels_path: Path) -> tuple[list[dict], list[str]]:
-    labels = load_labels(root / "configs" / "router" / "labels.json")
+    """Replay the recorded split on the frozen v5 label list.
+
+    The teacher file uses ``spec``. Pointing this replay at the current
+    21-label file would drop those rows. v5 outputs stay byte-identical.
+    """
+    labels = load_labels(root / "configs" / "router" / "labels_v5.json")
     sealed = load_sealed_config(root / "configs" / "router" / "sealed_eval.json")
     examples = training_examples(rows_from_pool(labels_path), labels)
     isolated = require_isolated(examples, load_exclusions(root / sealed["sealed_labels"]))

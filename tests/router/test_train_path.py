@@ -92,7 +92,7 @@ def test_owner_override_does_not_change_the_agreement_gate(repo_root: Path) -> N
 
 
 def test_pending_sample_is_a_header_only(repo_root: Path) -> None:
-    labels = load_labels(repo_root / "configs" / "router" / "labels.json")
+    labels = load_labels(repo_root / "configs" / "router" / "labels_v5.json")
     path = repo_root / "data" / "router" / "human_sample_PENDING_OWNER.csv"
     with path.open(encoding="utf-8", newline="") as handle:
         rows = list(csv.reader(handle))

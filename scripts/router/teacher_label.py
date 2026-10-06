@@ -1,7 +1,10 @@
 """Teacher labelling from document content. Dry-run writes nothing.
 
-The prompt is fixed. The allowed labels are read from configs/router/labels.json
-at call time. Unsure and low-confidence rows are not training rows.
+The system prompt is built at call time from configs/router/label_set_v8.json.
+Definitions, "Is not" lines, regional names, notes, and the design rules are
+not copied into this module. The allowed label names are read from
+configs/router/labels.json at call time. Unsure and low-confidence rows are
+not training rows.
 """
 
 from __future__ import annotations
@@ -14,7 +17,7 @@ from pathlib import Path
 
 from router.content import model_user_text
 from router.guard import RouterWall, refuse_sealed_input
-from router.labels import confidence_floor, load_labels, load_sealed_config, repo_root
+from router.labels import confidence_floor, load_label_set, load_labels, load_sealed_config, repo_root
 from router.parse_label import canonical_label
 from router.sheet import UNSURE
 
@@ -28,6 +31,8 @@ Use only the document text in the next message.
 Do not use a filename, a folder, a document id, or a project name. They are not provided.
 Reply with one JSON object and no other text:
 {{"label": "<one list entry or unsure>", "reason": "<one line>", "confidence": 0}}
+Design rules:
+{design_rules}
 Allowed labels:
 {label_list}
 """
@@ -35,9 +40,56 @@ Allowed labels:
 _KEY_ENV = ("TINKER_API_KEY", "ROUTER_TEACHER_API_KEY")
 
 
-def prompt_for(labels: list[str]) -> str:
-    lines = "\n".join(f"- {label}" for label in labels)
-    return _PROMPT.format(label_list=lines)
+def prompt_for(
+    labels: list[str] | None = None,
+    *,
+    label_set: dict | None = None,
+    path: Path | None = None,
+) -> str:
+    """List each label's approved definition and "Is not" line.
+
+    Regional names and notes are included when the label-set file has them.
+    The five design rules are copied from that file verbatim. Pass ``label_set``
+    or ``path`` in tests; otherwise the approved file is read at call time.
+    """
+    data = label_set if label_set is not None else load_label_set(path)
+    entries = [
+        item
+        for item in data["labels"]
+        if isinstance(item, dict) and isinstance(item.get("label"), str)
+    ]
+    if labels is None:
+        selected = entries
+        bare: list[str] = []
+    else:
+        wanted = set(labels)
+        selected = [item for item in entries if item["label"] in wanted]
+        known = {item["label"] for item in selected}
+        bare = [label for label in labels if label not in known]
+    blocks = [_label_block(item) for item in selected]
+    blocks.extend(f"- {label}" for label in bare)
+    rules = [rule for rule in data["design_rules"] if isinstance(rule, str)]
+    return _PROMPT.format(
+        design_rules="\n".join(f"- {rule}" for rule in rules),
+        label_list="\n".join(blocks),
+    )
+
+
+def _label_block(item: dict) -> str:
+    lines = [
+        f"- {item['label']}",
+        f"  Definition: {item['definition']}",
+        f"  Is not: {item['is_not']}",
+    ]
+    regional = item.get("regional_names_text")
+    if isinstance(regional, str) and regional.strip():
+        lines.append(f"  Regional names that map here: {regional}")
+    notes = item.get("notes")
+    if isinstance(notes, list):
+        for note in notes:
+            if isinstance(note, str) and note.strip():
+                lines.append(f"  {note}")
+    return "\n".join(lines)
 
 
 def messages_for(row: dict, labels: list[str]) -> list[dict[str, str]] | None:

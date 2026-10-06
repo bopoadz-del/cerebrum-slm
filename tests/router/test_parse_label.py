@@ -1,7 +1,8 @@
 import json
 
+import router.parse_label as parse_label
 from router.labels import load_labels
-from router.parse_label import parse_router_output
+from router.parse_label import _ALIASES, parse_router_output
 from router.teacher_label import eligible_for_train, parse_teacher_response
 from router.train_router import _as_label
 
@@ -67,14 +68,12 @@ def test_near_misses_stay_unmatched(repo_root) -> None:
         "variation orders",
         "the variation",
         "VOC",
-        "VO",
         "C",
         "CO.",
         "vo/co",
         "rfi",
         "Rfi",
         "Payment Certificate",
-        "specification",
         "correspondence",
         "",
         "   ",
@@ -89,6 +88,108 @@ def test_near_misses_stay_unmatched(repo_root) -> None:
             labels,
         )
         assert teacher["label"] == expected.get(sample, "unsure")
+
+
+def test_parsing_rules_are_fixed_before_v8_scores() -> None:
+    assert "Parsing rules are fixed now, before any v8 scores exist." in (parse_label.__doc__ or "")
+
+
+def test_every_alias_targets_a_declared_label(repo_root) -> None:
+    labels = load_labels(repo_root / "configs" / "router" / "labels.json")
+    assert set(_ALIASES.values()) <= set(labels)
+    for alias, target in _ALIASES.items():
+        assert parse_router_output(alias, labels) == target
+        assert parse_router_output(alias.upper(), labels) == target
+        assert parse_router_output(f"  {alias}  ", labels) == target
+
+
+def test_approved_synonyms_match_the_whole_string(repo_root) -> None:
+    labels = load_labels(repo_root / "configs" / "router" / "labels.json")
+    expected = {
+        "vo": "VO/CO",
+        "variation instruction": "VO/CO",
+        "pay application": "payment application",
+        "pay app": "payment application",
+        "application for payment": "payment application",
+        "interim application": "payment application",
+        "progress claim": "payment application",
+        "payment claim": "payment application",
+        "ipc": "payment certificate",
+        "interim payment certificate": "payment certificate",
+        "final payment certificate": "payment certificate",
+        "certificate of payment": "payment certificate",
+        "spec": "specification",
+        "specification": "specification",
+        "request for inspection": "inspection request",
+        "inspection and test request": "inspection request",
+        "itr": "inspection request",
+        "wir": "inspection request",
+        "mir": "inspection request",
+        "work inspection request": "inspection request",
+        "material inspection request": "inspection request",
+        "register": "register/log",
+        "log": "register/log",
+        "register/log": "register/log",
+        "notice of claim": "claim",
+        "eot claim": "claim",
+        "request for information": "RFI",
+        "non-conformance report": "NCR",
+        "non-compliance report": "NCR",
+        "bill of quantities": "BOQ",
+        "schedule of rates": "BOQ",
+        "minutes of meeting": "meeting minutes",
+        "VO": "VO/CO",
+        "Pay App": "payment application",
+        "  IPC  ": "payment certificate",
+    }
+    for sample, target in expected.items():
+        assert parse_router_output(sample, labels) == target
+
+
+def test_plurals_substrings_and_conditional_names_stay_unmatched(repo_root) -> None:
+    labels = load_labels(repo_root / "configs" / "router" / "labels.json")
+    unmatched = [
+        "pay apps",
+        "pay applications",
+        "payapp",
+        "pay-app",
+        "applications for payment",
+        "interim applications",
+        "progress claims",
+        "payment claims",
+        "ipcs",
+        "specs",
+        "specifications",
+        "registers",
+        "logs",
+        "a register",
+        "the log",
+        "notices of claim",
+        "eot claims",
+        "bills of quantities",
+        "schedules of rates",
+        "minutes of meetings",
+        "non-conformance reports",
+        "non-compliance reports",
+        "requests for information",
+        "request for inspections",
+        "work inspection requests",
+        "variation instructions",
+        "engineer's instruction",
+        "architect's instruction",
+        "engineers instruction",
+        "rfi",
+        "wire",
+        "mire",
+        "notice of inspection",
+    ]
+    for sample in unmatched:
+        assert parse_router_output(sample, labels) == "unsure"
+    assert parse_router_output("rfi", ["inspection request"]) == "unsure"
+    assert parse_router_output("RFI", ["inspection request"]) == "unsure"
+    assert parse_router_output("RFI", labels) == "RFI"
+    assert parse_router_output("spec", ["spec"]) == "spec"
+    assert parse_router_output("spec", ["alpha-mark"]) == "unsure"
 
 
 def test_json_model_reply_uses_the_same_alias(repo_root) -> None:

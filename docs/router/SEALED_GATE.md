@@ -32,3 +32,11 @@ Version 1 was the rule when the v5 sealed set was scored. The result of that sco
 The model passes only if macro recall beats every constant single-label predictor on the sealed rows, and each of those constant predictors fails the existing majority gate. Macro recall is the mean of per-label recall over labels present in the sealed rows. The constant predictors include always-drawing, the training majority, and always-report, the sealed-set majority. A tie does not beat a constant predictor. The majority gate is scripts/router/majority_gate.py with majority_class_fail left unchanged. sealed_scoring stays false.
 
 Version 1 called `majority_gate.evaluate` on the real sealed gold for each constant predictor. That function fails a predictor when every prediction is the majority label of those rows. The set-majority constant is the one that fails. On v5 that label is `report`. The other eleven constants pass that call, so condition (b) cannot be met on a set with more than one label. The recorded v5 result is that gate defect. Version 2 leaves the recorded result in place.
+
+## Version 2 + per-label n rule (v8)
+
+`evaluate_sealed_gate_v8` in `scripts/router/sealed_gate.py` keeps version-2 logic and the `RULE` text unchanged. It adds `MIN_SEALED_PER_LABEL = 12`.
+
+For each declared label the report is `{"label", "n", "recall", "passable"}`. `n` is the number of sealed gold documents of that label. `recall` is null when `n` is 0. `passable` is true only when `n` is at least 12. A label with `n` below 12 is marked `not passable`.
+
+`router_passed` is true only when `gate_v2["passed"]` is true and every declared label has `n` of at least 12. Nothing else is loosened. The v5 sealed set is not re-scored under this rule.
