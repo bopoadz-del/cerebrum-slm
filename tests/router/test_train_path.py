@@ -101,8 +101,15 @@ def test_pending_sample_is_a_header_only(repo_root: Path) -> None:
     assert rows == [header(labels)]
     note = (repo_root / "data" / "router" / "HUMAN_AGREEMENT.md").read_text(encoding="utf-8")
     card = (repo_root / "docs" / "router" / "DATASET_CARD.md").read_text(encoding="utf-8")
-    assert "PENDING_OWNER" in note
-    assert "PENDING_OWNER" in card
+    recorded = load_train_config(repo_root)
+    assert recorded["human_agreement_status"] == "done"
+    assert recorded["human_agreement"]["overall"] == 0.875
+    assert recorded["human_agreement"]["kappa"] == 0.864
+    assert "done" in note
+    assert "0.875" in note
+    assert "0.864" in note
+    assert "done" in card
+    assert "0.875" in card
     assert "training proceeds before" in card
     assert "2026-10-06T03:45:00Z" in card
     assert "Qwen/Qwen3-8B" in card

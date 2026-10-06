@@ -1,6 +1,6 @@
 # Router dataset card
 
-Status: teacher labels and a Qwen3.5-4B LoRA are recorded. Human agreement is still PENDING_OWNER.
+Status: teacher labels and a Qwen3.5-4B LoRA are recorded. Human agreement is done (0.875, kappa 0.864). sealed gate: FAIL (gate defect: condition (b) unsatisfiable as written); router NOT marked passed.
 
 Model version: Qwen/Qwen3-8B
 
@@ -34,7 +34,7 @@ Each teacher row is one label from that file, or `unsure`, plus a reason and a c
 | sealed sha256 or project overlaps | 0 |
 | rows labelled | 5627 |
 
-Isolation on the v5 seal (`project` `web_public` and the 64 content sha256 values) rejected 0 of 1334 train rows, 0 of 683 val rows, and 0 of 4555 teacher rows. The sealed set was not scored.
+Isolation on the v5 seal (`project` `web_public` and the 64 content sha256 values) rejected 0 of 1334 train rows, 0 of 683 val rows, and 0 of 4555 teacher rows. The sealed set was scored once after that check. `sealed_scoring` stays false, so it is not scored again and not tuned on.
 
 ## Teacher counts
 
@@ -60,7 +60,7 @@ Kept rows are `data/router/teacher_labels.jsonl`. Counts are `docs/router/runs/v
 
 ## Human agreement
 
-Human stratified agreement: **PENDING_OWNER**. The sample file `data/router/human_sample_PENDING_OWNER.csv` is still the tick-sheet header and no rows. The owner has not labelled it.
+Human agreement: **done**. Overall 0.875 (56/64), kappa 0.864, from the sealed owner labels. The stratified sample file `data/router/human_sample_PENDING_OWNER.csv` is still the tick-sheet header and no rows.
 
 By owner order, training proceeds before that check.
 
@@ -117,6 +117,6 @@ Macro recall over the 11 labels present in val: 0.664. Accuracy: 0.906.
 
 Majority-class gate on the model predictions: passed (`not a majority-class predictor`). The constant `drawing` baseline fails that gate (accuracy 0.811, macro recall 0.091). The gate code is unchanged.
 
-The sealed set was not scored. Metrics are in `docs/router/runs/v2/`.
+The sealed set was scored once. Macro recall 0.715. Accuracy 0.672 (43/64). Every constant predictor scores macro 0.083. Condition (a) holds. Condition (b) fails. sealed gate: FAIL (gate defect: condition (b) unsatisfiable as written); router NOT marked passed. The defect was logged in `docs/router/runs/v2/sealed/PRE_RUN_NOTE.txt` before the run. The majority check fails only the constant `report`. The other 11 constants pass it, so condition (b) cannot be met. The gate definition was not changed. VO/CO recall is 0/5. 3 outputs said 'change order', which the val parser maps to unsure, and they were not remapped. Files and `SHA256SUMS` are in `docs/router/runs/v2/sealed/`. Val metrics are in `docs/router/runs/v2/`.
 
 WALL: Tinker does not serve Qwen/Qwen3-4B; trained on Qwen/Qwen3.5-4B with the same LoRA config. The pool has no folder path, so the split uses a document series from the filename.

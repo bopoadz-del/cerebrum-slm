@@ -1,9 +1,15 @@
+import hashlib
 import json
 from pathlib import Path
 
 from router.labels import load_labels, load_sealed_config
 from router.majority_gate import evaluate
 from router.sealed_gate import RULE, evaluate_sealed_gate
+
+_FAIL = (
+    "sealed gate: FAIL (gate defect: condition (b) unsatisfiable as written); "
+    "router NOT marked passed"
+)
 
 
 def test_sealed_gate_field_is_registered_and_scoring_stays_off(repo_root: Path) -> None:
@@ -21,6 +27,12 @@ def test_sealed_gate_field_is_registered_and_scoring_stays_off(repo_root: Path) 
     assert RULE in doc
     serve = json.loads((repo_root / "configs" / "serve" / "router-epoch2.json").read_text(encoding="utf-8"))
     assert serve["sealed_scoring"] is False
+    assert serve["sealed_scored"] is True
+    assert serve["router_passed"] is False
+    assert serve["status"] == "trained"
+    assert serve["sealed_gate_result"] == _FAIL
+    assert config["sealed_scored"] is True
+    assert config["sealed_gate_result"] == _FAIL
 
 
 def test_sealed_gate_uses_the_unchanged_majority_function(repo_root: Path) -> None:
@@ -44,6 +56,25 @@ def test_a_perfect_single_label_set_does_not_beat_its_constant() -> None:
     assert result["beats_every_constant"] is False
     assert result["every_constant_fails_majority_gate"] is True
     assert result["passed"] is False
+
+
+def test_recorded_sealed_score_matches_its_sha256sums(repo_root: Path) -> None:
+    directory = repo_root / "docs" / "router" / "runs" / "v2" / "sealed"
+    listed = (directory / "SHA256SUMS").read_text(encoding="utf-8").splitlines()
+    names = []
+    for line in listed:
+        if not line.strip() or line.startswith("#"):
+            continue
+        digest, name = line.split(None, 1)
+        names.append(name)
+        actual = hashlib.sha256((directory / name).read_bytes()).hexdigest()
+        assert actual == digest
+    assert names == [
+        "sealed_scores.json",
+        "sealed_predictions.jsonl",
+        "SEALED_RESULT.md",
+        "PRE_RUN_NOTE.txt",
+    ]
 
 
 def test_flag_off_means_constants_do_not_fail_the_majority_gate() -> None:

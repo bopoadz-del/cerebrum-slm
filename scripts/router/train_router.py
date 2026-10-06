@@ -1,8 +1,8 @@
 """Router LoRA entry. Dry-run writes nothing and does not contact Tinker.
 
-The human agreement check is PENDING_OWNER. Training is allowed to proceed
-only because configs/router/train.json records the owner order. The majority
-gate is unchanged.
+The human agreement check is done (0.875, kappa 0.864). The owner order that
+allowed training before that check stays in configs/router/train.json. The
+majority gate is unchanged.
 """
 
 from __future__ import annotations
@@ -29,11 +29,20 @@ WALL = (
 def load_train_config(root: Path) -> dict:
     path = root / "configs" / "router" / "train.json"
     data = json.loads(path.read_text(encoding="utf-8"))
-    if data.get("human_agreement_status") != "PENDING_OWNER":
+    status = data.get("human_agreement_status")
+    if status not in {"PENDING_OWNER", "done"}:
         raise RouterWall("WALL: human agreement status is not the pending owner check")
     override = data.get("train_before_human_agreement")
     if not isinstance(override, dict) or override.get("enabled") is not True:
         raise RouterWall("WALL: owner override to train before human agreement is absent")
+    if status == "done":
+        recorded = data.get("human_agreement")
+        if not isinstance(recorded, dict):
+            raise RouterWall("WALL: recorded human agreement is absent")
+        for key in ("overall", "kappa"):
+            value = recorded.get(key)
+            if isinstance(value, bool) or not isinstance(value, (int, float)):
+                raise RouterWall("WALL: recorded human agreement is absent")
     return data
 
 
