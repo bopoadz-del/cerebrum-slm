@@ -148,6 +148,72 @@ def test_xlsx_tick_matches_csv(tmp_path: Path, repo_root: Path) -> None:
     assert "drawing.pdf" not in json.dumps(stored)
 
 
+def test_xlsx_uses_the_labelling_worksheet_when_instructions_is_first(tmp_path: Path, repo_root: Path) -> None:
+    labels = load_labels(repo_root / "configs" / "router" / "labels.json")
+    columns = ["sheet_id", "excerpt", "filename_optional_blank", "source_path", "file_sha256", "excluded_from_eval", *labels, "unsure"]
+    decoy = {column: "" for column in columns}
+    decoy.update({"sheet_id": "S1", "excerpt": "instructions", labels[0]: "1"})
+    owner = {column: "" for column in columns}
+    owner.update(
+        {
+            "sheet_id": "S1",
+            "excerpt": "from-labelling",
+            "source_path": "Master Folder/pack/note.pdf",
+            "file_sha256": "e" * 64,
+            labels[5]: "1",
+        }
+    )
+    sheet = tmp_path / "book.xlsx"
+    _write_workbook(
+        sheet,
+        [
+            ("Instructions", columns, [decoy]),
+            ("Labelling", columns, [owner]),
+        ],
+    )
+    out = tmp_path / "sealed"
+    seal_sheet(sheet, out, labels)
+    stored = json.loads((out / "sealed_labels.jsonl").read_text(encoding="utf-8"))
+    assert stored["label"] == labels[5]
+    assert stored["excerpt"] == "from-labelling"
+
+
+def test_xlsx_falls_back_to_the_first_sheet_with_label_columns(tmp_path: Path, repo_root: Path) -> None:
+    labels = load_labels(repo_root / "configs" / "router" / "labels.json")
+    columns = ["sheet_id", "excerpt", "filename_optional_blank", "source_path", "file_sha256", "excluded_from_eval", *labels, "unsure"]
+    owner = {column: "" for column in columns}
+    owner.update({"sheet_id": "S9", "excerpt": "grid", labels[3]: "x"})
+    sheet = tmp_path / "book.xlsx"
+    _write_workbook(
+        sheet,
+        [
+            ("Instructions", ["note"], [{"note": "read me"}]),
+            ("Grid", columns, [owner]),
+        ],
+    )
+    out = tmp_path / "sealed"
+    seal_sheet(sheet, out, labels)
+    stored = json.loads((out / "sealed_labels.jsonl").read_text(encoding="utf-8"))
+    assert stored["label"] == labels[3]
+    assert stored["excerpt"] == "grid"
+
+
+def test_xlsx_without_a_label_sheet_keeps_the_header_wall(tmp_path: Path, repo_root: Path) -> None:
+    labels = load_labels(repo_root / "configs" / "router" / "labels.json")
+    sheet = tmp_path / "book.xlsx"
+    _write_workbook(
+        sheet,
+        [
+            ("Instructions", ["note"], [{"note": "read me"}]),
+            ("Notes", ["comment"], [{"comment": "later"}]),
+        ],
+    )
+    out = tmp_path / "sealed"
+    with pytest.raises(RouterWall, match="sheet header is missing a declared label column"):
+        seal_sheet(sheet, out, labels)
+    assert not (out / "sealed_labels.jsonl").exists()
+
+
 def test_committed_seal_is_empty(repo_root: Path) -> None:
     path = repo_root / "data" / "eval" / "router_unseen" / "sealed_labels.jsonl"
     assert path.read_bytes() == b""
@@ -261,3 +327,78 @@ def _write_xlsx(path: Path, columns: list[str], rows: list[dict[str, str]]) -> N
         archive.writestr("xl/workbook.xml", workbook)
         archive.writestr("xl/_rels/workbook.xml.rels", rels)
         archive.writestr("xl/worksheets/sheet1.xml", sheet)
+
+
+def _write_workbook(path: Path, sheets: list[tuple[str, list[str], list[dict[str, str]]]]) -> None:
+    def column_ref(index: int, row_number: int) -> str:
+        letters = ""
+        number = index + 1
+        while number:
+            number, rem = divmod(number - 1, 26)
+            letters = chr(65 + rem) + letters
+        return f"{letters}{row_number}"
+
+    def sheet_xml(columns: list[str], rows: list[dict[str, str]]) -> str:
+        def row_xml(values: list[str], row_number: int) -> str:
+            cells = [
+                f'<c r="{column_ref(index, row_number)}" t="inlineStr"><is><t>{value}</t></is></c>'
+                for index, value in enumerate(values)
+            ]
+            return f'<row r="{row_number}">{"".join(cells)}</row>'
+
+        body = [row_xml(columns, 1)]
+        for offset, row in enumerate(rows, start=2):
+            body.append(row_xml([row.get(column, "") for column in columns], offset))
+        return (
+            '<?xml version="1.0" encoding="UTF-8"?>'
+            '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+            f"<sheetData>{''.join(body)}</sheetData></worksheet>"
+        )
+
+    sheet_tags = []
+    relationships = []
+    overrides = []
+    for index, (name, _columns, _rows) in enumerate(sheets, start=1):
+        sheet_tags.append(f'<sheet name="{name}" sheetId="{index}" r:id="rId{index}"/>')
+        relationships.append(
+            f'<Relationship Id="rId{index}" '
+            'Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" '
+            f'Target="worksheets/sheet{index}.xml"/>'
+        )
+        overrides.append(
+            f'<Override PartName="/xl/worksheets/sheet{index}.xml" '
+            'ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>'
+        )
+    workbook = (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" '
+        'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'
+        f"<sheets>{''.join(sheet_tags)}</sheets></workbook>"
+    )
+    rels = (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+        f"{''.join(relationships)}</Relationships>"
+    )
+    package = (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+        '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" '
+        'Target="xl/workbook.xml"/></Relationships>'
+    )
+    content_types = (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'
+        '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'
+        '<Default Extension="xml" ContentType="application/xml"/>'
+        '<Override PartName="/xl/workbook.xml" '
+        'ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>'
+        f"{''.join(overrides)}</Types>"
+    )
+    with zipfile.ZipFile(path, "w") as archive:
+        archive.writestr("[Content_Types].xml", content_types)
+        archive.writestr("_rels/.rels", package)
+        archive.writestr("xl/workbook.xml", workbook)
+        archive.writestr("xl/_rels/workbook.xml.rels", rels)
+        for index, (_name, columns, rows) in enumerate(sheets, start=1):
+            archive.writestr(f"xl/worksheets/sheet{index}.xml", sheet_xml(columns, rows))
