@@ -1,12 +1,12 @@
 # Router labels
 
-The label set is `configs/router/labels.json`. Code loads that file. It does not declare another set, and it does not add a label.
+The current label set is v8 in `configs/router/labels.json` (`label_set` is `v8`). Definitions are `docs/router/LABEL_SET_v8.md` and `configs/router/label_set_v8.json`. Code loads those files. It does not add a label. The v5 sealed set used the 12 labels frozen in `configs/router/labels_v5.json`, including `spec`. Replay of those records loads that file. The sealed rows are not relabelled.
 
 A label comes from document content. A filename, a folder, a document id, and a project id are not labels.
 
 ## Output aliases
 
-The router output parser maps an exact case-insensitive alias onto one canonical label. The match is the whole string after whitespace is collapsed. There is no fuzzy match. The label docs name no other alias.
+The router output parser maps an exact case-insensitive alias onto one canonical label. The match is the whole string after whitespace is collapsed. There is no fuzzy match. A plural, a substring, and a near-miss stay unmatched. Conditional names (engineer's instruction, architect's instruction) are not aliases. `rfi` is not mapped to inspection request. Parsing rules are fixed now, before any v8 scores exist.
 
 | alias | canonical |
 | --- | --- |
@@ -14,6 +14,36 @@ The router output parser maps an exact case-insensitive alias onto one canonical
 | variation order | VO/CO |
 | variation | VO/CO |
 | CO | VO/CO |
+| VO | VO/CO |
+| variation instruction | VO/CO |
+| pay application | payment application |
+| pay app | payment application |
+| application for payment | payment application |
+| interim application | payment application |
+| progress claim | payment application |
+| payment claim | payment application |
+| IPC | payment certificate |
+| interim payment certificate | payment certificate |
+| final payment certificate | payment certificate |
+| certificate of payment | payment certificate |
+| spec | specification |
+| request for inspection | inspection request |
+| inspection and test request | inspection request |
+| ITR | inspection request |
+| WIR | inspection request |
+| MIR | inspection request |
+| work inspection request | inspection request |
+| material inspection request | inspection request |
+| register | register/log |
+| log | register/log |
+| notice of claim | claim |
+| EOT claim | claim |
+| request for information | RFI |
+| non-conformance report | NCR |
+| non-compliance report | NCR |
+| bill of quantities | BOQ |
+| schedule of rates | BOQ |
+| minutes of meeting | meeting minutes |
 
 The router model, the teacher, and a baseline share that parser (`scripts/router/parse_label.py`). The v5 sealed predictions were not re-parsed. The three v5 outputs that said `change order` stay recorded as misses.
 

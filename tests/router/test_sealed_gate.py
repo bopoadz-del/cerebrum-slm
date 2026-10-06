@@ -4,7 +4,13 @@ from pathlib import Path
 
 from router.labels import load_labels, load_sealed_config
 from router.majority_gate import evaluate
-from router.sealed_gate import RULE, RULE_V1, evaluate_sealed_gate
+from router.sealed_gate import (
+    MIN_SEALED_PER_LABEL,
+    RULE,
+    RULE_V1,
+    evaluate_sealed_gate,
+    evaluate_sealed_gate_v8,
+)
 
 _FAIL = (
     "sealed gate: FAIL (gate defect: condition (b) unsatisfiable as written); "
@@ -124,6 +130,64 @@ def test_v5_change_order_rows_stay_recorded_as_unsure(repo_root: Path) -> None:
     change = [row for row in rows if row["raw"] == "change order"]
     assert [row["sheet_id"] for row in change] == ["S5-011", "S5-062", "S5-064"]
     assert all(row["gold"] == "VO/CO" and row["pred"] == "unsure" for row in change)
+
+
+def _balanced(labels: list[str], counts: dict[str, int]) -> list[str]:
+    gold: list[str] = []
+    for label in labels:
+        gold.extend([label] * counts[label])
+    return gold
+
+
+def test_v8_gate_passes_twelve_per_label_and_rejects_constants(repo_root: Path) -> None:
+    labels = load_labels(repo_root / "configs" / "router" / "labels.json")
+    assert len(labels) == 21
+    assert MIN_SEALED_PER_LABEL == 12
+    gold = _balanced(labels, {label: 12 for label in labels})
+    perfect = evaluate_sealed_gate_v8(gold, list(gold), labels, majority_class_fail=True)
+    assert perfect["gate_v2"]["passed"] is True
+    assert perfect["router_passed"] is True
+    assert all(row["n"] == 12 and row["passable"] is True and row["recall"] == 1.0 for row in perfect["per_label"])
+    for label in labels:
+        constant = evaluate_sealed_gate_v8(
+            gold,
+            [label] * len(gold),
+            labels,
+            majority_class_fail=True,
+        )
+        assert constant["router_passed"] is False
+
+
+def test_v8_gate_eleven_docs_on_one_label_is_not_passable(repo_root: Path) -> None:
+    labels = load_labels(repo_root / "configs" / "router" / "labels.json")
+    short = labels[4]
+    counts = {label: 12 for label in labels}
+    counts[short] = 11
+    gold = _balanced(labels, counts)
+    result = evaluate_sealed_gate_v8(gold, list(gold), labels, majority_class_fail=True)
+    assert result["gate_v2"]["passed"] is True
+    assert result["router_passed"] is False
+    row = next(item for item in result["per_label"] if item["label"] == short)
+    assert row["n"] == 11
+    assert row["passable"] is False
+    assert row["status"] == "not passable"
+    assert row["recall"] == 1.0
+
+
+def test_v8_gate_zero_docs_blocks_a_pass(repo_root: Path) -> None:
+    labels = load_labels(repo_root / "configs" / "router" / "labels.json")
+    missing = labels[-1]
+    counts = {label: 12 for label in labels}
+    counts[missing] = 0
+    gold = _balanced(labels, counts)
+    result = evaluate_sealed_gate_v8(gold, list(gold), labels, majority_class_fail=True)
+    assert result["gate_v2"]["passed"] is True
+    assert result["router_passed"] is False
+    row = next(item for item in result["per_label"] if item["label"] == missing)
+    assert row["n"] == 0
+    assert row["recall"] is None
+    assert row["passable"] is False
+    assert row["status"] == "not passable"
 
 
 def test_flag_off_means_constants_do_not_fail_the_majority_gate() -> None:

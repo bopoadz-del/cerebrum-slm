@@ -88,6 +88,53 @@ def evaluate_sealed_gate(
     }
 
 
+MIN_SEALED_PER_LABEL = 12
+
+
+def evaluate_sealed_gate_v8(
+    gold: list[str],
+    pred: list[str],
+    labels: list[str],
+    *,
+    majority_class_fail: bool,
+) -> dict:
+    """Version 2, plus a per-label count rule. Version 2 itself is unchanged.
+
+    ``router_passed`` is true only when the version-2 gate passed and every
+    declared label has at least ``MIN_SEALED_PER_LABEL`` sealed gold documents.
+    A label with fewer is marked ``not passable``. Nothing else is loosened.
+    """
+    gate_v2 = evaluate_sealed_gate(
+        gold,
+        pred,
+        labels,
+        majority_class_fail=majority_class_fail,
+    )
+    aligned = bool(gold) and len(gold) == len(pred)
+    recalls = per_label_recall(gold, pred, labels) if aligned else {}
+    per_label: list[dict] = []
+    for label in labels:
+        n = sum(1 for item in gold if item == label)
+        recall = None if n == 0 or not aligned else recalls[label]
+        passable = n >= MIN_SEALED_PER_LABEL
+        row: dict = {
+            "label": label,
+            "n": n,
+            "recall": recall,
+            "passable": passable,
+        }
+        if not passable:
+            row["status"] = "not passable"
+        per_label.append(row)
+    every_label_passable = bool(labels) and all(row["passable"] for row in per_label)
+    return {
+        "router_passed": bool(gate_v2["passed"]) and every_label_passable,
+        "min_sealed_per_label": MIN_SEALED_PER_LABEL,
+        "per_label": per_label,
+        "gate_v2": gate_v2,
+    }
+
+
 def _constant_fails_on_its_own(
     label: str,
     n: int,
