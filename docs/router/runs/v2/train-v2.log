@@ -1,0 +1,30 @@
+env loaded names=['TINKER_API_KEY']
+SPLIT {"train_rows": 1334, "val_rows": 683, "version": "v2-series-grouped-stratified"}
+SUBSTITUTE base_model Qwen/Qwen3-4B -> Qwen/Qwen3.5-4B
+OVERRIDE max_sequence_length 2048 -> 3072
+fit start rows=1334 steps=168
+training run console=https://tinker.thinkingmachines.ai/training_runs/b0857111-57c4-56f6-bf9b-ed3f8021826b:train:0
+step 1/168 elapsed_s=48 {'loss:sum': 347.8191680908203}
+step 10/168 elapsed_s=162 {'loss:sum': 8.316781163215637}
+step 20/168 elapsed_s=267 {'loss:sum': 14.715697258710861}
+step 30/168 elapsed_s=363 {'loss:sum': 7.26277619600296}
+step 40/168 elapsed_s=472 {'loss:sum': 2.4053274989128113}
+step 50/168 elapsed_s=549 {'loss:sum': 22.846114318352193}
+step 60/168 elapsed_s=626 {'loss:sum': 2.7450548261404037}
+step 70/168 elapsed_s=691 {'loss:sum': 9.170311689376831}
+step 80/168 elapsed_s=798 {'loss:sum': 3.3243525959551334}
+saved router-qwen3.5-4b-lora-r16-epoch1 path=tinker://b0857111-57c4-56f6-bf9b-ed3f8021826b:train:0/sampler_weights/router-qwen3.5-4b-lora-r16-epoch1
+step 90/168 elapsed_s=900 {'loss:sum': 2.2896977849304676}
+step 100/168 elapsed_s=997 {'loss:sum': 27.06052304804325}
+step 110/168 elapsed_s=1154 {'loss:sum': 11.088915348052979}
+step 120/168 elapsed_s=1569 {'loss:sum': 10.68600022397004}
+step 130/168 elapsed_s=1658 {'loss:sum': 15.864599068183452}
+step 140/168 elapsed_s=1770 {'loss:sum': 1.9715817272663116}
+step 150/168 elapsed_s=1907 {'loss:sum': 30.66342920064926}
+step 160/168 elapsed_s=2050 {'loss:sum': 0.7353498712182045}
+saved router-qwen3.5-4b-lora-r16-epoch2 path=tinker://b0857111-57c4-56f6-bf9b-ed3f8021826b:train:0/sampler_weights/router-qwen3.5-4b-lora-r16-epoch2
+FIT {"steps": 168, "epoch_sampler": "tinker://b0857111-57c4-56f6-bf9b-ed3f8021826b:train:0/sampler_weights/router-qwen3.5-4b-lora-r16-epoch2", "epoch_samplers": ["tinker://b0857111-57c4-56f6-bf9b-ed3f8021826b:train:0/sampler_weights/router-qwen3.5-4b-lora-r16-epoch1", "tinker://b0857111-57c4-56f6-bf9b-ed3f8021826b:train:0/sampler_weights/router-qwen3.5-4b-lora-r16-epoch2"]}
+MAJ {"label": "drawing", "gate_passed": false, "gate_reason": "majority-class predictor", "accuracy": 0.8111273792093704, "macro_recall": 0.09090909090909091}
+EVAL epoch1 {"checkpoint": "tinker://b0857111-57c4-56f6-bf9b-ed3f8021826b:train:0/sampler_weights/router-qwen3.5-4b-lora-r16-epoch1", "per_label_recall": {"RFI": 0.5, "submittal": 1.0, "transmittal": 0.0, "VO/CO": 0.0, "claim": 0.0, "payment certificate": 1.0, "drawing": 0.983754512635379, "spec": 0.2413793103448276, "schedule": 0.5, "report": 0.972972972972973, "correspondence": 0.3888888888888889, "other": null}, "macro_recall": 0.5079086986220062, "beats_majority_macro": true, "gate_overall_pass": true, "majority_gate": {"passed": true, "reason": "not a majority-class predictor", "accuracy": 0.9048316251830161}, "pred_counts": {"schedule": 27, "correspondence": 10, "drawing": 566, "spec": 9, "report": 56, "RFI": 9, "submittal": 4, "payment certificate": 2}}
+EVAL epoch2 {"checkpoint": "tinker://b0857111-57c4-56f6-bf9b-ed3f8021826b:train:0/sampler_weights/router-qwen3.5-4b-lora-r16-epoch2", "per_label_recall": {"RFI": 0.5, "submittal": 0.75, "transmittal": 1.0, "VO/CO": 1.0, "claim": 0.0, "payment certificate": 1.0, "drawing": 0.9711191335740073, "spec": 0.7586206896551724, "schedule": 0.375, "report": 0.9459459459459459, "correspondence": 0.0, "other": null}, "macro_recall": 0.6636987062886477, "beats_majority_macro": true, "gate_overall_pass": true, "majority_gate": {"passed": true, "reason": "not a majority-class predictor", "accuracy": 0.9062957540263543}, "pred_counts": {"schedule": 9, "RFI": 13, "drawing": 558, "spec": 35, "claim": 11, "report": 47, "payment certificate": 3, "transmittal": 3, "submittal": 3, "VO/CO": 1}}
+DONE

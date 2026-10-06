@@ -1,0 +1,81 @@
+{
+  "base_model": "Qwen/Qwen3.5-4B",
+  "configured_base_model": "Qwen/Qwen3-4B",
+  "split_version": "v2-series-grouped-stratified",
+  "drawing_cap_train": 600,
+  "cap_seed": 20261006,
+  "split_seed": 20261006,
+  "val_label_counts": {
+    "RFI": 18,
+    "submittal": 4,
+    "transmittal": 3,
+    "VO/CO": 1,
+    "claim": 1,
+    "payment certificate": 2,
+    "drawing": 554,
+    "spec": 29,
+    "schedule": 16,
+    "report": 37,
+    "correspondence": 18,
+    "other": 0
+  },
+  "majority_baseline": {
+    "label": "drawing",
+    "gate_passed": false,
+    "gate_reason": "majority-class predictor",
+    "accuracy": 0.8111273792093704,
+    "macro_recall": 0.09090909090909091
+  },
+  "per_epoch": {
+    "1": {
+      "checkpoint": "tinker://b0857111-57c4-56f6-bf9b-ed3f8021826b:train:0/sampler_weights/router-qwen3.5-4b-lora-r16-epoch1",
+      "per_label_recall": {
+        "RFI": 0.5,
+        "submittal": 1.0,
+        "transmittal": 0.0,
+        "VO/CO": 0.0,
+        "claim": 0.0,
+        "payment certificate": 1.0,
+        "drawing": 0.983754512635379,
+        "spec": 0.2413793103448276,
+        "schedule": 0.5,
+        "report": 0.972972972972973,
+        "correspondence": 0.3888888888888889,
+        "other": null
+      },
+      "macro_recall": 0.5079086986220062,
+      "beats_majority_macro": true,
+      "gate_overall_pass": true,
+      "majority_gate": {
+        "passed": true,
+        "reason": "not a majority-class predictor",
+        "accuracy": 0.9048316251830161
+      }
+    },
+    "2": {
+      "checkpoint": "tinker://b0857111-57c4-56f6-bf9b-ed3f8021826b:train:0/sampler_weights/router-qwen3.5-4b-lora-r16-epoch2",
+      "per_label_recall": {
+        "RFI": 0.5,
+        "submittal": 0.75,
+        "transmittal": 1.0,
+        "VO/CO": 1.0,
+        "claim": 0.0,
+        "payment certificate": 1.0,
+        "drawing": 0.9711191335740073,
+        "spec": 0.7586206896551724,
+        "schedule": 0.375,
+        "report": 0.9459459459459459,
+        "correspondence": 0.0,
+        "other": null
+      },
+      "macro_recall": 0.6636987062886477,
+      "beats_majority_macro": true,
+      "gate_overall_pass": true,
+      "majority_gate": {
+        "passed": true,
+        "reason": "not a majority-class predictor",
+        "accuracy": 0.9062957540263543
+      }
+    }
+  }
+}

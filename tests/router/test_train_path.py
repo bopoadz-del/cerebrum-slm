@@ -14,6 +14,7 @@ from router.split_projects import project_grouped_split
 from router.teacher_label import main as teacher_main
 from router.train_router import (
     WALL,
+    _encode,
     fit_router,
     load_train_config,
     main,
@@ -118,13 +119,15 @@ def test_pool_write_walls_on_the_missing_key_and_not_on_an_empty_seal(
         encoding="utf-8",
     )
     output = tmp_path / "teacher_labels.jsonl"
+    committed = repo_root / "data" / "router" / "teacher_labels.jsonl"
+    before = committed.read_bytes()
     code = teacher_main(["--write", "--input", str(pool), "--output", str(output), "--root", str(repo_root)])
     captured = capsys.readouterr().out
     assert code == 2
     assert "TINKER_API_KEY is not set" in captured
     assert "sealed eval labels are absent" not in captured
     assert not output.exists()
-    assert not (repo_root / "data" / "router" / "teacher_labels.jsonl").exists()
+    assert committed.read_bytes() == before
 
 
 def test_sealed_set_is_not_scored(repo_root: Path) -> None:
@@ -323,5 +326,63 @@ def test_fit_uses_rank_16_and_two_epochs(repo_root: Path) -> None:
     assert trained["epoch_sampler"] == "tinker://sampler/router-qwen3-4b-lora-r16-epoch2"
     assert sdk.service.closed == "success"
     serve = json.loads((repo_root / "configs" / "serve" / "router-epoch2.json").read_text(encoding="utf-8"))
-    assert serve["checkpoint"] is None
-    assert serve["status"] == "not_trained"
+    assert serve["status"] == "trained"
+    assert serve["checkpoint"] == (
+        "tinker://b0857111-57c4-56f6-bf9b-ed3f8021826b:train:0/sampler_weights/"
+        "router-qwen3.5-4b-lora-r16-epoch2"
+    )
+
+
+class _BatchEncoding:
+    def __init__(self) -> None:
+        self._data = {"input_ids": [[11, 12, 13]], "attention_mask": [[1, 1, 1]]}
+
+    def keys(self):
+        return self._data.keys()
+
+    def __contains__(self, item: object) -> bool:
+        return item in self._data
+
+    def __getitem__(self, item: str):
+        return self._data[item]
+
+
+class _BatchTokenizer:
+    def apply_chat_template(self, messages, tokenize, add_generation_prompt, enable_thinking=False):
+        return _BatchEncoding()
+
+
+def test_encode_unwraps_transformers_5_batch_encoding() -> None:
+    ids = _encode(
+        _BatchTokenizer(),
+        [{"role": "user", "content": "body"}],
+        add_generation_prompt=True,
+        enable_thinking=False,
+    )
+    assert ids == [11, 12, 13]
+
+
+def test_split_v2_reproduces_the_landed_rows(repo_root: Path) -> None:
+    from router.split_v2 import filenames_for, load_isolated_examples, split_examples
+
+    examples, labels = load_isolated_examples(repo_root, repo_root / "data" / "router" / "teacher_labels.jsonl")
+    train, val, summary = split_examples(
+        examples,
+        labels,
+        filenames_for(repo_root / "data" / "raw" / "router" / "labels.jsonl"),
+    )
+    landed = json.loads((repo_root / "docs" / "router" / "runs" / "v2" / "split_summary.json").read_text(encoding="utf-8"))
+    assert summary["train_rows"] == landed["train_rows"] == 1334
+    assert summary["val_rows"] == landed["val_rows"] == 683
+    assert summary["drawing_train_before_cap"] == 3138
+    assert summary["no_duplication_or_synthesis"] is True
+    assert [row["doc_id"] for row in train] == [
+        json.loads(line)["doc_id"]
+        for line in (repo_root / "data" / "router" / "train.jsonl").read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+    assert [row["doc_id"] for row in val] == [
+        json.loads(line)["doc_id"]
+        for line in (repo_root / "data" / "router" / "val.jsonl").read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]

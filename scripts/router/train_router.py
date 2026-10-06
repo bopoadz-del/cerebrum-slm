@@ -316,6 +316,7 @@ def _supervised(tokenizer, messages: list[dict], *, enable_thinking: bool) -> tu
 
 
 def _encode(tokenizer, messages: list[dict], *, add_generation_prompt: bool, enable_thinking: bool) -> list[int]:
+    """Token ids for one chat. transformers 5.x returns a BatchEncoding, not a list of ids."""
     try:
         encoded = tokenizer.apply_chat_template(
             messages,
@@ -329,6 +330,11 @@ def _encode(tokenizer, messages: list[dict], *, add_generation_prompt: bool, ena
             tokenize=True,
             add_generation_prompt=add_generation_prompt,
         )
+    if hasattr(encoded, "keys") and "input_ids" in encoded:
+        ids = encoded["input_ids"]
+        if ids and isinstance(ids[0], list):
+            ids = ids[0]
+        return [int(token) for token in ids]
     if hasattr(encoded, "ids"):
         encoded = encoded.ids
     return [int(token) for token in encoded]

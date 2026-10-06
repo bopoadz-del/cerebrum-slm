@@ -21,7 +21,7 @@
   "grad_clip_norm": 1.0,
   "epochs": 2,
   "batch_size": 16,
-  "max_sequence_length": 2048,
+  "max_sequence_length": 3072,
   "seed": 0,
   "checkpoint_name": "router-qwen3-4b-lora-r16",
   "teacher_model": "Qwen/Qwen3-8B",
