@@ -8,6 +8,17 @@
   "sealed_labels": "data/eval/router_unseen/sealed_labels.jsonl",
   "agreement_file": "data/eval/router_unseen/agreement.json",
   "sha256sums": "data/eval/router_unseen/SHA256SUMS",
+  "sealed_gate": {
+    "sealed_scoring": false,
+    "doc": "docs/router/SEALED_GATE.md",
+    "metric": "macro_recall",
+    "comparison": "strictly_greater_than_every_constant_single_label_predictor",
+    "constant_predictors_fail_majority_gate": true,
+    "training_majority": "drawing",
+    "sealed_set_majority": "report",
+    "majority_class_fail": true,
+    "val_gate_unchanged": true
+  },
   "teacher": {
     "provider": "tinker",
     "model": "Qwen/Qwen3-8B",

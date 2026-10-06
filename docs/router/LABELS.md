@@ -10,7 +10,7 @@ Pull request #25 (`data/router-labels`) is the raw document pool. That file is n
 
 ## Sealed eval
 
-The sealed set is 60 documents from Master Folder (or another corpus not yet used as training labels), labelled by a practitioner. Master Folder, including DG2 Infra Pack 1, is a valid source: not all of Master Folder is in Fork, and nothing is sealed yet. The blank sheet and the owner line are in `data/sealed/router/`. The sealed labels, when the owner returns the sheet, are written to `data/eval/router_unseen/` (`configs/router/sealed_eval.json`). That file is empty until then. `file_sha256` and the top-level corpus folder are exclusion keys, not labels.
+The v5 sealed set is 64 public-web documents, labelled by the owner. The blank 60-row sheet and the owner line stay in `data/sealed/router/`. The sealed labels are `data/eval/router_unseen/sealed_labels.jsonl` (`configs/router/sealed_eval.json`). `file_sha256` and `project` (`web_public` for this seal) are exclusion keys, not labels. The sealed set has not been scored. The gate is `docs/router/SEALED_GATE.md`.
 
 Holding out one Fork project is an extra in-pool check only. It is not the sealed set.
 

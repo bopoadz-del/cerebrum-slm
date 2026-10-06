@@ -1,9 +1,10 @@
-"""Seal a practitioner-labelled router sheet.
+"""Seal practitioner-labelled router sheets.
 
 The ticked column is the owner's label. It is copied, not edited, and not
-inferred from a path, filename, folder, or id. Unsure rows and rows marked
-excluded_from_eval are omitted. A hidden proposal file is used only for an
-agreement statistic.
+inferred from a path, filename, folder, id, or a meta file. Unsure rows and
+rows marked excluded_from_eval are omitted. A hidden proposal file is used
+only for an agreement statistic. A meta file may add the content sha256,
+isolation key, and source URL. It never supplies a label.
 """
 
 from __future__ import annotations
@@ -37,16 +38,19 @@ def corpus_project(source_path: object) -> str | None:
 
 
 def seal_sheet(
-    sheet: Path,
+    sheet: Path | list[Path],
     output_dir: Path,
     labels: list[str],
     *,
     proposed: Path | None = None,
+    meta: list[Path] | None = None,
 ) -> dict:
-    """Validate the sheet and write sealed labels. Raises without writing on a bad tick."""
-    header, rows = read_table(sheet, labels)
-    _require_header(header, labels)
-    sealed, dropped = _select(rows, labels)
+    """Validate the sheets and write sealed labels. Raises without writing on a bad tick."""
+    paths = [sheet] if isinstance(sheet, Path) else list(sheet)
+    if not paths:
+        raise RouterWall("WALL: no sheet")
+    rows = _collect_rows(paths, labels)
+    sealed, dropped = _select(rows, labels, _read_meta(list(meta or [])))
     output_dir.mkdir(parents=True, exist_ok=True)
     labels_path = output_dir / "sealed_labels.jsonl"
     payload = "".join(json.dumps(row, ensure_ascii=False) + "\n" for row in sealed)
@@ -101,13 +105,48 @@ def _require_header(header: list[str], labels: list[str]) -> None:
         raise RouterWall("WALL: sheet header is missing a declared label column")
 
 
-def _select(rows: list[dict[str, str]], labels: list[str]) -> tuple[list[dict], dict[str, int]]:
+def _collect_rows(paths: list[Path], labels: list[str]) -> list[dict[str, str]]:
+    """Read every sheet. ``id`` is the sheet id when ``sheet_id`` is absent."""
+    collected: list[dict[str, str]] = []
+    seen: set[str] = set()
+    for path in paths:
+        header, rows = read_table(path, labels)
+        _require_header(header, labels)
+        for index, row in enumerate(rows, start=2):
+            sheet_id = _resolve_sheet_id(row, index)
+            if sheet_id in seen:
+                raise RouterWall(f"WALL: duplicate sheet id {sheet_id}")
+            seen.add(sheet_id)
+            copied = dict(row)
+            copied["sheet_id"] = sheet_id
+            collected.append(copied)
+    return collected
+
+
+def _resolve_sheet_id(row: dict[str, str], index: int) -> str:
+    sheet_id = _blank_none(row.get("sheet_id"))
+    alias = _blank_none(row.get("id"))
+    if sheet_id and alias and sheet_id != alias:
+        raise RouterWall(f"WALL: {sheet_id} id column does not match sheet_id")
+    if sheet_id:
+        return sheet_id
+    if alias:
+        return alias
+    return f"row-{index}"
+
+
+def _select(
+    rows: list[dict[str, str]],
+    labels: list[str],
+    meta_by_id: dict[str, dict[str, str]] | None = None,
+) -> tuple[list[dict], dict[str, int]]:
     allowed = [*labels, UNSURE]
+    joined = meta_by_id or {}
     sealed: list[dict] = []
     dropped = {"unsure": 0, "excluded_from_eval": 0}
     for index, row in enumerate(rows, start=2):
         ticked = _ticked(row, allowed)
-        sheet_id = row.get("sheet_id") or f"row-{index}"
+        sheet_id = _resolve_sheet_id(row, index)
         if len(ticked) != 1:
             raise RouterWall(f"WALL: {sheet_id} does not have exactly one tick")
         label = ticked[0]
@@ -117,18 +156,34 @@ def _select(rows: list[dict[str, str]], labels: list[str]) -> tuple[list[dict], 
         if label == UNSURE:
             dropped["unsure"] += 1
             continue
-        sealed.append(_sealed_row(row, label, sheet_id))
+        sealed.append(_sealed_row(row, label, sheet_id, joined.get(sheet_id)))
     return sealed, dropped
 
 
-def _sealed_row(row: dict[str, str], label: str, sheet_id: str) -> dict:
-    """Copy the owner tick. Path fields stay out of the label."""
+def _sealed_row(
+    row: dict[str, str],
+    label: str,
+    sheet_id: str,
+    meta_row: dict[str, str] | None = None,
+) -> dict:
+    """Copy the owner tick. Path fields and meta labels stay out of the label."""
     sealed = {
         "sheet_id": sheet_id,
         "label": label,
         "file_sha256": _blank_none(row.get("file_sha256")),
         "project": corpus_project(row.get("source_path")),
     }
+    if meta_row is not None:
+        content_sha = meta_row.get("file_sha256")
+        if content_sha:
+            sealed["file_sha256"] = content_sha
+        sealed["project"] = "web_public"
+        isolation_key = meta_row.get("isolation_key")
+        if isolation_key:
+            sealed["isolation_key"] = isolation_key
+        source_url = meta_row.get("source_url")
+        if source_url:
+            sealed["source_url"] = source_url
     excerpt = row.get("excerpt")
     if isinstance(excerpt, str) and excerpt.strip():
         sealed["excerpt"] = excerpt
@@ -309,6 +364,52 @@ def _cell_text(cell: ElementTree.Element, shared: list[str]) -> str:
     return value.text
 
 
+def _read_meta(paths: list[Path]) -> dict[str, dict[str, str]]:
+    """Join fields by sheet id. ``proposed_label`` and document text are ignored."""
+    joined: dict[str, dict[str, str]] = {}
+    for path in paths:
+        try:
+            text = path.read_text(encoding="utf-8")
+        except OSError as exc:
+            raise RouterWall(f"WALL: meta file is unreadable: {path.name}") from exc
+        for lineno, line in enumerate(text.splitlines(), 1):
+            if not line.strip():
+                continue
+            try:
+                obj = json.loads(line)
+            except json.JSONDecodeError as exc:
+                raise RouterWall(f"WALL: {path.name}:{lineno}: {exc}") from exc
+            if not isinstance(obj, dict):
+                raise RouterWall(f"WALL: {path.name}:{lineno}: record is not an object")
+            sheet_id = _meta_id(obj, path.name, lineno)
+            if sheet_id in joined:
+                raise RouterWall(f"WALL: duplicate meta id {sheet_id}")
+            record: dict[str, str] = {}
+            for source_key, dest_key in (
+                ("content_sha256", "file_sha256"),
+                ("isolation_key", "isolation_key"),
+                ("source_url", "source_url"),
+            ):
+                value = obj.get(source_key)
+                if isinstance(value, str) and value.strip():
+                    record[dest_key] = value.strip()
+            joined[sheet_id] = record
+    return joined
+
+
+def _meta_id(obj: dict, name: str, lineno: int) -> str:
+    sheet_id = obj.get("sheet_id")
+    alias = obj.get("id")
+    sheet_text = sheet_id.strip() if isinstance(sheet_id, str) else ""
+    alias_text = alias.strip() if isinstance(alias, str) else ""
+    if sheet_text and alias_text and sheet_text != alias_text:
+        raise RouterWall(f"WALL: {name}:{lineno}: id does not match sheet_id")
+    chosen = sheet_text or alias_text
+    if not chosen:
+        raise RouterWall(f"WALL: {name}:{lineno}: meta row has no sheet_id")
+    return chosen
+
+
 def _read_proposed(path: Path) -> dict[str, str]:
     proposed: dict[str, str] = {}
     for lineno, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
@@ -338,8 +439,9 @@ def _write_digests(directory: Path, names: list[str]) -> None:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Seal a practitioner router labelling sheet")
-    parser.add_argument("--sheet", type=Path, required=True)
+    parser = argparse.ArgumentParser(description="Seal practitioner router labelling sheets")
+    parser.add_argument("--sheet", type=Path, action="append", required=True)
+    parser.add_argument("--meta", type=Path, action="append", default=None)
     parser.add_argument("--output-dir", type=Path, default=None)
     parser.add_argument("--proposed", type=Path, default=None)
     parser.add_argument("--root", type=Path, default=None)
@@ -349,7 +451,13 @@ def main(argv: list[str] | None = None) -> int:
         labels = load_labels(root / "configs" / "router" / "labels.json")
         config = load_sealed_config(root / "configs" / "router" / "sealed_eval.json")
         output_dir = args.output_dir or (root / config["sealed_dir"])
-        report = seal_sheet(args.sheet, output_dir, labels, proposed=args.proposed)
+        report = seal_sheet(
+            args.sheet,
+            output_dir,
+            labels,
+            proposed=args.proposed,
+            meta=args.meta,
+        )
     except RouterWall as exc:
         print(str(exc))
         return 2

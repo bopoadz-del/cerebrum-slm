@@ -1,0 +1,19 @@
+{
+  "compared": 64,
+  "overall": 0.875,
+  "per_label": {
+    "RFI": 1.0,
+    "submittal": 1.0,
+    "transmittal": 1.0,
+    "VO/CO": 1.0,
+    "claim": 1.0,
+    "payment certificate": 1.0,
+    "drawing": 1.0,
+    "spec": 0.8333333333333334,
+    "schedule": 1.0,
+    "report": 0.625,
+    "correspondence": 0.8333333333333334,
+    "other": 0.5714285714285714
+  },
+  "note": "Agreement does not change sealed labels."
+}

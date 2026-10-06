@@ -54,7 +54,7 @@ No training run is started by CI or by `--dry-run`. CI does not generate pairs. 
 
 ## Router labels
 
-The document-type label set is `configs/router/labels.json`. Sealed eval waits on 60 documents from Master Folder, or another corpus not yet used as training labels. The blank sheet is `data/sealed/router/`. Sealed labels are written to `data/eval/router_unseen/` and are empty until the owner sheet returns. The raw Fork export is a document pool, not training labels (pull request #25). A teacher pass and a Qwen3.5-4B LoRA are recorded in `docs/router/DATASET_CARD.md`. Tinker does not serve `Qwen/Qwen3-4B`. Human agreement is PENDING_OWNER, and training proceeded before that check. The sealed set has not been scored. See `docs/router/LABELS.md`.
+The document-type label set is `configs/router/labels.json`. The v5 sealed set is 64 owner-labelled public-web rows in `data/eval/router_unseen/`. The blank sheet remains `data/sealed/router/`. The raw Fork export is a document pool, not training labels (pull request #25). A teacher pass and a Qwen3.5-4B LoRA are recorded in `docs/router/DATASET_CARD.md`. Tinker does not serve `Qwen/Qwen3-4B`. Human agreement is PENDING_OWNER, and training proceeded before that check. The sealed set has not been scored. The sealed gate is `docs/router/SEALED_GATE.md`. See `docs/router/LABELS.md`.
 
 ## Local run
 

@@ -34,7 +34,7 @@ Each teacher row is one label from that file, or `unsure`, plus a reason and a c
 | sealed sha256 or project overlaps | 0 |
 | rows labelled | 5627 |
 
-The sealed file is empty, so the isolation guard excluded nothing. It runs again when the owner sheet is sealed. The sealed set was not scored.
+Isolation on the v5 seal (`project` `web_public` and the 64 content sha256 values) rejected 0 of 1334 train rows, 0 of 683 val rows, and 0 of 4555 teacher rows. The sealed set was not scored.
 
 ## Teacher counts
 
