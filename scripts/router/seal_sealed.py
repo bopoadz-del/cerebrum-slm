@@ -44,7 +44,7 @@ def seal_sheet(
     proposed: Path | None = None,
 ) -> dict:
     """Validate the sheet and write sealed labels. Raises without writing on a bad tick."""
-    header, rows = read_table(sheet)
+    header, rows = read_table(sheet, labels)
     _require_header(header, labels)
     sealed, dropped = _select(rows, labels)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -86,12 +86,12 @@ def agreement(sealed: list[dict], proposed: dict[str, str], labels: list[str]) -
     }
 
 
-def read_table(path: Path) -> tuple[list[str], list[dict[str, str]]]:
+def read_table(path: Path, labels: list[str] | None = None) -> tuple[list[str], list[dict[str, str]]]:
     suffix = path.suffix.lower()
     if suffix == ".csv":
         return _read_csv(path)
     if suffix == ".xlsx":
-        return _read_xlsx(path)
+        return _read_xlsx(path, labels or [])
     raise RouterWall("WALL: sheet must be csv or xlsx")
 
 
@@ -174,14 +174,14 @@ def _read_csv(path: Path) -> tuple[list[str], list[dict[str, str]]]:
     return header, rows
 
 
-def _read_xlsx(path: Path) -> tuple[list[str], list[dict[str, str]]]:
+def _read_xlsx(path: Path, labels: list[str]) -> tuple[list[str], list[dict[str, str]]]:
     try:
         archive = zipfile.ZipFile(path)
     except zipfile.BadZipFile as exc:
         raise RouterWall("WALL: xlsx is not a zip") from exc
     with archive:
         shared = _shared_strings(archive)
-        sheet = _first_sheet(archive)
+        sheet = _chosen_sheet(archive, shared, labels)
         grid = _sheet_rows(sheet, shared)
     if not grid:
         raise RouterWall("WALL: sheet has no header")
@@ -206,11 +206,68 @@ def _shared_strings(archive: zipfile.ZipFile) -> list[str]:
     return strings
 
 
+_LABELLING_SHEET = "Labelling"
+_RID = "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id"
+_REL_NS = {"p": "http://schemas.openxmlformats.org/package/2006/relationships"}
+
+
 def _first_sheet(archive: zipfile.ZipFile) -> bytes:
     names = [name for name in archive.namelist() if name.startswith("xl/worksheets/sheet") and name.endswith(".xml")]
     if not names:
         raise RouterWall("WALL: xlsx has no worksheet")
     return archive.read(sorted(names)[0])
+
+
+def _chosen_sheet(archive: zipfile.ZipFile, shared: list[str], labels: list[str]) -> bytes:
+    """Prefer the sheet named Labelling. Otherwise the first sheet whose header has every declared label."""
+    ordered = _workbook_sheets(archive)
+    if not ordered:
+        return _first_sheet(archive)
+    for name, path in ordered:
+        if name == _LABELLING_SHEET:
+            return archive.read(path)
+    for _name, path in ordered:
+        payload = archive.read(path)
+        if _header_has_labels(payload, shared, labels):
+            return payload
+    raise RouterWall("WALL: sheet header is missing a declared label column")
+
+
+def _workbook_sheets(archive: zipfile.ZipFile) -> list[tuple[str, str]]:
+    if "xl/workbook.xml" not in archive.namelist():
+        return []
+    targets: dict[str, str] = {}
+    rels_name = "xl/_rels/workbook.xml.rels"
+    if rels_name in archive.namelist():
+        rels = ElementTree.fromstring(archive.read(rels_name))
+        for rel in rels.findall("p:Relationship", _REL_NS):
+            rid = rel.get("Id")
+            target = rel.get("Target") or ""
+            if rid and target:
+                targets[rid] = _worksheet_target(target)
+    root = ElementTree.fromstring(archive.read("xl/workbook.xml"))
+    ordered: list[tuple[str, str]] = []
+    for sheet in root.findall("m:sheets/m:sheet", _NS):
+        name = (sheet.get("name") or "").strip()
+        path = targets.get(sheet.get(_RID) or "")
+        if path and path in archive.namelist():
+            ordered.append((name, path))
+    return ordered
+
+
+def _worksheet_target(target: str) -> str:
+    cleaned = target.lstrip("/")
+    if cleaned.startswith("xl/"):
+        return cleaned
+    return "xl/" + cleaned
+
+
+def _header_has_labels(payload: bytes, shared: list[str], labels: list[str]) -> bool:
+    grid = _sheet_rows(payload, shared)
+    if not grid or not labels:
+        return False
+    header = {cell.strip() for cell in grid[0]}
+    return all(label in header for label in labels)
 
 
 def _sheet_rows(payload: bytes, shared: list[str]) -> list[list[str]]:
