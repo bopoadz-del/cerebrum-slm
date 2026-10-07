@@ -199,3 +199,37 @@ def test_json_model_reply_uses_the_same_alias(repo_root) -> None:
     assert parse_teacher_response(raw, labels)["label"] == "VO/CO"
     assert parse_router_output("RFI", labels) == "RFI"
     assert _as_label('{"label": "invented-type"}', labels) == "unsure"
+
+
+def test_v9_change_request_aliases_match_the_whole_string(repo_root) -> None:
+    labels = load_labels(repo_root / "configs" / "router" / "labels.json")
+    expected = {
+        "change request": "change request",
+        "Change Request": "unsure",
+        "change order request": "change request",
+        "Variation Request": "change request",
+        "potential change order": "change request",
+        "PCO": "change request",
+        "COR": "change request",
+        "request for modification": "change request",
+        "RFM": "change request",
+        "proposal request": "change request",
+        "variation proposal": "change request",
+        "change proposal": "change request",
+        "construction change directive": "VO/CO",
+        "change order": "VO/CO",
+        "variation": "VO/CO",
+        "change requests": "unsure",
+        "variation requests": "unsure",
+        "pcos": "unsure",
+        "a change request": "unsure",
+        "change-request": "unsure",
+    }
+    for sample, target in expected.items():
+        assert parse_router_output(sample, labels) == target, sample
+        teacher = parse_teacher_response(
+            json.dumps({"label": sample, "reason": "from text", "confidence": 0.9}),
+            labels,
+        )
+        assert teacher["label"] == target, sample
+    assert parse_router_output("variation request", labels[:4]) == "unsure"

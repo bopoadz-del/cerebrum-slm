@@ -141,7 +141,7 @@ def _balanced(labels: list[str], counts: dict[str, int]) -> list[str]:
 
 def test_v8_gate_passes_twelve_per_label_and_rejects_constants(repo_root: Path) -> None:
     labels = load_labels(repo_root / "configs" / "router" / "labels.json")
-    assert len(labels) == 21
+    assert len(labels) == 22
     assert MIN_SEALED_PER_LABEL == 12
     gold = _balanced(labels, {label: 12 for label in labels})
     perfect = evaluate_sealed_gate_v8(gold, list(gold), labels, majority_class_fail=True)
@@ -195,3 +195,42 @@ def test_flag_off_means_constants_do_not_fail_the_majority_gate() -> None:
     result = evaluate_sealed_gate(gold, gold, ["drawing", "report"], majority_class_fail=False)
     assert result["every_constant_fails_majority_gate"] is False
     assert result["passed"] is False
+
+
+def test_v9_gate_requires_twelve_sealed_docs_for_change_request(repo_root: Path) -> None:
+    """The n>=12 rule covers the new v9 label. Nothing is loosened."""
+    labels = load_labels(repo_root / "configs" / "router" / "labels.json")
+    assert "change request" in labels
+    counts = {label: 12 for label in labels}
+    gold = _balanced(labels, counts)
+    passing = evaluate_sealed_gate_v8(gold, list(gold), labels, majority_class_fail=True)
+    assert passing["router_passed"] is True
+    row = next(item for item in passing["per_label"] if item["label"] == "change request")
+    assert row["n"] == 12 and row["passable"] is True
+    for short in (11, 0):
+        counts["change request"] = short
+        gold = _balanced(labels, counts)
+        result = evaluate_sealed_gate_v8(gold, list(gold), labels, majority_class_fail=True)
+        assert result["router_passed"] is False
+        row = next(item for item in result["per_label"] if item["label"] == "change request")
+        assert row["n"] == short
+        assert row["passable"] is False
+        assert row["status"] == "not passable"
+
+
+def test_v9_retick_sets_mark_thin_labels_not_passable(repo_root: Path) -> None:
+    """Gold from the re-ticked sealed sets only; predictions are gold, so no score is made."""
+    labels = load_labels(repo_root / "configs" / "router" / "labels.json")
+    base = repo_root / "data" / "eval" / "router_unseen" / "v9_retick"
+    for name in ("v5", "v8"):
+        gold = [
+            json.loads(line)["label"]
+            for line in (base / name / "sealed_labels.jsonl").read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
+        result = evaluate_sealed_gate_v8(gold, list(gold), labels, majority_class_fail=True)
+        rows = {item["label"]: item for item in result["per_label"]}
+        assert rows["change request"]["passable"] is False
+        for label, item in rows.items():
+            assert item["passable"] is (item["n"] >= MIN_SEALED_PER_LABEL)
+        assert result["router_passed"] is False

@@ -1,12 +1,12 @@
 # Router labels
 
-The current label set is v8 in `configs/router/labels.json` (`label_set` is `v8`). Definitions are `docs/router/LABEL_SET_v8.md` and `configs/router/label_set_v8.json`. Code loads those files. It does not add a label. The v5 sealed set used the 12 labels frozen in `configs/router/labels_v5.json`, including `spec`. Replay of those records loads that file. The sealed rows are not relabelled.
+The current label set is v9 in `configs/router/labels.json` (`label_set` is `v9`, 22 labels). Definitions are `docs/router/LABEL_SET_v9.md` and `configs/router/label_set_v9.json`. v9 adds one label to v8: `change request` (a scope change asked for or priced, not instructed). Code loads those files. It does not add a label. The v8 names are frozen in `configs/router/labels_v8.json` and its definitions in `configs/router/label_set_v8.json`. The v5 sealed set used the 12 labels frozen in `configs/router/labels_v5.json`, including `spec`. Replay of the recorded v5 and v8 scores loads those files and the original sealed rows, which are unchanged. The v9 re-tick of both sealed sets is a separate copy in `data/eval/router_unseen/v9_retick/` (see `RETICK.md`).
 
 A label comes from document content. A filename, a folder, a document id, and a project id are not labels.
 
 ## Output aliases
 
-The router output parser maps an exact case-insensitive alias onto one canonical label. The match is the whole string after whitespace is collapsed. There is no fuzzy match. A plural, a substring, and a near-miss stay unmatched. Conditional names (engineer's instruction, architect's instruction) are not aliases. `rfi` is not mapped to inspection request. Parsing rules are fixed now, before any v8 scores exist.
+The router output parser maps an exact case-insensitive alias onto one canonical label. The match is the whole string after whitespace is collapsed. There is no fuzzy match. A plural, a substring, and a near-miss stay unmatched. Conditional names (engineer's instruction, architect's instruction) are not aliases. `rfi` is not mapped to inspection request. Parsing rules are fixed now, before any v8 scores exist. The v9 aliases (change order request, variation request, potential change order, PCO, COR, request for modification, RFM, proposal request, variation proposal, change proposal → change request; construction change directive → VO/CO) are fixed before any v9 scores exist.
 
 | alias | canonical |
 | --- | --- |
@@ -16,6 +16,17 @@ The router output parser maps an exact case-insensitive alias onto one canonical
 | CO | VO/CO |
 | VO | VO/CO |
 | variation instruction | VO/CO |
+| construction change directive | VO/CO |
+| change order request | change request |
+| variation request | change request |
+| potential change order | change request |
+| pco | change request |
+| cor | change request |
+| request for modification | change request |
+| rfm | change request |
+| proposal request | change request |
+| variation proposal | change request |
+| change proposal | change request |
 | pay application | payment application |
 | pay app | payment application |
 | application for payment | payment application |

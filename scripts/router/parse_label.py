@@ -7,11 +7,13 @@ declared label. Conditional names (engineer's instruction, architect's
 instruction) are not aliases. "rfi" is not mapped to inspection request.
 
 Parsing rules are fixed now, before any v8 scores exist.
+The v9 aliases for "change request" and the construction change directive are
+fixed before any v9 scores exist.
 """
 
 from __future__ import annotations
 
-# Whole-string aliases. Keys are casefolded. Targets are declared v8 labels.
+# Whole-string aliases. Keys are casefolded. Targets are declared v9 labels.
 _ALIASES = {
     "change order": "VO/CO",
     "variation order": "VO/CO",
@@ -19,6 +21,17 @@ _ALIASES = {
     "co": "VO/CO",
     "vo": "VO/CO",
     "variation instruction": "VO/CO",
+    "construction change directive": "VO/CO",
+    "change order request": "change request",
+    "variation request": "change request",
+    "potential change order": "change request",
+    "pco": "change request",
+    "cor": "change request",
+    "request for modification": "change request",
+    "rfm": "change request",
+    "proposal request": "change request",
+    "variation proposal": "change request",
+    "change proposal": "change request",
     "pay application": "payment application",
     "pay app": "payment application",
     "application for payment": "payment application",
