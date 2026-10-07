@@ -1,0 +1,37 @@
+DATA {"train": {"merged_rows": 1602, "rebuilt_rows": 1602, "merged_system_prompt_equals_prompt_for": 1602, "user_text_unchanged": 1602}, "val": {"merged_rows": 880, "rebuilt_rows": 880, "merged_system_prompt_equals_prompt_for": 880, "user_text_unchanged": 880}, "labels": 22}
+OVERRIDE max_sequence_length 3072 -> 6656
+RECIPE {"base_model": "Qwen/Qwen3.5-4B", "rank": 16, "alpha": 16, "epochs": 2, "learning_rate": 0.000473, "batch_size": 16, "seed": 0, "max_sequence_length": 6656, "checkpoint_name": "router-v5-qwen3.5-4b-lora-r16"}
+env loaded names=['TINKER_API_KEY']
+fit start rows=1602 steps=202
+training run model_id=4ec9bca9-f838-5d1a-ad89-7157820a3f09:train:0
+training run console=https://tinker.thinkingmachines.ai/training_runs/4ec9bca9-f838-5d1a-ad89-7157820a3f09:train:0
+[transformers] PyTorch was not found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+step 1/202 elapsed_s=22 {'loss:sum': 394.1226043701172}
+step 10/202 elapsed_s=44 {'loss:sum': 26.39722579717636}
+step 20/202 elapsed_s=69 {'loss:sum': 29.86800817400217}
+step 30/202 elapsed_s=104 {'loss:sum': 20.953349232673645}
+step 40/202 elapsed_s=130 {'loss:sum': 7.740897798445076}
+step 50/202 elapsed_s=156 {'loss:sum': 13.342578614363447}
+step 60/202 elapsed_s=181 {'loss:sum': 21.30108522530645}
+step 70/202 elapsed_s=218 {'loss:sum': 12.681549209170043}
+step 80/202 elapsed_s=242 {'loss:sum': 19.959863610565662}
+step 90/202 elapsed_s=273 {'loss:sum': 21.9505233168602}
+step 100/202 elapsed_s=297 {'loss:sum': 35.15673329308629}
+saved router-v5-qwen3.5-4b-lora-r16-epoch1 path=tinker://4ec9bca9-f838-5d1a-ad89-7157820a3f09:train:0/sampler_weights/router-v5-qwen3.5-4b-lora-r16-epoch1
+step 110/202 elapsed_s=323 {'loss:sum': 9.895404065726325}
+step 120/202 elapsed_s=350 {'loss:sum': 2.8185526481829584}
+step 130/202 elapsed_s=374 {'loss:sum': 26.659048415720463}
+step 140/202 elapsed_s=398 {'loss:sum': 4.5375861877109855}
+step 150/202 elapsed_s=424 {'loss:sum': 3.6624898929148912}
+step 160/202 elapsed_s=448 {'loss:sum': 24.104040565900505}
+step 170/202 elapsed_s=481 {'loss:sum': 12.675744032487273}
+step 180/202 elapsed_s=511 {'loss:sum': 19.429471897892654}
+step 190/202 elapsed_s=536 {'loss:sum': 11.73896704427898}
+step 200/202 elapsed_s=560 {'loss:sum': 4.0590705634094775}
+step 202/202 elapsed_s=567 {'loss:sum': 0.3344505950808525}
+saved router-v5-qwen3.5-4b-lora-r16-epoch2 path=tinker://4ec9bca9-f838-5d1a-ad89-7157820a3f09:train:0/sampler_weights/router-v5-qwen3.5-4b-lora-r16-epoch2
+FIT {"steps": 202, "epoch_sampler": "tinker://4ec9bca9-f838-5d1a-ad89-7157820a3f09:train:0/sampler_weights/router-v5-qwen3.5-4b-lora-r16-epoch2", "epoch_samplers": ["tinker://4ec9bca9-f838-5d1a-ad89-7157820a3f09:train:0/sampler_weights/router-v5-qwen3.5-4b-lora-r16-epoch1", "tinker://4ec9bca9-f838-5d1a-ad89-7157820a3f09:train:0/sampler_weights/router-v5-qwen3.5-4b-lora-r16-epoch2"]}
+MAJ {"label": "drawing", "gate_passed": false, "gate_reason": "majority-class predictor", "accuracy": 0.7477272727272727, "macro_recall": 0.045454545454545456}
+EVAL epoch1 {"macro_recall": 0.6579116751275591, "accuracy": 0.8602272727272727, "gate_overall_pass": true, "labels_never_predicted": ["VO/CO", "claim", "site instruction"]}
+EVAL epoch2 {"macro_recall": 0.5317276785205046, "accuracy": 0.8647727272727272, "gate_overall_pass": true, "labels_never_predicted": ["VO/CO", "claim", "payment application", "payment certificate", "specification", "site instruction"]}
+DONE

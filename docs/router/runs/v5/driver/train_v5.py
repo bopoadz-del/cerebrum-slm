@@ -1,6 +1,6 @@
 """Router run v5 driver (v9, 22 labels). Same recipe as run v4; only data and labels change.
 
-Data: data/router/train.jsonl and val.jsonl from main at a35e160 (PR #42, pr5 merged), exactly as merged.
+Data: data/router/train.jsonl and val.jsonl from main at 0e81e95 (PR #43, pr7 encoded-bytes rule merged), exactly as merged.
 Each merged row is turned back into (label, excerpt) and rebuilt with the repo's
 train_router.training_examples (22-label prompt_for from configs/router/label_set_v9.json,
 require_no_paths). The sealed sets are never read or scored.
@@ -219,7 +219,7 @@ def main() -> int:
 
     split = split_counts.get("split", {})
     metrics = {
-        "run": "v5", "repo_commit": "a35e160", "label_set": "v9 (22 labels)",
+        "run": "v5", "repo_commit": "0e81e95", "label_set": "v9 (22 labels)",
         "base_model": lora["base_model"], "configured_base_model": configured_base,
         "max_sequence_length": lora["max_sequence_length"], "rank": lora["rank"], "alpha": lora["alpha"],
         "epochs": lora["epochs"], "learning_rate": lora["learning_rate"], "batch_size": lora["batch_size"], "seed": lora["seed"],

@@ -1,0 +1,9 @@
+{
+  "run": "v5",
+  "rule": "pick the epoch with the higher val macro recall, before any sealed score",
+  "val_macro_recall": {"1": 0.6579116751275591, "2": 0.5317276785205046},
+  "val_accuracy": {"1": 0.8602272727272727, "2": 0.8647727272727272},
+  "chosen_epoch": 1,
+  "chosen_checkpoint": "tinker://4ec9bca9-f838-5d1a-ad89-7157820a3f09:train:0/sampler_weights/router-v5-qwen3.5-4b-lora-r16-epoch1",
+  "note": "metrics.json top-level checkpoint/val_recall/macro_recall default to the final epoch (2); the chosen epoch is 1. Sealed sets were not read or scored."
+}
