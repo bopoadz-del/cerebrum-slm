@@ -1,12 +1,12 @@
 # Router dataset card
 
-Status: teacher labels and a Qwen3.5-4B LoRA are recorded. Human agreement is done (0.875, kappa 0.864). sealed gate: FAIL (gate defect: condition (b) unsatisfiable as written); router NOT marked passed.
+Status: v8 21-label teacher relabel of the cleaned training pool, plus owner-laptop additions and a thin-label public/laptop top-up. Human agreement remains as recorded (0.875, kappa 0.864). Sealed v5 and sealed v8 are untouched. No training run in this PR.
 
 Model version: Qwen/Qwen3-8B
 
-The fixed teacher is `Qwen/Qwen3-8B`, provider `tinker`, temperature `0`. The laptop run used that model on the pool.
+The teacher is `Qwen/Qwen3-8B`, provider `tinker`, temperature `0`, max_tokens `128`. Relabel used the fixed confidence placeholder from main at 1a94dcf (PR #36): the prompt asks for a number between 0 and 1 instead of a literal `0`. On the 5627-row cleaned pool the teacher returned 0.95 on 5297 rows, so the 0.7 floor barely discriminates; treat confidence as a coarse filter.
 
-The recorded teacher pass used the template below. `{label_list}` was filled from the label file at call time. The current builder in `scripts/router/teacher_label.py` loads definitions, "Is not" lines, regional names, notes, and the design rules from `configs/router/label_set_v8.json` at call time. Parsing rules are fixed now, before any v8 scores exist. The recorded template is:
+The current builder in `scripts/router/teacher_label.py` loads definitions from `configs/router/label_set_v8.json`. The recorded template is:
 
 ```
 You assign one document-type label from the document text only.
@@ -20,103 +20,97 @@ Allowed labels:
 {label_list}
 ```
 
-Each teacher row is one label from that file, or `unsure`, plus a reason and a confidence. `unsure`, a label outside the file, a missing confidence, and a confidence below `teacher.confidence_floor` (0.7) are excluded. Labels are read from `first_512_tokens` only. `fork_declared_type`, filename, path, and project are not sent to the teacher and are not labels.
+Labels come from document content only. Filename, folder, source path, source site and form number do not decide a label and do not appear in training text.
 
 ## Pool preparation
 
-`data/raw/router/labels.jsonl`, after dropping empty text and keeping the first row per `doc_id`:
+`data/raw/router/labels.jsonl` is unchanged in this PR. After empty-text and duplicate-doc drops: 5627 rows labelled. Isolation against sealed v5 and sealed v8 (sha + project) rejected 0.
 
-| count | value |
+Before this PR's relabel, 102 pool rows were removed for 12-word phrase overlap with sealed v8/v5 (including 72 DG2 Jacobs-copyright rows). The 6 synthetic CANARY_A/B fixture rows were dropped from the training pool. See `data/router/removed_overlap.json`.
+
+## Teacher counts (21 labels, after overlap + canary drop, floor 0.7)
+
+`data/router/teacher_labels.jsonl` holds the relabelled pool only (5482 rows). Owner-laptop and public thin-label additions are in `data/router/additions_owner_laptop.jsonl` with `provenance` set (`owner laptop, content-labelled` or `public web, content-labelled`). No paths. `project_id` is taken from content.
+
+Pool kept at floor (by label):
+
+| label | count |
 | --- | ---: |
-| input rows | 6580 |
-| empty text dropped | 140 |
-| duplicate doc ids dropped | 813 |
-| sealed sha256 or project overlaps | 0 |
-| rows labelled | 5627 |
+| drawing | 3951 |
+| other | 771 |
+| report | 147 |
+| correspondence | 78 |
+| meeting minutes | 68 |
+| contract | 68 |
+| specification | 63 |
+| schedule | 57 |
+| site instruction | 56 |
+| BOQ | 43 |
+| RFI | 36 |
+| inspection request | 34 |
+| register/log | 29 |
+| submittal | 27 |
+| method statement | 23 |
+| transmittal | 13 |
+| VO/CO | 8 |
+| NCR | 4 |
+| payment application | 3 |
+| payment certificate | 2 |
+| claim | 1 |
 
-Isolation on the v5 seal (`project` `web_public` and the 64 content sha256 values) rejected 0 of 1334 train rows, 0 of 683 val rows, and 0 of 4555 teacher rows. The sealed set was scored once after that check. `sealed_scoring` stays false, so it is not scored again and not tuned on.
+Combined pool + additions kept at floor: 5647 rows (see `data/router/split_counts.json`).
 
-## Teacher counts
+## Split v2 (proposed, 21 labels)
 
-Kept for training (on-list label, confidence >= 0.7): 4555. Excluded: 1072. That is 60 off-list labels mapped to `unsure` (the teacher never said `unsure`; 0 replies were unparseable) and 1012 below 0.7 (753 of those were `other`, mostly confidence 0). Missing confidence: 0. No rare class was duplicated or synthesized.
+`scripts/router/split_v2.py` series-grouped stratified split, seed `20261006`. Drawing capped at **400** in train. **Other capped at 300** in train (sampled across projects, same helper). Val is left as the repo split produces it (drawing-heavy); macro recall is per-label, so that is fine.
 
-| label | all | kept | low confidence |
-| --- | ---: | ---: | ---: |
-| RFI | 125 | 120 | 5 |
-| submittal | 27 | 25 | 2 |
-| transmittal | 17 | 17 | 0 |
-| VO/CO | 6 | 6 | 0 |
-| claim | 6 | 6 | 0 |
-| payment certificate | 14 | 14 | 0 |
-| drawing | 3899 | 3692 | 207 |
-| spec | 202 | 194 | 8 |
-| schedule | 144 | 110 | 34 |
-| report | 251 | 248 | 3 |
-| correspondence | 121 | 121 | 0 |
-| other | 755 | 2 | 753 |
-| unsure | 60 | 0 | 0 |
+Isolation: `router.isolation.require_isolated` on every example against sealed v5 and sealed v8. Path guard: `require_no_paths` on train and val.
 
-Kept rows are `data/router/teacher_labels.jsonl`. Counts are `docs/router/runs/v2/teacher_counts.json`. The unfiltered teacher file `teacher_labels_all.jsonl` was not in the upload. Its sha256 is `a7498a7f9e1ffb4723c7478ecd7cece10f616dbe76e074c0240da1d80f7c90b3` (`docs/router/runs/v2/SHA256SUMS`).
+| | rows |
+| --- | ---: |
+| train | 1482 |
+| val | 848 |
+| drawing before train cap | 3299 |
+| other before train cap | 718 |
+
+### Train label counts
+
+| label | train | val |
+| --- | ---: | ---: |
+| RFI | 29 | 7 |
+| submittal | 29 | 4 |
+| transmittal | 12 | 1 |
+| VO/CO | 7 | 1 |
+| claim | 1 | 0 |
+| payment application | 4 | 1 |
+| payment certificate | 7 | 1 |
+| drawing | 400 | 652 |
+| specification | 66 | 3 |
+| schedule | 49 | 8 |
+| report | 107 | 43 |
+| correspondence | 71 | 7 |
+| BOQ | 73 | 2 |
+| contract | 134 | 11 |
+| method statement | 29 | 3 |
+| meeting minutes | 58 | 10 |
+| NCR | 4 | 0 |
+| inspection request | 27 | 7 |
+| site instruction | 48 | 8 |
+| register/log | 27 | 3 |
+| other | 300 | 76 |
+
+### Thin labels (train &lt; 30)
+
+RFI=29, submittal=29, transmittal=12, VO/CO=7, claim=1, payment application=4, payment certificate=7, method statement=29, NCR=4, inspection request=27, register/log=27
+
+Full machine-readable summary: `data/router/split_counts.json`.
 
 ## Human agreement
 
-Human agreement: **done**. Overall 0.875 (56/64), kappa 0.864, from the sealed owner labels. The stratified sample file `data/router/human_sample_PENDING_OWNER.csv` is still the tick-sheet header and no rows.
+Unchanged from the previous card (done; 0.875 / kappa 0.864). Sealed gate records unchanged. `sealed_scoring` stays false.
 
-By owner order, training proceeds before that check.
+## Provenance notes
 
-The agreement gate code is unchanged. `labels_not_for_train` still flags a label under `agreement_threshold` 0.8, and a label with no paired judgements. The recorded override is only a flag:
-
-- enabled: true
-- recorded_at: 2026-10-06T03:45:00Z
-- owner_clock: 2026-10-06 07:45
-- owner_order: CHADi: Go. Training proceeds before the human stratified agreement check.
-
-## Split v2
-
-`scripts/router/split_v2.py` groups by document series. The pool has no folder path, so the series is taken from the filename (numbering `PKG-AREA-NNN|TYPE|DISC|LVL`, otherwise a normalised stem). Groups merge when rows share a filename, an excerpt, or a sha. `project_id` is not part of the key. The filename is not a label and is not model input. Seed `20261006`. 537 groups, 27 in val, 0 in both.
-
-Isolation: `router.isolation.require_isolated` on every example before the split.
-
-Drawing is capped at 600 in train only (3138 drawing rows before the cap), seed `20261006`. Val is not capped. No row was copied.
-
-| split | rows |
-| --- | ---: |
-| examples | 4555 |
-| train before the drawing cap | 3872 |
-| train | 1334 |
-| val | 683 |
-
-Val label counts: RFI 18, submittal 4, transmittal 3, VO/CO 1, claim 1, payment certificate 2, drawing 554, spec 29, schedule 16, report 37, correspondence 18, other 0. `other` has 2 kept rows and both stayed in train. Rows were not added to fill it.
-
-## Training
-
-Tinker does not serve `Qwen/Qwen3-4B`. The run used `Qwen/Qwen3.5-4B`, LoRA rank 16, alpha 16, 2 epochs, learning rate 0.000473, batch 16, seed 0, 168 steps. Max sequence length was raised from 2048 to 3072 because 130 train rows were over 2048 (the longest was 2996).
-
-Checkpoint: `tinker://b0857111-57c4-56f6-bf9b-ed3f8021826b:train:0/sampler_weights/router-qwen3.5-4b-lora-r16-epoch2`
-
-`configs/serve/router-epoch2.json` status is `trained`.
-
-Val per-label recall at epoch 2 (n in val):
-
-| label | n | recall |
-| --- | ---: | ---: |
-| RFI | 18 | 0.50 |
-| submittal | 4 | 0.75 |
-| transmittal | 3 | 1.00 |
-| VO/CO | 1 | 1.00 |
-| claim | 1 | 0.00 |
-| payment certificate | 2 | 1.00 |
-| drawing | 554 | 0.971 |
-| spec | 29 | 0.759 |
-| schedule | 16 | 0.375 |
-| report | 37 | 0.946 |
-| correspondence | 18 | 0.000 |
-| other | 0 | unset |
-
-Macro recall over the 11 labels present in val: 0.664. Accuracy: 0.906.
-
-Majority-class gate on the model predictions: passed (`not a majority-class predictor`). The constant `drawing` baseline fails that gate (accuracy 0.811, macro recall 0.091). The gate code is unchanged.
-
-The sealed set was scored once. Macro recall 0.715. Accuracy 0.672 (43/64). Every constant predictor scores macro 0.083. Condition (a) holds. Condition (b) fails. sealed gate: FAIL (gate defect: condition (b) unsatisfiable as written); router NOT marked passed. The defect was logged in `docs/router/runs/v2/sealed/PRE_RUN_NOTE.txt` before the run. The majority check fails only the constant `report`. The other 11 constants pass it, so condition (b) cannot be met. The gate definition was not changed for that score. VO/CO recall is 0/5. 3 outputs said 'change order', which the val parser maps to unsure, and they were not remapped. Files and `SHA256SUMS` are in `docs/router/runs/v2/sealed/`. Val metrics are in `docs/router/runs/v2/`. Sealed gate version 2 applies only to a future fresh sealed set. The v5 predictions were not re-scored or re-graded under version 2 or the label-alias parser. The recorded result stays FAIL. The router is not marked passed.
-
-WALL: Tinker does not serve Qwen/Qwen3-4B; trained on Qwen/Qwen3.5-4B with the same LoRA config. The pool has no folder path, so the split uses a document series from the filename.
+- Additions batch (145) and thin-label top-up from the owner's laptop: provenance `owner laptop, content-labelled`. Outside DG2/Master Folder. Per-project caps about 10.
+- Public thin-label top-up: real project documents from NSIP published packs and other public archives. Domains already used for sealed v8 were excluded entirely. 12-word phrase check against sealed rows. Bot-check walls logged, never bypassed (see agent walls log).
+- Nothing from sealed v5 or sealed v8 enters training.

@@ -102,16 +102,21 @@ def test_pending_sample_is_a_header_only(repo_root: Path) -> None:
     note = (repo_root / "data" / "router" / "HUMAN_AGREEMENT.md").read_text(encoding="utf-8")
     card = (repo_root / "docs" / "router" / "DATASET_CARD.md").read_text(encoding="utf-8")
     recorded = load_train_config(repo_root)
+    override = recorded["train_before_human_agreement"]
     assert recorded["human_agreement_status"] == "done"
     assert recorded["human_agreement"]["overall"] == 0.875
     assert recorded["human_agreement"]["kappa"] == 0.864
+    assert override["recorded_at"] == "2026-10-06T03:45:00Z"
+    assert override["owner_order"].startswith("CHADi: Go. Training proceeds before")
     assert "done" in note
     assert "0.875" in note
     assert "0.864" in note
+    assert "2026-10-06T03:45:00Z" in note
+    assert "training proceeded before" in note
     assert "done" in card
     assert "0.875" in card
-    assert "training proceeds before" in card
-    assert "2026-10-06T03:45:00Z" in card
+    assert "0.864" in card
+    assert "Human agreement remains as recorded" in card
     assert "Qwen/Qwen3-8B" in card
 
 
@@ -370,9 +375,16 @@ def test_encode_unwraps_transformers_5_batch_encoding() -> None:
 
 
 def test_split_v2_reproduces_the_landed_rows(repo_root: Path) -> None:
+    """Replay the recorded v2 split on the frozen v5 snapshot.
+
+    Live ``data/router/teacher_labels.jsonl``, ``train.jsonl`` and ``val.jsonl``
+    are the v8 proposed split. The historical v2 counts stay byte-identical in
+    ``docs/router/runs/v2/split_summary.json``.
+    """
     from router.split_v2 import filenames_for, load_isolated_examples, split_examples
 
-    examples, labels = load_isolated_examples(repo_root, repo_root / "data" / "router" / "teacher_labels.jsonl")
+    snapshot = repo_root / "data" / "router" / "v5_snapshot"
+    examples, labels = load_isolated_examples(repo_root, snapshot / "teacher_labels.jsonl")
     train, val, summary = split_examples(
         examples,
         labels,
@@ -385,11 +397,45 @@ def test_split_v2_reproduces_the_landed_rows(repo_root: Path) -> None:
     assert summary["no_duplication_or_synthesis"] is True
     assert [row["doc_id"] for row in train] == [
         json.loads(line)["doc_id"]
-        for line in (repo_root / "data" / "router" / "train.jsonl").read_text(encoding="utf-8").splitlines()
+        for line in (snapshot / "train.jsonl").read_text(encoding="utf-8").splitlines()
         if line.strip()
     ]
     assert [row["doc_id"] for row in val] == [
         json.loads(line)["doc_id"]
-        for line in (repo_root / "data" / "router" / "val.jsonl").read_text(encoding="utf-8").splitlines()
+        for line in (snapshot / "val.jsonl").read_text(encoding="utf-8").splitlines()
         if line.strip()
     ]
+
+
+def test_proposed_split_stays_isolated_and_still_rejects_sealed_keys(repo_root: Path) -> None:
+    """Live v8 rows must not overlap sealed v5 or v8, and those keys still refuse."""
+    from router.isolation import load_exclusions, require_isolated
+    from router.train_router import rows_from_pool
+
+    sealed_paths = (
+        repo_root / "data" / "eval" / "router_unseen" / "sealed_labels.jsonl",
+        repo_root / "data" / "eval" / "router_unseen" / "v8" / "sealed_labels.jsonl",
+    )
+    live = (
+        "teacher_labels.jsonl",
+        "train.jsonl",
+        "val.jsonl",
+        "additions_owner_laptop.jsonl",
+    )
+    for name in live:
+        rows = rows_from_pool(repo_root / "data" / "router" / name)
+        for sealed in sealed_paths:
+            assert require_isolated(rows, load_exclusions(sealed)) == rows
+    for sealed in sealed_paths:
+        sample = rows_from_pool(sealed)[0]
+        exclusions = load_exclusions(sealed)
+        with pytest.raises(RouterWall, match="sealed doc or project"):
+            require_isolated(
+                [{"doc_id": sample["file_sha256"], "excerpt": "probe"}],
+                exclusions,
+            )
+        with pytest.raises(RouterWall, match="sealed doc or project"):
+            require_isolated(
+                [{"project_id": sample["project"], "excerpt": "probe"}],
+                exclusions,
+            )

@@ -1,0 +1,2086 @@
+{
+ "pool_file": "/workspace/router-train/teacher_labels_all_clean.jsonl",
+ "pool_rows": 5627,
+ "removed_count": 102,
+ "jacobs_copyright_rows": 72,
+ "only_numeric_phrase_rows": 18,
+ "by_hit": {
+  "v5_phrase12": 23,
+  "v8_phrase12": 83
+ },
+ "removed_doc_ids": [
+  "a2b32b0df99385679c1989fce3574cdf5c949558533e727d6b247ad9a4c4dcb3",
+  "ba0649187cd52b01eb4ef146ce0e47c6c50a97a02f0e6900e3baa37bc3234881",
+  "99389204864a3d2e14de0f2f35dd2044619f6ac386b049d422f41a0005cbffd2",
+  "f3cc9cbbcd4ab9a31f5f3be15192f64cee7fb3a454c361747fac21e227b507f1",
+  "0e3355ccfd7f86ac8d41d731797f6ba0036b97cdc339101205b751392a4d69f3",
+  "7baad4d5ea676edcfd2077a59a311f19eccb35070028bd6568027adce86cae82",
+  "81d4c04e986fd7061415460f98f3d10e0b6b77d859b79c2291dd929a0fbcce6a",
+  "ed46c1965db2326687909eca611fd666d9493d916600308a6eb7a8de4d3e0742",
+  "89ed50e7256a7ae85d1aa1e6ffda78f363cb9715d456465c0a793b1d2b3fa577",
+  "226accae57bd3e32fb9b7aee771d6ab9b49446cbd6c069549dd31ef3cc7ba104",
+  "f61f460cf677daafed3de82e5bf49354b47a3876fc0b89fd6e2b437b82a95286",
+  "06f6fda8ec71749d539f744f1817c4a38bb90dd7aef2ea589d2b573a10025c7a",
+  "fd97b6956ab39c7b8770b742cbac69dcc0b92268f322851157bca97528ae2543",
+  "383f626534408e126df1746c3243aeb9beda8d91042197819cdafb7e65f5f57a",
+  "9e38417f7db8ab05e0cea6fa3d4408d460675d6823ca7d7cebc4220ffdec7d25",
+  "9735e322bfaa717e14dbd6a3808e3a9fe965848b28523a503712f3dc1b7ac2b9",
+  "aabee79ef2e90259a56ddfc4cf5d3e3eb775144f54690ccb63775753b7045462",
+  "a5021687f34375387bbb50e8337d2a522d7c754f0749075fc0cb6050813e49b2",
+  "a5c94e0f4b581857b465b3cf018607f2ae0d261b40e1386759b1772603cbbe25",
+  "855d27106696f29ab8cfb59ed6dc1a3e2f4f65878a12e30be5adc0734db27f88",
+  "81068f65bf1c93ade26fd400641720d04466eef04384a71545f6fa98f6b0d24f",
+  "c4c874778272922cf863e268b23ccc7a73f76aa35c932f6b1c862d34af5a65e0",
+  "eec82a7746f7fb56e46613d2aab260d2583b02f59f07ae061c0ead58c50e2b1d",
+  "3286875c1004067ec478abc4dd5ae3b35b25ae0d06a32ef738d7b898f8311ea6",
+  "8afdc553bd64787ce1d57fda4e908ecc48c6dfaf45fba02c31277368ee13a5d7",
+  "79f280d168734ecacf00c53541e7c61463ceb323e067d6cc10d2a416c776184a",
+  "b25f26a58ea64122c2849c9c8f10f606a37af85229c91095b28216f45fc82cb3",
+  "58013b6d5d03ca243900a04a9241df15cbf64f2650f89e0947dce1dc36d12192",
+  "a4d903907f19104c1f8b0340d4f5836ef1cae15054819748abe1334e1e181b86",
+  "e7b0b276cd5af6b4e47c9089b129905fb70b81fea5d05810a9f2d97733c05959",
+  "2e6552ad4a0dcf85b9a3dc1b97c17d9149057cae087fe289fda98e29a4f4e3ba",
+  "fa3273baddc5b26b536914a25fd3980efc585a45d54490768e379df34dfe8054",
+  "237b86be623c712d7a4f85a2131ec88a6a9d7a7b1b8070dc081e1f933d3a4a51",
+  "5c9713a3228249896919c069921e3830319600da776faf308ab7272a3d82daa5",
+  "5ebdedcd47628427c7c687c429eed269d1c003038c1edf0ce7a26095afd49285",
+  "628e26324a78086a0df04b5c5d40f108b9c7029a69fefa3e646237c9870ef6f4",
+  "fa8cf70d80d1936b790a76074fc2fa797dd3828d9fb85821edb91f1a65f4e253",
+  "2c5fea2eb000f70a80d470f252d2fac2f0dccc86cec5696c6f71004dca66ab9f",
+  "762c14efd696d92b14277f296088891538ef381d1141f41bef847599dc08075a",
+  "63dba1fb61671ea71c1bfb25a1017ad8ec58a8d1f9b450bc3c917ad7deca392a",
+  "1cf99ba3db2e5910abd8e5ddb7b207db188195c46f7bbd01f599b7aafc07b55c",
+  "d416b7d30146080888b34ace9327d1407d9ea38966ef16dd565c0e3fcd1485e2",
+  "8b455dd7c4ab59527653d7d1d5d08c20eae4c1d499fe835c013eaed2596538dc",
+  "680d8e0d890053d7bbdc6e5bc96b697e8a736015d1a06fec7250456cb96015eb",
+  "dfce8fb6c02d6f01e28f3abbae9f06aa0cf0e864eaec4a2aa523c3dcdfde5ab4",
+  "a547ad1f159501b95b21d51b3c92fe7d8888a1a20075ff6f998718837a3846ee",
+  "db740536111ac4af3dc551f7775855b3d9dc6dd76a78c56b5c63ca75226fa24a",
+  "e052e9e4a3703e86db4f4420bf02b62c62223a8b4d037d66e2a49318b862c54e",
+  "5cedafc50fb0a10285df446e9f7e47ec11684294d8536c87793e4c856a4e739d",
+  "c1cf2a77cf83587a787bc0c203d5419bfc0f65824101fd7b5b969cd1a0a1b5ab",
+  "17765c2edd6ec485a41b322e41809980302bc8f30d4f450acdea01babc674927",
+  "9f39293eace6dab3cf73dc6563b19578771fa9aee5bbc0fc6a31ffb14d85505d",
+  "6fb29a76aaa5b800adddb0d1e4a94451833441a23b5614e442d71762b5fa0cd9",
+  "bc93e69f6aaca1ce2ce949cdddb51999d720884edef1c7ebcad182bd6d02dbf7",
+  "947057778544b33e226e08561a0315c1d4cfd57c34e1a7ba7025f5f72048d80a",
+  "2e054a3392fe7038c6f076d01e0aa864ccccd12803b87521ee272782a2d0e623",
+  "d8c17c65f5b39da95179d7ca756743fe91989623d85f8800df4431ccdfc00405",
+  "769b0587ad0b6fcb430ca4a1a63f55065c5afa156a04dc97d1a4b87b1d5ea9b4",
+  "9a8684b1127f104e8c717b42111139deb53d00989cb5392ac3d419923026dc42",
+  "5a2721a8845dfbceb970896a563b98d6d4e40737dd52b12660738222e3330d3a",
+  "fc02b05ba49b7b293f064d6b7e3d55ff3de544964bdf936de23b1b236ac097ee",
+  "befd2124d2da2de04e0d50ceeef07a855bda0b4e4e0c68b39f46696e0a7e5243",
+  "9a37421a05ab5e49ac40dffc94320e5bd008003c4fad86e6d6649ad6a37fe4d6",
+  "47dc84b4383a280ad46a43c2436ced08fd10cf8aee3af78dd66441693a052f70",
+  "3b4791cfc8309b3d662dc0d65d8bcef94ef30e712a11a34ec20c02f02625fef2",
+  "1d0db0cab612d9c4779466039fa733049a28522f006a68144a3445c785aca071",
+  "ce4442a300aee5b9809db36c77911e7d2b4b2fd746e4304752a75cb7c087142d",
+  "7a092b31883c96c5ccc96ffe366c47b04ad0e4fe766b77457b97e726f0e648a3",
+  "8ab3e3facc7b2eb33c41802e834317001ad2cef4dd72ab63186b389ab7f4e657",
+  "8a523df83824bb06d6c15f2329e4ac760963d89d99cdbe64c8aba5b810f8aacf",
+  "9be5898ed24472cd818a1e1ba939cfe9ba019d9e4f4fdf799b798d5798645ec4",
+  "837ad15463e2b0beb5e1adcd64e1b4aa05cc31981a2c30bb6b2c4e43d587d4e2",
+  "a51b1c717999389fe9f1c69cb95f463ec67fb9926f13640db2d3435222e88596",
+  "697be2ab229eb4d09e5609ed69b5db0cb4e88ff2d0a6affb334d3966c27b221f",
+  "f7a168655c7dd71d4299fc965e1468cff11f48c2c4eaefdeb5a657da59f13566",
+  "cdd7ffed69647612f223a0819339c68249f5760e8ee4592392d81316d1d47f73",
+  "72946098c0d10dcc94e6af5d88b4c79bea9e3686d6198d20cf68e58f57577050",
+  "f7346f8be27b4c6b17635f9d1496e6c69e36616117315d6953db24aecd2f90c1",
+  "9d051af239237941e70881b7bd85c6de834be170abec1df030a1a88d2ec29597",
+  "5e33aaa24115e09e88bfb48f5b944d644bbc023cbaae24d4dfc3d329914117e5",
+  "b0bd6b1302b19964e8f029b86496bbd675d8e455fe09e4ba50633e8ed85170d0",
+  "24023cc5921b24475f26501ab48575ba5a77a52be21042ee085acf8ab6429223",
+  "5ed8df4c5e1171ce771e0280cf7448c162767d7a66e0d989584cb976bb7113ad",
+  "50fdd55c831a711afd5f24edd721d651b8293cf31e002da7b3ecbc822ea8655b",
+  "645ce182d7d75468740f6b2bee1b1e93ff962d304e6111be7b16610601f70b0a",
+  "c49e2dd7039604b9fa0c11d6bfa99ac90cf61f20c7b78c78e26a2b30568d81d7",
+  "e7c26f6491677295f1943331885ef2b0a076022f45419f270c80aa612b7f132c",
+  "967105ee9c1e6cb15e0975b03d290776741e8882cb30f2d1e53c0a7c61223b46",
+  "f9398ea252df7431d5718d46039d07cdaa4779c6bf32547c4d80ca7e5632f2ac",
+  "a706432eb572bd9ae22258755c0f667f04291ce2573eaafb522e3fc1171e9fa6",
+  "8dd5c997046177089969b5201d06c173398a7726d75956880746e72333bacbea",
+  "c579427c3b1afd611ba323acc4384fd258a88cf93a67c09fc3f56a687a1a31d6",
+  "2c2b6638d7dce2032c494977045b3c9e279252e3cc873b4a6f1df6bc7d16d770",
+  "9d367534513b86e13e1b2eeef09e5c7a264bf25dff41707f79cf82350e223e9e",
+  "4e034cdfc3eb57d026e2875f390c9e8190698dafc6788e9a60a7742429c46d5e",
+  "c01e205cd4a72ce3901763468a73847f28a02f7c02306ad086c74532530796af",
+  "47511a8dce7540c112220c28d70e412375b51adc5120c9cfd2540013302fd5f0",
+  "53752128bea37cf7ef0a72817687274a495e59d5a8f0b4325918dc18b26255c6",
+  "26aaf08e139b29e6aad378a857f1214076519a523253b92877a1d31e1f2c0aaf",
+  "5f28f4489e44fc6fe4349729a43a95a9d626b8ffd6868cfc5b8d680c10ab18dd",
+  "3bd2d6015124eae32857de7a70369a6504ff16f6f56aa2da7611a15e95a401fb",
+  "ca1ec4ec5064f60bd6dbb85ca65d684d7f76de682cd6df0833297d3f2252942a"
+ ],
+ "rows": [
+  {
+   "idx": 111,
+   "doc_id": "a2b32b0df99385679c1989fce3574cdf5c949558533e727d6b247ad9a4c4dcb3",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v5_phrase12",
+    "v8_phrase12"
+   ],
+   "n_phrases": 7,
+   "sealed_rows": [
+    "V8-008",
+    "V8-119",
+    "V8-128",
+    "v5#32"
+   ],
+   "jacobs_copyright": false,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "apr may jun jul aug sep oct nov dec jan feb mar",
+    "aug sep oct nov dec jan feb mar apr may jun jul",
+    "jul aug sep oct nov dec jan feb mar apr may jun"
+   ]
+  },
+  {
+   "idx": 177,
+   "doc_id": "ba0649187cd52b01eb4ef146ce0e47c6c50a97a02f0e6900e3baa37bc3234881",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v5_phrase12"
+   ],
+   "n_phrases": 22,
+   "sealed_rows": [
+    "v5#39",
+    "v5#58"
+   ],
+   "jacobs_copyright": false,
+   "only_numeric_phrases": true,
+   "sample_phrases": [
+    "10 11 12 13 14 15 16 17 18 19 20 21",
+    "11 12 13 14 15 16 17 18 19 20 21 22",
+    "12 13 14 15 16 17 18 19 20 21 22 23"
+   ]
+  },
+  {
+   "idx": 240,
+   "doc_id": "99389204864a3d2e14de0f2f35dd2044619f6ac386b049d422f41a0005cbffd2",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 374,
+   "doc_id": "f3cc9cbbcd4ab9a31f5f3be15192f64cee7fb3a454c361747fac21e227b507f1",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v5_phrase12"
+   ],
+   "n_phrases": 10,
+   "sealed_rows": [
+    "v5#39",
+    "v5#58"
+   ],
+   "jacobs_copyright": false,
+   "only_numeric_phrases": true,
+   "sample_phrases": [
+    "10 11 12 13 14 15 16 17 18 19 20 21",
+    "11 12 13 14 15 16 17 18 19 20 21 22",
+    "12 13 14 15 16 17 18 19 20 21 22 23"
+   ]
+  },
+  {
+   "idx": 387,
+   "doc_id": "0e3355ccfd7f86ac8d41d731797f6ba0036b97cdc339101205b751392a4d69f3",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 472,
+   "doc_id": "7baad4d5ea676edcfd2077a59a311f19eccb35070028bd6568027adce86cae82",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 690,
+   "doc_id": "81d4c04e986fd7061415460f98f3d10e0b6b77d859b79c2291dd929a0fbcce6a",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 723,
+   "doc_id": "ed46c1965db2326687909eca611fd666d9493d916600308a6eb7a8de4d3e0742",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v5_phrase12"
+   ],
+   "n_phrases": 22,
+   "sealed_rows": [
+    "v5#39",
+    "v5#58"
+   ],
+   "jacobs_copyright": false,
+   "only_numeric_phrases": true,
+   "sample_phrases": [
+    "10 11 12 13 14 15 16 17 18 19 20 21",
+    "11 12 13 14 15 16 17 18 19 20 21 22",
+    "12 13 14 15 16 17 18 19 20 21 22 23"
+   ]
+  },
+  {
+   "idx": 837,
+   "doc_id": "89ed50e7256a7ae85d1aa1e6ffda78f363cb9715d456465c0a793b1d2b3fa577",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 3,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "document in whole or in part without the written permission of jacobs",
+    "of this document in whole or in part without the written permission",
+    "this document in whole or in part without the written permission of"
+   ]
+  },
+  {
+   "idx": 846,
+   "doc_id": "226accae57bd3e32fb9b7aee771d6ab9b49446cbd6c069549dd31ef3cc7ba104",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v5_phrase12"
+   ],
+   "n_phrases": 11,
+   "sealed_rows": [
+    "v5#39",
+    "v5#58"
+   ],
+   "jacobs_copyright": false,
+   "only_numeric_phrases": true,
+   "sample_phrases": [
+    "10 11 12 13 14 15 16 17 18 19 20 21",
+    "11 12 13 14 15 16 17 18 19 20 21 22",
+    "12 13 14 15 16 17 18 19 20 21 22 23"
+   ]
+  },
+  {
+   "idx": 862,
+   "doc_id": "f61f460cf677daafed3de82e5bf49354b47a3876fc0b89fd6e2b437b82a95286",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 922,
+   "doc_id": "06f6fda8ec71749d539f744f1817c4a38bb90dd7aef2ea589d2b573a10025c7a",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v5_phrase12",
+    "v8_phrase12"
+   ],
+   "n_phrases": 6,
+   "sealed_rows": [
+    "V8-008",
+    "V8-119",
+    "V8-128",
+    "v5#32"
+   ],
+   "jacobs_copyright": false,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "26 dec jan feb mar apr may jun jul aug sep oct",
+    "apr may jun jul aug sep oct nov dec jan feb mar",
+    "dec jan feb mar apr may jun jul aug sep oct nov"
+   ]
+  },
+  {
+   "idx": 926,
+   "doc_id": "fd97b6956ab39c7b8770b742cbac69dcc0b92268f322851157bca97528ae2543",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v5_phrase12",
+    "v8_phrase12"
+   ],
+   "n_phrases": 7,
+   "sealed_rows": [
+    "V8-008",
+    "V8-119",
+    "V8-128",
+    "v5#32"
+   ],
+   "jacobs_copyright": false,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "apr may jun jul aug sep oct nov dec jan feb mar",
+    "aug sep oct nov dec jan feb mar apr may jun jul",
+    "jul aug sep oct nov dec jan feb mar apr may jun"
+   ]
+  },
+  {
+   "idx": 940,
+   "doc_id": "383f626534408e126df1746c3243aeb9beda8d91042197819cdafb7e65f5f57a",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v5_phrase12"
+   ],
+   "n_phrases": 22,
+   "sealed_rows": [
+    "v5#39",
+    "v5#58"
+   ],
+   "jacobs_copyright": false,
+   "only_numeric_phrases": true,
+   "sample_phrases": [
+    "10 11 12 13 14 15 16 17 18 19 20 21",
+    "11 12 13 14 15 16 17 18 19 20 21 22",
+    "12 13 14 15 16 17 18 19 20 21 22 23"
+   ]
+  },
+  {
+   "idx": 955,
+   "doc_id": "9e38417f7db8ab05e0cea6fa3d4408d460675d6823ca7d7cebc4220ffdec7d25",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v5_phrase12"
+   ],
+   "n_phrases": 24,
+   "sealed_rows": [
+    "v5#39",
+    "v5#58"
+   ],
+   "jacobs_copyright": false,
+   "only_numeric_phrases": true,
+   "sample_phrases": [
+    "1 2 3 4 5 6 7 8 9 10 11 12",
+    "10 11 12 13 14 15 16 17 18 19 20 21",
+    "11 12 13 14 15 16 17 18 19 20 21 22"
+   ]
+  },
+  {
+   "idx": 1035,
+   "doc_id": "9735e322bfaa717e14dbd6a3808e3a9fe965848b28523a503712f3dc1b7ac2b9",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 4,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": false,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "or copying of this document in whole or in part without the",
+    "the concepts and information contained in this document are the property of"
+   ]
+  },
+  {
+   "idx": 1178,
+   "doc_id": "aabee79ef2e90259a56ddfc4cf5d3e3eb775144f54690ccb63775753b7045462",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v5_phrase12"
+   ],
+   "n_phrases": 24,
+   "sealed_rows": [
+    "v5#39",
+    "v5#58"
+   ],
+   "jacobs_copyright": false,
+   "only_numeric_phrases": true,
+   "sample_phrases": [
+    "1 2 3 4 5 6 7 8 9 10 11 12",
+    "10 11 12 13 14 15 16 17 18 19 20 21",
+    "11 12 13 14 15 16 17 18 19 20 21 22"
+   ]
+  },
+  {
+   "idx": 1255,
+   "doc_id": "a5021687f34375387bbb50e8337d2a522d7c754f0749075fc0cb6050813e49b2",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 1285,
+   "doc_id": "a5c94e0f4b581857b465b3cf018607f2ae0d261b40e1386759b1772603cbbe25",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 1312,
+   "doc_id": "855d27106696f29ab8cfb59ed6dc1a3e2f4f65878a12e30be5adc0734db27f88",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 1375,
+   "doc_id": "81068f65bf1c93ade26fd400641720d04466eef04384a71545f6fa98f6b0d24f",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v5_phrase12"
+   ],
+   "n_phrases": 20,
+   "sealed_rows": [
+    "v5#39",
+    "v5#58"
+   ],
+   "jacobs_copyright": false,
+   "only_numeric_phrases": true,
+   "sample_phrases": [
+    "1 2 3 4 5 6 7 8 9 10 11 12",
+    "10 11 12 13 14 15 16 17 18 19 20 21",
+    "11 12 13 14 15 16 17 18 19 20 21 22"
+   ]
+  },
+  {
+   "idx": 1446,
+   "doc_id": "c4c874778272922cf863e268b23ccc7a73f76aa35c932f6b1c862d34af5a65e0",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 72,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "accepts no liability or responsibility whatsoever for or in respect of any",
+    "accordance with the provisions of the contract between jacobs and the client",
+    "an infringement of copyright limitation this document has been prepared on behalf"
+   ]
+  },
+  {
+   "idx": 1473,
+   "doc_id": "eec82a7746f7fb56e46613d2aab260d2583b02f59f07ae061c0ead58c50e2b1d",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 1535,
+   "doc_id": "3286875c1004067ec478abc4dd5ae3b35b25ae0d06a32ef738d7b898f8311ea6",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 1562,
+   "doc_id": "8afdc553bd64787ce1d57fda4e908ecc48c6dfaf45fba02c31277368ee13a5d7",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 1810,
+   "doc_id": "79f280d168734ecacf00c53541e7c61463ceb323e067d6cc10d2a416c776184a",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 1866,
+   "doc_id": "b25f26a58ea64122c2849c9c8f10f606a37af85229c91095b28216f45fc82cb3",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 1881,
+   "doc_id": "58013b6d5d03ca243900a04a9241df15cbf64f2650f89e0947dce1dc36d12192",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 1910,
+   "doc_id": "a4d903907f19104c1f8b0340d4f5836ef1cae15054819748abe1334e1e181b86",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 2030,
+   "doc_id": "e7b0b276cd5af6b4e47c9089b129905fb70b81fea5d05810a9f2d97733c05959",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 2034,
+   "doc_id": "2e6552ad4a0dcf85b9a3dc1b97c17d9149057cae087fe289fda98e29a4f4e3ba",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 2141,
+   "doc_id": "fa3273baddc5b26b536914a25fd3980efc585a45d54490768e379df34dfe8054",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 2312,
+   "doc_id": "237b86be623c712d7a4f85a2131ec88a6a9d7a7b1b8070dc081e1f933d3a4a51",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 2356,
+   "doc_id": "5c9713a3228249896919c069921e3830319600da776faf308ab7272a3d82daa5",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 4,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": false,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "or copying of this document in whole or in part without the",
+    "the concepts and information contained in this document are the property of"
+   ]
+  },
+  {
+   "idx": 2387,
+   "doc_id": "5ebdedcd47628427c7c687c429eed269d1c003038c1edf0ce7a26095afd49285",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 2414,
+   "doc_id": "628e26324a78086a0df04b5c5d40f108b9c7029a69fefa3e646237c9870ef6f4",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v5_phrase12"
+   ],
+   "n_phrases": 20,
+   "sealed_rows": [
+    "v5#39",
+    "v5#58"
+   ],
+   "jacobs_copyright": false,
+   "only_numeric_phrases": true,
+   "sample_phrases": [
+    "1 2 3 4 5 6 7 8 9 10 11 12",
+    "10 11 12 13 14 15 16 17 18 19 20 21",
+    "11 12 13 14 15 16 17 18 19 20 21 22"
+   ]
+  },
+  {
+   "idx": 2441,
+   "doc_id": "fa8cf70d80d1936b790a76074fc2fa797dd3828d9fb85821edb91f1a65f4e253",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 2,
+   "sealed_rows": [
+    "V8-122",
+    "V8-128"
+   ],
+   "jacobs_copyright": false,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "14 21 28 05 12 19 26 02 09 16 23 30",
+    "actual work remaining work critical remaining work milestone summary page 1 of"
+   ]
+  },
+  {
+   "idx": 2581,
+   "doc_id": "2c5fea2eb000f70a80d470f252d2fac2f0dccc86cec5696c6f71004dca66ab9f",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 2616,
+   "doc_id": "762c14efd696d92b14277f296088891538ef381d1141f41bef847599dc08075a",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 2701,
+   "doc_id": "63dba1fb61671ea71c1bfb25a1017ad8ec58a8d1f9b450bc3c917ad7deca392a",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v5_phrase12",
+    "v8_phrase12"
+   ],
+   "n_phrases": 7,
+   "sealed_rows": [
+    "V8-008",
+    "V8-119",
+    "V8-128",
+    "v5#32"
+   ],
+   "jacobs_copyright": false,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "apr may jun jul aug sep oct nov dec jan feb mar",
+    "aug sep oct nov dec jan feb mar apr may jun jul",
+    "jul aug sep oct nov dec jan feb mar apr may jun"
+   ]
+  },
+  {
+   "idx": 2757,
+   "doc_id": "1cf99ba3db2e5910abd8e5ddb7b207db188195c46f7bbd01f599b7aafc07b55c",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 72,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "accepts no liability or responsibility whatsoever for or in respect of any",
+    "accordance with the provisions of the contract between jacobs and the client",
+    "an infringement of copyright limitation this document has been prepared on behalf"
+   ]
+  },
+  {
+   "idx": 2761,
+   "doc_id": "d416b7d30146080888b34ace9327d1407d9ea38966ef16dd565c0e3fcd1485e2",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 2762,
+   "doc_id": "8b455dd7c4ab59527653d7d1d5d08c20eae4c1d499fe835c013eaed2596538dc",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 2795,
+   "doc_id": "680d8e0d890053d7bbdc6e5bc96b697e8a736015d1a06fec7250456cb96015eb",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 2848,
+   "doc_id": "dfce8fb6c02d6f01e28f3abbae9f06aa0cf0e864eaec4a2aa523c3dcdfde5ab4",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 2856,
+   "doc_id": "a547ad1f159501b95b21d51b3c92fe7d8888a1a20075ff6f998718837a3846ee",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 2867,
+   "doc_id": "db740536111ac4af3dc551f7775855b3d9dc6dd76a78c56b5c63ca75226fa24a",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 2915,
+   "doc_id": "e052e9e4a3703e86db4f4420bf02b62c62223a8b4d037d66e2a49318b862c54e",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 2941,
+   "doc_id": "5cedafc50fb0a10285df446e9f7e47ec11684294d8536c87793e4c856a4e739d",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 2997,
+   "doc_id": "c1cf2a77cf83587a787bc0c203d5419bfc0f65824101fd7b5b969cd1a0a1b5ab",
+   "project_id": "client_infra_pack_1",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 3127,
+   "doc_id": "17765c2edd6ec485a41b322e41809980302bc8f30d4f450acdea01babc674927",
+   "project_id": "d4d93c61",
+   "hits": [
+    "v5_phrase12"
+   ],
+   "n_phrases": 2,
+   "sealed_rows": [
+    "v5#36",
+    "v5#5",
+    "v5#51"
+   ],
+   "jacobs_copyright": false,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "03 30 00 cast in place concrete part 1 general 1 1",
+    "section 03 30 00 cast in place concrete part 1 general 1"
+   ]
+  },
+  {
+   "idx": 3151,
+   "doc_id": "9f39293eace6dab3cf73dc6563b19578771fa9aee5bbc0fc6a31ffb14d85505d",
+   "project_id": "drive_archive",
+   "hits": [
+    "v5_phrase12"
+   ],
+   "n_phrases": 3,
+   "sealed_rows": [
+    "v5#39",
+    "v5#58"
+   ],
+   "jacobs_copyright": false,
+   "only_numeric_phrases": true,
+   "sample_phrases": [
+    "1 2 3 4 5 6 7 8 9 10 11 12",
+    "2 3 4 5 6 7 8 9 10 11 12 13",
+    "3 4 5 6 7 8 9 10 11 12 13 14"
+   ]
+  },
+  {
+   "idx": 3162,
+   "doc_id": "6fb29a76aaa5b800adddb0d1e4a94451833441a23b5614e442d71762b5fa0cd9",
+   "project_id": "drive_archive",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 2,
+   "sealed_rows": [
+    "V8-055"
+   ],
+   "jacobs_copyright": false,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "consultant has agreed to provide the services in accordance with this agreement",
+    "the consultant has agreed to provide the services in accordance with this"
+   ]
+  },
+  {
+   "idx": 3166,
+   "doc_id": "bc93e69f6aaca1ce2ce949cdddb51999d720884edef1c7ebcad182bd6d02dbf7",
+   "project_id": "drive_archive",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 3222,
+   "doc_id": "947057778544b33e226e08561a0315c1d4cfd57c34e1a7ba7025f5f72048d80a",
+   "project_id": "drive_archive",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 3227,
+   "doc_id": "2e054a3392fe7038c6f076d01e0aa864ccccd12803b87521ee272782a2d0e623",
+   "project_id": "drive_archive",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 3272,
+   "doc_id": "d8c17c65f5b39da95179d7ca756743fe91989623d85f8800df4431ccdfc00405",
+   "project_id": "drive_archive",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 3282,
+   "doc_id": "769b0587ad0b6fcb430ca4a1a63f55065c5afa156a04dc97d1a4b87b1d5ea9b4",
+   "project_id": "drive_archive",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 3368,
+   "doc_id": "9a8684b1127f104e8c717b42111139deb53d00989cb5392ac3d419923026dc42",
+   "project_id": "drive_archive",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 9,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 3400,
+   "doc_id": "5a2721a8845dfbceb970896a563b98d6d4e40737dd52b12660738222e3330d3a",
+   "project_id": "drive_archive",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 3508,
+   "doc_id": "fc02b05ba49b7b293f064d6b7e3d55ff3de544964bdf936de23b1b236ac097ee",
+   "project_id": "drive_archive",
+   "hits": [
+    "v5_phrase12"
+   ],
+   "n_phrases": 24,
+   "sealed_rows": [
+    "v5#39",
+    "v5#58"
+   ],
+   "jacobs_copyright": false,
+   "only_numeric_phrases": true,
+   "sample_phrases": [
+    "1 2 3 4 5 6 7 8 9 10 11 12",
+    "10 11 12 13 14 15 16 17 18 19 20 21",
+    "11 12 13 14 15 16 17 18 19 20 21 22"
+   ]
+  },
+  {
+   "idx": 3519,
+   "doc_id": "befd2124d2da2de04e0d50ceeef07a855bda0b4e4e0c68b39f46696e0a7e5243",
+   "project_id": "drive_archive",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 72,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "accepts no liability or responsibility whatsoever for or in respect of any",
+    "accordance with the provisions of the contract between jacobs and the client",
+    "an infringement of copyright limitation this document has been prepared on behalf"
+   ]
+  },
+  {
+   "idx": 3525,
+   "doc_id": "9a37421a05ab5e49ac40dffc94320e5bd008003c4fad86e6d6649ad6a37fe4d6",
+   "project_id": "drive_archive",
+   "hits": [
+    "v5_phrase12"
+   ],
+   "n_phrases": 5,
+   "sealed_rows": [
+    "v5#39"
+   ],
+   "jacobs_copyright": false,
+   "only_numeric_phrases": true,
+   "sample_phrases": [
+    "2 3 4 5 6 7 8 9 10 11 12 13",
+    "3 4 5 6 7 8 9 10 11 12 13 14",
+    "4 5 6 7 8 9 10 11 12 13 14 15"
+   ]
+  },
+  {
+   "idx": 3598,
+   "doc_id": "47dc84b4383a280ad46a43c2436ced08fd10cf8aee3af78dd66441693a052f70",
+   "project_id": "drive_archive",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 3656,
+   "doc_id": "3b4791cfc8309b3d662dc0d65d8bcef94ef30e712a11a34ec20c02f02625fef2",
+   "project_id": "drive_archive",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 11,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 3742,
+   "doc_id": "1d0db0cab612d9c4779466039fa733049a28522f006a68144a3445c785aca071",
+   "project_id": "drive_archive",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 11,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 3808,
+   "doc_id": "ce4442a300aee5b9809db36c77911e7d2b4b2fd746e4304752a75cb7c087142d",
+   "project_id": "drive_archive",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 3839,
+   "doc_id": "7a092b31883c96c5ccc96ffe366c47b04ad0e4fe766b77457b97e726f0e648a3",
+   "project_id": "drive_archive",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 3840,
+   "doc_id": "8ab3e3facc7b2eb33c41802e834317001ad2cef4dd72ab63186b389ab7f4e657",
+   "project_id": "drive_archive",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 3854,
+   "doc_id": "8a523df83824bb06d6c15f2329e4ac760963d89d99cdbe64c8aba5b810f8aacf",
+   "project_id": "drive_archive",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 3882,
+   "doc_id": "9be5898ed24472cd818a1e1ba939cfe9ba019d9e4f4fdf799b798d5798645ec4",
+   "project_id": "drive_archive",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 3951,
+   "doc_id": "837ad15463e2b0beb5e1adcd64e1b4aa05cc31981a2c30bb6b2c4e43d587d4e2",
+   "project_id": "drive_archive",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 3997,
+   "doc_id": "a51b1c717999389fe9f1c69cb95f463ec67fb9926f13640db2d3435222e88596",
+   "project_id": "drive_archive",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 4024,
+   "doc_id": "697be2ab229eb4d09e5609ed69b5db0cb4e88ff2d0a6affb334d3966c27b221f",
+   "project_id": "drive_archive",
+   "hits": [
+    "v5_phrase12"
+   ],
+   "n_phrases": 8,
+   "sealed_rows": [
+    "v5#39",
+    "v5#58"
+   ],
+   "jacobs_copyright": false,
+   "only_numeric_phrases": true,
+   "sample_phrases": [
+    "1 2 3 4 5 6 7 8 9 10 11 12",
+    "2 3 4 5 6 7 8 9 10 11 12 13",
+    "3 4 5 6 7 8 9 10 11 12 13 14"
+   ]
+  },
+  {
+   "idx": 4041,
+   "doc_id": "f7a168655c7dd71d4299fc965e1468cff11f48c2c4eaefdeb5a657da59f13566",
+   "project_id": "drive_archive",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 4288,
+   "doc_id": "cdd7ffed69647612f223a0819339c68249f5760e8ee4592392d81316d1d47f73",
+   "project_id": "drive_archive",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 29,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": false,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "accepts no liability or responsibility whatsoever for or in respect of any",
+    "an infringement of copyright limitation this document has been prepared on behalf",
+    "any use of or reliance upon this document by any third party"
+   ]
+  },
+  {
+   "idx": 4326,
+   "doc_id": "72946098c0d10dcc94e6af5d88b4c79bea9e3686d6198d20cf68e58f57577050",
+   "project_id": "drive_archive",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 4480,
+   "doc_id": "f7346f8be27b4c6b17635f9d1496e6c69e36616117315d6953db24aecd2f90c1",
+   "project_id": "drive_archive",
+   "hits": [
+    "v5_phrase12"
+   ],
+   "n_phrases": 3,
+   "sealed_rows": [
+    "v5#39",
+    "v5#58"
+   ],
+   "jacobs_copyright": false,
+   "only_numeric_phrases": true,
+   "sample_phrases": [
+    "1 2 3 4 5 6 7 8 9 10 11 12",
+    "2 3 4 5 6 7 8 9 10 11 12 13",
+    "3 4 5 6 7 8 9 10 11 12 13 14"
+   ]
+  },
+  {
+   "idx": 4487,
+   "doc_id": "9d051af239237941e70881b7bd85c6de834be170abec1df030a1a88d2ec29597",
+   "project_id": "drive_archive",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 4533,
+   "doc_id": "5e33aaa24115e09e88bfb48f5b944d644bbc023cbaae24d4dfc3d329914117e5",
+   "project_id": "drive_archive",
+   "hits": [
+    "v5_phrase12"
+   ],
+   "n_phrases": 13,
+   "sealed_rows": [
+    "v5#39",
+    "v5#58"
+   ],
+   "jacobs_copyright": false,
+   "only_numeric_phrases": true,
+   "sample_phrases": [
+    "1 2 3 4 5 6 7 8 9 10 11 12",
+    "10 11 12 13 14 15 16 17 18 19 20 21",
+    "11 12 13 14 15 16 17 18 19 20 21 22"
+   ]
+  },
+  {
+   "idx": 4650,
+   "doc_id": "b0bd6b1302b19964e8f029b86496bbd675d8e455fe09e4ba50633e8ed85170d0",
+   "project_id": "drive_archive",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 24,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "and information contained in this document are the property of jacobs use",
+    "are the property of jacobs use or copying of this document in",
+    "concepts and information contained in this document are the property of jacobs"
+   ]
+  },
+  {
+   "idx": 4662,
+   "doc_id": "24023cc5921b24475f26501ab48575ba5a77a52be21042ee085acf8ab6429223",
+   "project_id": "drive_archive",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 4817,
+   "doc_id": "5ed8df4c5e1171ce771e0280cf7448c162767d7a66e0d989584cb976bb7113ad",
+   "project_id": "drive_archive",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 4861,
+   "doc_id": "50fdd55c831a711afd5f24edd721d651b8293cf31e002da7b3ecbc822ea8655b",
+   "project_id": "drive_archive",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 4896,
+   "doc_id": "645ce182d7d75468740f6b2bee1b1e93ff962d304e6111be7b16610601f70b0a",
+   "project_id": "drive_archive",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 4907,
+   "doc_id": "c49e2dd7039604b9fa0c11d6bfa99ac90cf61f20c7b78c78e26a2b30568d81d7",
+   "project_id": "drive_archive",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 4949,
+   "doc_id": "e7c26f6491677295f1943331885ef2b0a076022f45419f270c80aa612b7f132c",
+   "project_id": "drive_archive",
+   "hits": [
+    "v5_phrase12"
+   ],
+   "n_phrases": 4,
+   "sealed_rows": [
+    "v5#39",
+    "v5#58"
+   ],
+   "jacobs_copyright": false,
+   "only_numeric_phrases": true,
+   "sample_phrases": [
+    "10 11 12 13 14 15 16 17 18 19 20 21",
+    "11 12 13 14 15 16 17 18 19 20 21 22",
+    "12 13 14 15 16 17 18 19 20 21 22 23"
+   ]
+  },
+  {
+   "idx": 5022,
+   "doc_id": "967105ee9c1e6cb15e0975b03d290776741e8882cb30f2d1e53c0a7c61223b46",
+   "project_id": "drive_archive",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 4,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": false,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "or copying of this document in whole or in part without the",
+    "the concepts and information contained in this document are the property of"
+   ]
+  },
+  {
+   "idx": 5045,
+   "doc_id": "f9398ea252df7431d5718d46039d07cdaa4779c6bf32547c4d80ca7e5632f2ac",
+   "project_id": "drive_archive",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 14,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": false,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "and information contained in this document are the property of jacobs use",
+    "are the property of jacobs use or copying of this document in",
+    "concepts and information contained in this document are the property of jacobs"
+   ]
+  },
+  {
+   "idx": 5151,
+   "doc_id": "a706432eb572bd9ae22258755c0f667f04291ce2573eaafb522e3fc1171e9fa6",
+   "project_id": "drive_archive",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 11,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 5165,
+   "doc_id": "8dd5c997046177089969b5201d06c173398a7726d75956880746e72333bacbea",
+   "project_id": "drive_archive",
+   "hits": [
+    "v5_phrase12"
+   ],
+   "n_phrases": 20,
+   "sealed_rows": [
+    "v5#39",
+    "v5#58"
+   ],
+   "jacobs_copyright": false,
+   "only_numeric_phrases": true,
+   "sample_phrases": [
+    "1 2 3 4 5 6 7 8 9 10 11 12",
+    "10 11 12 13 14 15 16 17 18 19 20 21",
+    "11 12 13 14 15 16 17 18 19 20 21 22"
+   ]
+  },
+  {
+   "idx": 5222,
+   "doc_id": "c579427c3b1afd611ba323acc4384fd258a88cf93a67c09fc3f56a687a1a31d6",
+   "project_id": "drive_archive",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 5270,
+   "doc_id": "2c2b6638d7dce2032c494977045b3c9e279252e3cc873b4a6f1df6bc7d16d770",
+   "project_id": "drive_archive",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 3,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "document in whole or in part without the written permission of jacobs",
+    "of this document in whole or in part without the written permission",
+    "this document in whole or in part without the written permission of"
+   ]
+  },
+  {
+   "idx": 5295,
+   "doc_id": "9d367534513b86e13e1b2eeef09e5c7a264bf25dff41707f79cf82350e223e9e",
+   "project_id": "drive_archive",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 10,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 5311,
+   "doc_id": "4e034cdfc3eb57d026e2875f390c9e8190698dafc6788e9a60a7742429c46d5e",
+   "project_id": "drive_archive",
+   "hits": [
+    "v5_phrase12"
+   ],
+   "n_phrases": 1,
+   "sealed_rows": [
+    "v5#10",
+    "v5#62"
+   ],
+   "jacobs_copyright": false,
+   "only_numeric_phrases": true,
+   "sample_phrases": [
+    "0 0 0 0 0 0 0 0 0 0 0 0"
+   ]
+  },
+  {
+   "idx": 5318,
+   "doc_id": "c01e205cd4a72ce3901763468a73847f28a02f7c02306ad086c74532530796af",
+   "project_id": "drive_archive",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 11,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 5330,
+   "doc_id": "47511a8dce7540c112220c28d70e412375b51adc5120c9cfd2540013302fd5f0",
+   "project_id": "drive_archive",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 5392,
+   "doc_id": "53752128bea37cf7ef0a72817687274a495e59d5a8f0b4325918dc18b26255c6",
+   "project_id": "drive_archive",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 5432,
+   "doc_id": "26aaf08e139b29e6aad378a857f1214076519a523253b92877a1d31e1f2c0aaf",
+   "project_id": "drive_archive",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 5486,
+   "doc_id": "5f28f4489e44fc6fe4349729a43a95a9d626b8ffd6868cfc5b8d680c10ab18dd",
+   "project_id": "drive_archive",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 5535,
+   "doc_id": "3bd2d6015124eae32857de7a70369a6504ff16f6f56aa2da7611a15e95a401fb",
+   "project_id": "drive_archive",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  },
+  {
+   "idx": 5574,
+   "doc_id": "ca1ec4ec5064f60bd6dbb85ca65d684d7f76de682cd6df0833297d3f2252942a",
+   "project_id": "drive_archive",
+   "hits": [
+    "v8_phrase12"
+   ],
+   "n_phrases": 12,
+   "sealed_rows": [
+    "V8-108"
+   ],
+   "jacobs_copyright": true,
+   "only_numeric_phrases": false,
+   "sample_phrases": [
+    "copying of this document in whole or in part without the written",
+    "document in whole or in part without the written permission of jacobs",
+    "in part without the written permission of jacobs constitutes an infringement of"
+   ]
+  }
+ ]
+}

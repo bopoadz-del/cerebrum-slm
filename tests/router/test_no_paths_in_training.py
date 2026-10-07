@@ -15,6 +15,10 @@ TRAINING_FILES = (
     "data/router/teacher_labels.jsonl",
     "data/router/train.jsonl",
     "data/router/val.jsonl",
+    "data/router/additions_owner_laptop.jsonl",
+    "data/router/v5_snapshot/teacher_labels.jsonl",
+    "data/router/v5_snapshot/train.jsonl",
+    "data/router/v5_snapshot/val.jsonl",
 )
 
 
