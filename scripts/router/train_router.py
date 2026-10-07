@@ -208,8 +208,13 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
 
-def fit_router(lora: dict, train_rows: list[dict], *, sdk=None) -> dict:
-    """Fit the Qwen3-4B LoRA. sdk is a test double. The default import is tinker."""
+def fit_router(lora: dict, train_rows: list[dict], *, sdk=None, class_weight: dict[str, float] | None = None, on_epoch=None) -> dict:
+    """Fit the Qwen3-4B LoRA. sdk is a test double. The default import is tinker.
+
+    ``class_weight`` (v6) multiplies each row's label-token loss weights by the weight of its
+    label; ``on_epoch(epoch, sampler_path)`` returns True to stop early. Both default to off,
+    which is the v5 recipe unchanged.
+    """
     if not train_rows:
         raise RouterWall("WALL: no training rows")
     if sdk is None:
@@ -229,13 +234,44 @@ def fit_router(lora: dict, train_rows: list[dict], *, sdk=None) -> dict:
             train_unembed=bool(modules["unembed"]),
             user_metadata={"checkpoint": str(lora["checkpoint_name"])},
         )
-        trained = _fit(client, sdk.types, lora, train_rows)
+        trained = _fit(client, sdk.types, lora, train_rows, class_weight=class_weight, on_epoch=on_epoch)
         status = "success"
         return trained
     finally:
         closer = getattr(service, "close", None)
         if closer is not None:
             closer(status).result()
+
+
+def fit_router_v6(root: Path, train_rows: list[dict], val_rows: list[dict], labels: list[str], *, sdk=None) -> dict:
+    """v6: class-weighted loss from train label counts, early stop and epoch choice on val macro recall.
+
+    Nothing here names a label. Weights come from ``router.balance.class_weights`` over the
+    training rows' labels. The selection number is ``router.balance.macro_recall_present`` on val.
+    """
+    from router.balance import SELECTION_METRIC, class_weights, load_v6_config, macro_recall_present, select_epoch, should_stop
+
+    v6 = load_v6_config(root)
+    lora = v6["lora"]
+    weights = class_weights([row["messages"][-1]["content"] for row in train_rows], v6["cap"])
+    gold = [row["messages"][-1]["content"] for row in val_rows]
+    history: list[dict] = []
+
+    def on_epoch(epoch: int, path: str) -> bool:
+        pred = predict_labels(lora, val_rows, path, labels, sdk=sdk)
+        history.append({"epoch": epoch, "sampler": path, SELECTION_METRIC: macro_recall_present(gold, pred)})
+        return should_stop(history, v6["patience"], v6["max_epochs"])
+
+    trained = fit_router(lora, train_rows, sdk=sdk, class_weight=weights, on_epoch=on_epoch)
+    chosen = select_epoch(history)
+    return {
+        **trained,
+        "class_weights": weights,
+        "history": history,
+        "selected_epoch": chosen,
+        "selected_sampler": next(entry["sampler"] for entry in history if entry["epoch"] == chosen),
+        "selection_metric": SELECTION_METRIC,
+    }
 
 
 def predict_labels(
@@ -277,13 +313,17 @@ def _record_checkpoint(root: Path, checkpoint: str) -> None:
     path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
 
 
-def _fit(client, types, lora: dict, train_rows: list[dict]) -> dict:
+def _fit(client, types, lora: dict, train_rows: list[dict], *, class_weight: dict[str, float] | None = None, on_epoch=None) -> dict:
     tokenizer = client.get_tokenizer()
     prepared: list[tuple[list[int], list[int], list[float]]] = []
     limit = int(lora["max_sequence_length"])
     thinking = bool(lora["enable_thinking"])
     for row in train_rows:
         inputs, targets, weights = _supervised(tokenizer, row["messages"], enable_thinking=thinking)
+        if class_weight is not None:
+            from router.balance import scale_label_weights
+
+            weights = scale_label_weights(weights, class_weight[row["messages"][-1]["content"]])
         if len(inputs) + 1 > limit:
             raise RouterWall("WALL: a training row exceeds max_sequence_length")
         prepared.append((inputs, targets, weights))
@@ -324,7 +364,9 @@ def _fit(client, types, lora: dict, train_rows: list[dict]) -> dict:
         if not isinstance(path, str) or not path:
             raise RouterWall("WALL: epoch checkpoint save did not return a path")
         epoch_paths.append(path)
-    if len(epoch_paths) != epochs:
+        if on_epoch is not None and on_epoch(epoch + 1, path):
+            break
+    if on_epoch is None and len(epoch_paths) != epochs:
         raise RouterWall("WALL: epoch checkpoint count does not match the config")
     return {"steps": steps, "epoch_sampler": epoch_paths[-1], "epoch_samplers": epoch_paths}
 
