@@ -1,0 +1,6 @@
+env names loaded: 1; checkpoint=tinker://4ec9bca9-f838-5d1a-ad89-7157820a3f09:train:0/sampler_weights/router-v5-qwen3.5-4b-lora-r16-epoch1; blanker=a235de3cbe52
+v5_retick name-blind (fixed): flips=2 (passable 0, not passable 2; on unblanked rows 0) gate={'passed': True, 'failing_passable_classes': [], 'min_per_label': 12}
+v8_retick name-blind (fixed): flips=2 (passable 2, not passable 0; on unblanked rows 0) gate={'passed': False, 'failing_passable_classes': ['other', 'register/log'], 'min_per_label': 12}
+cr_addendum name-blind (fixed): flips=0 (passable 0, not passable 0; on unblanked rows 0) gate={'passed': True, 'failing_passable_classes': [], 'min_per_label': 12}
+combined name-blind (fixed): flips=4 (passable 4, not passable 0; on unblanked rows 0) gate={'passed': False, 'failing_passable_classes': ['correspondence', 'other', 'register/log'], 'min_per_label': 12}
+DONE nameblind_fix
