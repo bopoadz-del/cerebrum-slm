@@ -29,5 +29,59 @@
     "temperature": 0,
     "confidence_floor": 0.7
   },
-  "note": "Sealed documents come from Master Folder (or another corpus not yet used as training labels) and are labelled by a practitioner."
+  "note": "Sealed documents come from Master Folder (or another corpus not yet used as training labels) and are labelled by a practitioner.",
+  "v9_sealed": {
+    "labels_file": "configs/router/labels.json",
+    "label_set": "configs/router/label_set_v9.json",
+    "sets": [
+      {
+        "name": "v5_retick",
+        "sealed_labels": "data/eval/router_unseen/v9_retick/v5/sealed_labels.jsonl",
+        "rows": 64
+      },
+      {
+        "name": "v8_retick",
+        "sealed_labels": "data/eval/router_unseen/v9_retick/v8/sealed_labels.jsonl",
+        "rows": 185
+      },
+      {
+        "name": "cr_addendum",
+        "sealed_labels": "data/eval/router_unseen/v9_cr_addendum/sealed_labels.jsonl",
+        "rows": 14,
+        "addendum": true
+      }
+    ],
+    "combined": {
+      "rule": "concatenation of the sets in this order; nothing swapped; per-label n counts rows of every set",
+      "rows": 263,
+      "per_label_n": {
+        "RFI": 9,
+        "submittal": 18,
+        "transmittal": 13,
+        "VO/CO": 16,
+        "change request": 14,
+        "claim": 4,
+        "payment application": 3,
+        "payment certificate": 3,
+        "drawing": 18,
+        "specification": 18,
+        "schedule": 19,
+        "report": 21,
+        "correspondence": 18,
+        "BOQ": 12,
+        "contract": 12,
+        "method statement": 14,
+        "meeting minutes": 5,
+        "NCR": 2,
+        "inspection request": 0,
+        "site instruction": 8,
+        "register/log": 15,
+        "other": 21
+      }
+    },
+    "min_sealed_per_label": 12,
+    "gate": "router.sealed_gate.evaluate_sealed_gate_v8 (gate v2 + MIN_SEALED_PER_LABEL), unchanged",
+    "score_once_per_adapter": true,
+    "addendum_note": "The change-request addendum adds 14 owner-ticked rows as a new sealed file. With it, change request has 14 sealed rows in the combined v9 set (passable at n >= 12). Scored alone the addendum is single-label, so its own gate_v2 is degenerate; the gate is read on the combined set."
+  }
 }
