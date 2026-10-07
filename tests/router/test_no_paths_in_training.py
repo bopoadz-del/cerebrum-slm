@@ -16,7 +16,6 @@ TRAINING_FILES = (
     "data/router/train.jsonl",
     "data/router/val.jsonl",
     "data/router/additions_owner_laptop.jsonl",
-    "data/router/additions_owner_sources_pr2.jsonl",
     "data/router/v5_snapshot/teacher_labels.jsonl",
     "data/router/v5_snapshot/train.jsonl",
     "data/router/v5_snapshot/val.jsonl",
