@@ -1,0 +1,6 @@
+{
+  "train_max": 6387,
+  "train_over_limit": 6,
+  "val_prompt_max": 6470,
+  "limit": 6144
+}
