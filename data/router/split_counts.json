@@ -4,6 +4,7 @@
   "submittal",
   "transmittal",
   "VO/CO",
+  "change request",
   "claim",
   "payment application",
   "payment certificate",
@@ -22,12 +23,16 @@
   "register/log",
   "other"
  ],
- "base_commit_note": "data PR must land on main at 1a94dcf (teacher-confidence #36) or later",
+ "base_commit_note": "data PR pr5 must land on main at 868e5af (v9 label set, PR #41) or later",
  "sealed_exclusions": {
-  "v5_sha": 64,
-  "v5_projects": 1,
-  "v8_sha": 185,
-  "v8_projects": 1,
+  "files": [
+   "data/eval/router_unseen/sealed_labels.jsonl",
+   "data/eval/router_unseen/v8/sealed_labels.jsonl",
+   "data/eval/router_unseen/v9_retick/v5/sealed_labels.jsonl",
+   "data/eval/router_unseen/v9_retick/v8/sealed_labels.jsonl"
+  ],
+  "sha": 249,
+  "projects": 1,
   "rows_rejected": 0
  },
  "overlap_rows_removed_before_labelling_counts": 102,
@@ -256,7 +261,60 @@
   ],
   "no_duplication_or_synthesis": true,
   "other_cap_train": 300,
-  "other_train_before_cap": 718
+  "other_train_before_cap": 718,
+  "train": 1602,
+  "val": 880,
+  "train_counts": {
+   "RFI": 27,
+   "submittal": 31,
+   "transmittal": 12,
+   "VO/CO": 5,
+   "change request": 24,
+   "claim": 10,
+   "payment application": 9,
+   "payment certificate": 11,
+   "drawing": 400,
+   "specification": 66,
+   "schedule": 50,
+   "report": 123,
+   "correspondence": 79,
+   "BOQ": 76,
+   "contract": 136,
+   "method statement": 27,
+   "meeting minutes": 58,
+   "NCR": 19,
+   "inspection request": 48,
+   "site instruction": 48,
+   "register/log": 43,
+   "other": 300
+  },
+  "val_counts": {
+   "RFI": 7,
+   "submittal": 4,
+   "transmittal": 1,
+   "VO/CO": 1,
+   "change request": 4,
+   "claim": 1,
+   "payment application": 1,
+   "payment certificate": 2,
+   "drawing": 658,
+   "specification": 7,
+   "schedule": 8,
+   "report": 43,
+   "correspondence": 10,
+   "BOQ": 8,
+   "contract": 11,
+   "method statement": 5,
+   "meeting minutes": 10,
+   "NCR": 2,
+   "inspection request": 7,
+   "site instruction": 8,
+   "register/log": 6,
+   "other": 76
+  },
+  "drawing_before_cap": 3296,
+  "other_before_cap": 791,
+  "label_set": "v9"
  },
  "thin_labels_under_30_train": {
   "RFI": 29,
@@ -321,5 +379,40 @@
    "d4d93c61",
    2
   ]
- ]
+ ],
+ "pr5": {
+  "pr2_owner_sources_unmasked": {
+   "rows": 219,
+   "positives": 196,
+   "templates_train_only": 23,
+   "label_notes_v8_definition_rule": 19,
+   "rows_in_train": 191,
+   "rows_in_val": 0,
+   "v9_relabel_changes": 0,
+   "aaz_isolation": {
+    "aaz_rows": 71,
+    "sha_hits": 0,
+    "first300_hits": 0,
+    "gram12_pairs": 4,
+    "gram12_max_shared": 2,
+    "max_jaccard_5shingle": 0.0119,
+    "verdict": "isolated"
+   },
+   "provenance": "owner sources, internal only"
+  },
+  "change_request_v9": {
+   "rows": 26,
+   "change_request_rows": 25,
+   "projects": 15,
+   "rows_train": 23,
+   "rows_val": 3,
+   "teacher": "Qwen/Qwen3-8B temp 0, v9 prompt",
+   "floor": 0.7,
+   "dedupe_dropped": 1,
+   "isolation": "sha, project, 12-word shingles vs sealed v5/v8/v9-retick: 0; source domains disjoint from sealed sets and from v9 CR sealed candidates",
+   "provenance": "public filled documents, internal only"
+  },
+  "rows_in": 5869,
+  "kept_at_floor": 5869
+ }
 }

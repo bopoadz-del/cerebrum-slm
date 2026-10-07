@@ -1,6 +1,6 @@
 # Router dataset card
 
-Status: v8 21-label teacher relabel of the cleaned training pool, plus owner-laptop additions and a thin-label public/laptop top-up. Human agreement remains as recorded (0.875, kappa 0.864). Sealed v5 and sealed v8 are untouched. No training run in this PR.
+Status: pr5 adds the unmasked pr2 owner-source rows and v9 change-request rows and re-runs the split on the v9 label set (see the pr5 section). Earlier status: v8 21-label teacher relabel of the cleaned training pool, plus owner-laptop additions and a thin-label public/laptop top-up. Human agreement remains as recorded (0.875, kappa 0.864). Sealed v5 and sealed v8 are untouched. No training run in this PR.
 
 Model version: Qwen/Qwen3-8B
 
@@ -21,6 +21,44 @@ Allowed labels:
 ```
 
 Labels come from document content only. Filename, folder, source path, source site and form number do not decide a label and do not appear in training text.
+
+## pr5: unmasked pr2 owner sources and v9 change-request rows (label set v9, 22 labels)
+
+Masking ruling (owner, 2026-10-07): the router adapter trains on unmasked rows. See `docs/audit/router_masking_ruling.md`. The name-blind check (`scripts/router/name_blind.py`) is the gate that replaces masking for the router.
+
+- `data/router/additions_owner_sources_pr2.jsonl`: the 219 pr2 owner-source rows in their ORIGINAL unmasked text (196 positives, 23 blank-template negatives). 19 rows keep the label note `label_source: v8_definition_rule` with `teacher_label` for owner review. Templates are label `other`, train only, inside the other cap, never in val. Provenance: owner sources, internal only. Project ids are opaque (`pr2_pNN`).
+- AAZ isolation result (recorded before this PR): 71 AAZ rows against sealed v5 (64) and v8 (185): sha hits 0, first-300 hits 0, 12-word shingle pairs 4 (at most 2 shared shingles each), max 5-shingle Jaccard 0.012. Isolated.
+- v9 relabel applied to the pr2 rows by content (change-request type content -> change request; variation settlement recommendation -> report): 0 rows qualified, 0 label changes.
+- `data/router/additions_change_request_v9.jsonl`: 26 rows from public FILLED change-request documents (COR, PCO, proposal requests, change proposals) about the works, from 15 projects. Labelled by the v9 teacher (Qwen/Qwen3-8B, temperature 0, v9 prompt) at the 0.7 floor: 25 change request, 1 VO/CO. One near-duplicate row dropped. Project ids are opaque (`cr9_pNN`); each project is one split group. Source sites are not stored; a domain hash is kept for the isolation test. Internal only.
+- Sealed v9 change-request candidates (14, from other projects and other domains) are with the owner for ticking. They are not in the sealed set and not in training. `data/router/cr_v9_sealed_candidates_isolation.json` holds only their hashes.
+- Isolation: sha + project against sealed v5, v8 and both v9 re-tick copies (rejected 0); 12-word shingles against sealed v8 excerpts: 0; change-request source domains are disjoint from every sealed set and from the pending candidates.
+
+Split re-run on v9 labels, same procedure (CANARY drop, 0.7 floor, split_v2 series-grouped stratified, seed 20261006, drawing cap 400, other cap 300). Train 1602, val 880 (were 1482 / 848). pr2 rows in val: 0. Change-request rows: train 23, val 3 (new rows only).
+
+| label | train before | train after | val before | val after |
+| --- | ---: | ---: | ---: | ---: |
+| RFI | 27 | 27 | 7 | 7 |
+| submittal | 29 | 31 | 4 | 4 |
+| transmittal | 12 | 12 | 1 | 1 |
+| VO/CO | 5 | 5 | 0 | 1 |
+| change request | 3 | 24 | 0 | 4 |
+| claim | 1 | 10 | 0 | 1 |
+| payment application | 4 | 9 | 1 | 1 |
+| payment certificate | 7 | 11 | 1 | 2 |
+| drawing | 400 | 400 | 652 | 658 |
+| specification | 66 | 66 | 3 | 7 |
+| schedule | 49 | 50 | 8 | 8 |
+| report | 108 | 123 | 44 | 43 |
+| correspondence | 71 | 79 | 7 | 10 |
+| BOQ | 73 | 76 | 2 | 8 |
+| contract | 134 | 136 | 11 | 11 |
+| method statement | 29 | 27 | 3 | 5 |
+| meeting minutes | 58 | 58 | 10 | 10 |
+| NCR | 4 | 19 | 0 | 2 |
+| inspection request | 27 | 48 | 7 | 7 |
+| site instruction | 48 | 48 | 8 | 8 |
+| register/log | 27 | 43 | 3 | 6 |
+| other | 300 | 300 | 76 | 76 |
 
 ## Pool preparation
 
