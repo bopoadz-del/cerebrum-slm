@@ -23,7 +23,7 @@
   "register/log",
   "other"
  ],
- "base_commit_note": "data PR thin-v9 must land on main at 5226aa0 (PR #47) or later",
+ "base_commit_note": "data PR thin-v9b must land on main at db107de (PR #50) or later; system messages are the current v9 prompt (with the directs / asks-or-prices design rule from PR #49)",
  "sealed_exclusions": {
   "files": [
    "data/eval/router_unseen/sealed_labels.jsonl",
@@ -263,15 +263,15 @@
   "no_duplication_or_synthesis": true,
   "other_cap_train": 300,
   "other_train_before_cap": 718,
-  "train": 1681,
-  "val": 894,
+  "train": 1712,
+  "val": 900,
   "train_counts": {
    "RFI": 37,
-   "submittal": 30,
+   "submittal": 31,
    "transmittal": 12,
-   "VO/CO": 39,
-   "change request": 27,
-   "claim": 14,
+   "VO/CO": 49,
+   "change request": 45,
+   "claim": 19,
    "payment application": 37,
    "payment certificate": 12,
    "drawing": 400,
@@ -279,8 +279,8 @@
    "schedule": 50,
    "report": 123,
    "correspondence": 80,
-   "BOQ": 76,
-   "contract": 136,
+   "BOQ": 75,
+   "contract": 134,
    "method statement": 27,
    "meeting minutes": 58,
    "NCR": 18,
@@ -291,11 +291,11 @@
   },
   "val_counts": {
    "RFI": 6,
-   "submittal": 5,
+   "submittal": 4,
    "transmittal": 1,
    "VO/CO": 7,
-   "change request": 5,
-   "claim": 2,
+   "change request": 8,
+   "claim": 3,
    "payment application": 6,
    "payment certificate": 2,
    "drawing": 658,
@@ -303,8 +303,8 @@
    "schedule": 8,
    "report": 43,
    "correspondence": 10,
-   "BOQ": 8,
-   "contract": 11,
+   "BOQ": 9,
+   "contract": 13,
    "method statement": 5,
    "meeting minutes": 10,
    "NCR": 3,
@@ -549,5 +549,102 @@
     "other": 76
    }
   }
+ },
+ "thin_v9b": {
+  "rows": 38,
+  "rows_in_train": 34,
+  "rows_in_val": 3,
+  "by_label": {
+   "change request": {
+    "rows": 21,
+    "projects": 16,
+    "train": 18,
+    "val": 3
+   },
+   "VO/CO": {
+    "rows": 10,
+    "projects": 8,
+    "train": 10,
+    "val": 0
+   },
+   "other": {
+    "rows": 1,
+    "projects": 1,
+    "train": 0,
+    "val": 0
+   },
+   "claim": {
+    "rows": 6,
+    "projects": 2,
+    "train": 6,
+    "val": 0
+   }
+  },
+  "pairs": {
+   "complete": 19,
+   "in_train": 16,
+   "in_val": 3,
+   "projects": 15,
+   "record": "data/router/vo_cr_pairs_v9b.json"
+  },
+  "role_mismatch_dropped": 1,
+  "gate_12gram_vs_sealed_dropped": 0,
+  "grouping": "one project per source domain; a domain already used by thin-v9 or v9 change-request rows keeps that project and split group",
+  "teacher": "Qwen/Qwen3-8B temp 0, v9 labels, floor 0.7; labels from content only; text passed through router.strip_source_tags before labelling",
+  "provenance": "public filled documents (no blank templates); internal only; source sites not stored (domain sha256 only)",
+  "previous_split": {
+   "train": 1681,
+   "val": 894,
+   "train_counts": {
+    "RFI": 37,
+    "submittal": 30,
+    "transmittal": 12,
+    "VO/CO": 39,
+    "change request": 27,
+    "claim": 14,
+    "payment application": 37,
+    "payment certificate": 12,
+    "drawing": 400,
+    "specification": 66,
+    "schedule": 50,
+    "report": 123,
+    "correspondence": 80,
+    "BOQ": 76,
+    "contract": 136,
+    "method statement": 27,
+    "meeting minutes": 58,
+    "NCR": 18,
+    "inspection request": 48,
+    "site instruction": 48,
+    "register/log": 43,
+    "other": 300
+   },
+   "val_counts": {
+    "RFI": 6,
+    "submittal": 5,
+    "transmittal": 1,
+    "VO/CO": 7,
+    "change request": 5,
+    "claim": 2,
+    "payment application": 6,
+    "payment certificate": 2,
+    "drawing": 658,
+    "specification": 7,
+    "schedule": 8,
+    "report": 43,
+    "correspondence": 10,
+    "BOQ": 8,
+    "contract": 11,
+    "method statement": 5,
+    "meeting minutes": 10,
+    "NCR": 3,
+    "inspection request": 7,
+    "site instruction": 8,
+    "register/log": 6,
+    "other": 76
+   }
+  },
+  "rows_not_in_split": 1,
+  "rows_not_in_split_note": "rows kept in the additions file but not in train/val: the \"other\" train cap (300) drops them by the fixed-seed cap, as for every other \"other\" row"
  }
 }

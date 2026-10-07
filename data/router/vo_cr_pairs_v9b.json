@@ -1,0 +1,177 @@
+{
+ "note": "VO/CO vs change-request contrastive pairs: the issued instrument and the request for the SAME change, from the same public package. Pair membership is audit metadata only; it never reaches the prompt or the training text. Labels are the v9 teacher content labels.",
+ "pairs": [
+  {
+   "pair_id": "PAIR01",
+   "instrument": "2a60238ebcab030852c8d11c175117e519d24aa0a7f4a972099ff46f83d762a2",
+   "instrument_in": "data/router/additions_thin_v9.jsonl",
+   "requests": [
+    "caf90c0711ccc1616ca5f19924130c4bf32350b18a1b1ba2e2eee2fdc2779002"
+   ],
+   "lineage": "same package; the issued instrument cites the request by number, amount or scope and date (checked by reading both documents)"
+  },
+  {
+   "pair_id": "PAIR02",
+   "instrument": "9b4d1a0dd3171d8ebdc14622015522c3642d20d0d226d26fc693010cb11897f1",
+   "instrument_in": "data/router/additions_thin_v9.jsonl",
+   "requests": [
+    "582ddd9589c8a0952625b9d451b52b0749840426af62e472e9eaa7e0de835b4d"
+   ],
+   "lineage": "same package; the issued instrument cites the request by number, amount or scope and date (checked by reading both documents)"
+  },
+  {
+   "pair_id": "PAIR03",
+   "instrument": "1dc57bb928fcf249502c0fba16ccbc1788ace459f98969e8c8b0a8ea97015ddd",
+   "instrument_in": "data/router/additions_thin_v9.jsonl",
+   "requests": [
+    "054224bc29bb5bf30e5f7dcc391faa946d38aabdfe65f271d00e42fed40f7b7d"
+   ],
+   "lineage": "same package; the issued instrument cites the request by number, amount or scope and date (checked by reading both documents)"
+  },
+  {
+   "pair_id": "PAIR04",
+   "instrument": "ac3e3858ccfc44d77a5018026e22f702ff89f8f49068ec347c734e3963c1796c",
+   "instrument_in": "data/router/additions_thin_v9.jsonl",
+   "requests": [
+    "669e4ca3af2d38990c3e27f18abc355a336908cf0c8adf91e0bed0e553535077"
+   ],
+   "lineage": "same package; the issued instrument cites the request by number, amount or scope and date (checked by reading both documents)"
+  },
+  {
+   "pair_id": "PAIR05",
+   "instrument": "4f5b0d0fd60882e6101b2660973ce821b8035b4252fe80e5f5d6a9875891805d",
+   "instrument_in": "data/router/additions_thin_v9.jsonl",
+   "requests": [
+    "18e0bffba1fe8628aada3c1e78084ee8ed9b477e373ad78ac7d2ec73c423bc18"
+   ],
+   "lineage": "same package; the issued instrument cites the request by number, amount or scope and date (checked by reading both documents)"
+  },
+  {
+   "pair_id": "PAIR06",
+   "instrument": "63a060852f09d96a1229e9510926bbb780ee72268662531d12417cc3870e4882",
+   "instrument_in": "data/router/additions_thin_v9.jsonl",
+   "requests": [
+    "39a9f5a23b0a0f8eefca5c33029968f08ecc0317bbb597614975ac6de72c5028"
+   ],
+   "lineage": "same package; the issued instrument cites the request by number, amount or scope and date (checked by reading both documents)"
+  },
+  {
+   "pair_id": "PAIR07",
+   "instrument": "63a060852f09d96a1229e9510926bbb780ee72268662531d12417cc3870e4882",
+   "instrument_in": "data/router/additions_thin_v9.jsonl",
+   "requests": [
+    "829d9a043dca564b5dfe47717c6a9b275e1cc00b686f7f596d9952fea4416520"
+   ],
+   "lineage": "same package; the issued instrument cites the request by number, amount or scope and date (checked by reading both documents)"
+  },
+  {
+   "pair_id": "PAIR08",
+   "instrument": "439507abd369a72fdafdc56bf17b0fb3a6a41c9325b6b37a879870087d5019c6",
+   "instrument_in": "data/router/additions_thin_v9.jsonl",
+   "requests": [
+    "fc0e696de2d7ebc8a7f9b57407942123270db459ba186e56dfc5d08dd9f9f8b1"
+   ],
+   "lineage": "same package; the issued instrument cites the request by number, amount or scope and date (checked by reading both documents)"
+  },
+  {
+   "pair_id": "PAIR09",
+   "instrument": "439507abd369a72fdafdc56bf17b0fb3a6a41c9325b6b37a879870087d5019c6",
+   "instrument_in": "data/router/additions_thin_v9.jsonl",
+   "requests": [
+    "c0be89b861d0e316301d42273caee93e53d581648762a4a64ae420438a24633e"
+   ],
+   "lineage": "same package; the issued instrument cites the request by number, amount or scope and date (checked by reading both documents)"
+  },
+  {
+   "pair_id": "PAIR10",
+   "instrument": "d9f53390f71c0c44e5bf57669a2654197b1bb09c970029398ebc50fde8538632",
+   "instrument_in": "data/router/additions_thin_v9b.jsonl",
+   "requests": [
+    "c00f4e9d8ef1ab8678c66426ea8a480d1007e733ed661fa0a99ead59bce09ca5"
+   ],
+   "lineage": "same package; the issued instrument cites the request by number, amount or scope and date (checked by reading both documents)"
+  },
+  {
+   "pair_id": "PAIR11",
+   "instrument": "d9f53390f71c0c44e5bf57669a2654197b1bb09c970029398ebc50fde8538632",
+   "instrument_in": "data/router/additions_thin_v9b.jsonl",
+   "requests": [
+    "c0761233c6dbe1f5e4c0f79e6223a8e3a901ed14349d072e75d7e4f02a02d3a1"
+   ],
+   "lineage": "same package; the issued instrument cites the request by number, amount or scope and date (checked by reading both documents)"
+  },
+  {
+   "pair_id": "PAIR12",
+   "instrument": "ab38eef79b27a6471c89ccc257f3cccc844f9badcbeace45ed6c8a576c16d344",
+   "instrument_in": "data/router/additions_thin_v9b.jsonl",
+   "requests": [
+    "500fea8b524ac95e902b31d0802c791feb815b2529ce45265cf446e42400c6c5"
+   ],
+   "lineage": "same package; the issued instrument cites the request by number, amount or scope and date (checked by reading both documents)"
+  },
+  {
+   "pair_id": "PAIR13",
+   "instrument": "71598471d737af5cc219875b069f733972993a37ad79df31e7d02e8d1a409392",
+   "instrument_in": "data/router/additions_thin_v9b.jsonl",
+   "requests": [
+    "1b987c4587aee26ee84c9d707dff8299dff86f624b9f09345d768c7577da7ce9"
+   ],
+   "lineage": "same package; the issued instrument cites the request by number, amount or scope and date (checked by reading both documents)"
+  },
+  {
+   "pair_id": "PAIR15",
+   "instrument": "af5d64daaf40722b7b241c341e29145ca5a31fff296242499e9fe8c4f50c81f7",
+   "instrument_in": "data/router/additions_thin_v9b.jsonl",
+   "requests": [
+    "d5b81b230d3d5adb5c90175c0c4c9100f6ce73c668ec190cdc561a1d3722efc7"
+   ],
+   "lineage": "same package; the issued instrument cites the request by number, amount or scope and date (checked by reading both documents)"
+  },
+  {
+   "pair_id": "PAIR16",
+   "instrument": "bc09421aa7d72eb8f3ec2bb6590310a640363de9d56f2e62f747503a1aca62b7",
+   "instrument_in": "data/router/additions_thin_v9b.jsonl",
+   "requests": [
+    "53345c1cc725a834dd2a8e7d70e163b78b82930cd4b9cebb4834141fe00dd5b6"
+   ],
+   "lineage": "same package; the issued instrument cites the request by number, amount or scope and date (checked by reading both documents)"
+  },
+  {
+   "pair_id": "PAIR17",
+   "instrument": "491bb0800ef047487ff9c3c604eb9d85a686572b3d2eb0872beceb8df91fd1fc",
+   "instrument_in": "data/router/additions_thin_v9b.jsonl",
+   "requests": [
+    "476d4024fcac2bdd255d7fca6ae155101a27888017a485989174294df956cb72"
+   ],
+   "lineage": "same package; the issued instrument cites the request by number, amount or scope and date (checked by reading both documents)"
+  },
+  {
+   "pair_id": "PAIR18",
+   "instrument": "f441572452f4565dcc1a6f250ae299adf6dcce8b6dfb1a95574897e507b97a62",
+   "instrument_in": "data/router/additions_thin_v9b.jsonl",
+   "requests": [
+    "e9209550600bb6e10d2065684aa321c73c1536f3c27f861e3485ef0f8437c454"
+   ],
+   "lineage": "same package; the issued instrument cites the request by number, amount or scope and date (checked by reading both documents)"
+  },
+  {
+   "pair_id": "PAIR19",
+   "instrument": "8749a1d1d22feaed2a3544375122fc5a9a946dff2470908c7b65dcb692e3481c",
+   "instrument_in": "data/router/additions_thin_v9b.jsonl",
+   "requests": [
+    "2ea03c1db681fdd7256a3dbdc25658f18371f150402113f595c20e60c1809895"
+   ],
+   "lineage": "same package; the issued instrument cites the request by number, amount or scope and date (checked by reading both documents)"
+  },
+  {
+   "pair_id": "PAIR20",
+   "instrument": "686b66165d99708624ed25e0ba607d6fd9493123bfd45a87a5c84e1a12570c2c",
+   "instrument_in": "data/router/additions_thin_v9b.jsonl",
+   "requests": [
+    "7adbd4709a507cf81c7e21fc708b01c1835be657da917ddaa34c8c6775d05929",
+    "bdbbf08a4bc3cd5bb5c323d000c2de60a1f0ebd245934cbf93e899bdb86665ae"
+   ],
+   "lineage": "same package; the issued instrument cites the request by number, amount or scope and date (checked by reading both documents)"
+  }
+ ]
+}
