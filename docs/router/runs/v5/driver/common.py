@@ -5,7 +5,7 @@ import os
 import sys
 from pathlib import Path
 
-REPO = Path("/tmp/cslm-a35e160")  # read-only, blob-verified copy of main at a35e160
+REPO = Path("/tmp/cslm-0e81e95")  # read-only, blob-verified copy of main at 0e81e95
 for entry in (REPO / "scripts", REPO / "src", REPO):
     text = str(entry)
     if text not in sys.path:
