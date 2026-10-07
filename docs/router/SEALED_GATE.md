@@ -40,3 +40,7 @@ Version 1 called `majority_gate.evaluate` on the real sealed gold for each const
 For each declared label the report is `{"label", "n", "recall", "passable"}`. `n` is the number of sealed gold documents of that label. `recall` is null when `n` is 0. `passable` is true only when `n` is at least 12. A label with `n` below 12 is marked `not passable`.
 
 `router_passed` is true only when `gate_v2["passed"]` is true and every declared label has `n` of at least 12. Nothing else is loosened. The v5 sealed set is not re-scored under this rule.
+
+## v9 sealed sets and the change-request addendum (pr9)
+
+`configs/router/sealed_eval.json` → `v9_sealed` lists the v9 sealed sets: `v9_retick/v5` (64), `v9_retick/v8` (185), and the new owner-ticked change-request addendum `v9_cr_addendum` (14). Together they make 263 rows. The addendum is a new file; no existing sealed row was swapped. Change request has 14 sealed rows in the combined set, so it is passable at `MIN_SEALED_PER_LABEL = 12`. The gate (`evaluate_sealed_gate_v8`) and the parser are unchanged. Each set is scored at most once per adapter. The combined view is computed from those single predictions and is never re-sampled.

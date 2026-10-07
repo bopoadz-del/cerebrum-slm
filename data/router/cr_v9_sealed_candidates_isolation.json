@@ -1,5 +1,5 @@
 {
- "note": "Sealed v9 change-request CANDIDATES awaiting owner ticks (Drive SLM/router_sealed_v9_cr). Not in the sealed set and not in training. Hashes only: no text, no source site. Rows enter a v9 addendum only after owner ticks.",
+ "note": "Sealed v9 change-request candidates. The owner ticked all 14 as change request (order 2026-10-07 21:33 +04); they are sealed as data/eval/router_unseen/v9_cr_addendum/sealed_labels.jsonl. Not in training. Hashes only: no text, no source site.",
  "candidates": [
   {
    "id": "V9CR-S001",
