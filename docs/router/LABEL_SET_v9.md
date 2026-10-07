@@ -28,6 +28,7 @@ teacher model as instructions. They are never training pairs. Machine-readable c
 - Letter-form notices that are a claim, RFI, NCR, site instruction or payment application take that specific label, not correspondence.
 - A register lists many items of one kind; a single item listed in it takes its own label (one VO is VO/CO; the VO log is register/log).
 - Change request is about the works (a scope change asked for or priced, not yet instructed); claim is about entitlement (time or money asserted with particulars). A document that directs the change is VO/CO even when the price is not agreed.
+- Directs the change = VO/CO, asks or prices the change = change request.
 
 ## Labels (22)
 
