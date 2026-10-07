@@ -1,0 +1,28 @@
+{
+  "compared": 185,
+  "overall": 0.9675675675675676,
+  "per_label": {
+    "RFI": 1.0,
+    "submittal": 1.0,
+    "transmittal": 1.0,
+    "VO/CO": 1.0,
+    "claim": 1.0,
+    "payment application": 0.0,
+    "payment certificate": null,
+    "drawing": 1.0,
+    "specification": 1.0,
+    "schedule": 1.0,
+    "report": 1.0,
+    "correspondence": 0.9166666666666666,
+    "BOQ": 1.0,
+    "contract": 1.0,
+    "method statement": 1.0,
+    "meeting minutes": 1.0,
+    "NCR": 1.0,
+    "inspection request": null,
+    "site instruction": 0.875,
+    "register/log": 0.8666666666666667,
+    "other": 0.9285714285714286
+  },
+  "note": "Agreement does not change sealed labels."
+}
