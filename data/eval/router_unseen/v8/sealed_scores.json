@@ -1,0 +1,465 @@
+{
+  "repo_commit": "756ed728b6c42ed01af640d638eb6f12b58a6db9",
+  "checkpoint": "tinker://b0857111-57c4-56f6-bf9b-ed3f8021826b:train:0/sampler_weights/router-qwen3.5-4b-lora-r16-epoch2",
+  "base_model": "Qwen/Qwen3.5-4B",
+  "n_scored": 185,
+  "n_main": 164,
+  "n_addendum": 21,
+  "dropped_unsure": [
+    "V8-096",
+    "V8-110",
+    "V8-157"
+  ],
+  "main_scored_at": "2026-10-07T04:34:00+04:00 to 04:35:13+04:00 (before the addendum was returned; predictions reused unchanged)",
+  "addendum_scored_at": "2026-10-07T05:28:32+04:00",
+  "macro_recall": 0.42964053490369275,
+  "accuracy": 0.42162162162162165,
+  "correct": 78,
+  "gate_v2_passed": true,
+  "router_passed": false,
+  "evaluate_sealed_gate_v8": {
+    "router_passed": false,
+    "min_sealed_per_label": 12,
+    "per_label": [
+      {
+        "label": "RFI",
+        "n": 4,
+        "recall": 1.0,
+        "passable": false,
+        "status": "not passable"
+      },
+      {
+        "label": "submittal",
+        "n": 13,
+        "recall": 0.8461538461538461,
+        "passable": true
+      },
+      {
+        "label": "transmittal",
+        "n": 8,
+        "recall": 1.0,
+        "passable": false,
+        "status": "not passable"
+      },
+      {
+        "label": "VO/CO",
+        "n": 11,
+        "recall": 0.7272727272727273,
+        "passable": false,
+        "status": "not passable"
+      },
+      {
+        "label": "claim",
+        "n": 2,
+        "recall": 0.0,
+        "passable": false,
+        "status": "not passable"
+      },
+      {
+        "label": "payment application",
+        "n": 1,
+        "recall": 1.0,
+        "passable": false,
+        "status": "not passable"
+      },
+      {
+        "label": "payment certificate",
+        "n": 0,
+        "recall": null,
+        "passable": false,
+        "status": "not passable"
+      },
+      {
+        "label": "drawing",
+        "n": 13,
+        "recall": 0.9230769230769231,
+        "passable": true
+      },
+      {
+        "label": "specification",
+        "n": 12,
+        "recall": 1.0,
+        "passable": true
+      },
+      {
+        "label": "schedule",
+        "n": 14,
+        "recall": 0.35714285714285715,
+        "passable": true
+      },
+      {
+        "label": "report",
+        "n": 13,
+        "recall": 1.0,
+        "passable": true
+      },
+      {
+        "label": "correspondence",
+        "n": 12,
+        "recall": 0.16666666666666666,
+        "passable": true
+      },
+      {
+        "label": "BOQ",
+        "n": 12,
+        "recall": 0.0,
+        "passable": true
+      },
+      {
+        "label": "contract",
+        "n": 12,
+        "recall": 0.0,
+        "passable": true
+      },
+      {
+        "label": "method statement",
+        "n": 14,
+        "recall": 0.14285714285714285,
+        "passable": true
+      },
+      {
+        "label": "meeting minutes",
+        "n": 5,
+        "recall": 0.0,
+        "passable": false,
+        "status": "not passable"
+      },
+      {
+        "label": "NCR",
+        "n": 2,
+        "recall": 0.0,
+        "passable": false,
+        "status": "not passable"
+      },
+      {
+        "label": "inspection request",
+        "n": 0,
+        "recall": null,
+        "passable": false,
+        "status": "not passable"
+      },
+      {
+        "label": "site instruction",
+        "n": 8,
+        "recall": 0.0,
+        "passable": false,
+        "status": "not passable"
+      },
+      {
+        "label": "register/log",
+        "n": 15,
+        "recall": 0.0,
+        "passable": true
+      },
+      {
+        "label": "other",
+        "n": 14,
+        "recall": 0.0,
+        "passable": true
+      }
+    ],
+    "gate_v2": {
+      "passed": true,
+      "reason": "sealed gate",
+      "macro_recall": 0.42964053490369275,
+      "beats_every_constant": true,
+      "every_constant_fails_majority_gate": true
+    }
+  },
+  "min_sealed_per_label": 12,
+  "gate_v2_rule": "Version 2. The model passes only if macro recall beats every constant single-label predictor on the sealed rows, and each of those constant predictors fails the existing majority-gate thresholds on its own. Each constant is evaluated per label, not only when that label is the set majority. Macro recall is the mean of per-label recall over labels present in the sealed rows. The constant predictors include always-drawing, the training majority, and always-report, the sealed-set majority. A tie does not beat a constant predictor. The majority gate is scripts/router/majority_gate.py with majority_class_fail left unchanged. The val gate is unchanged. sealed_scoring stays false. Version 2 applies only to a future fresh sealed set. The v5 sealed set stays FAIL under version 1 and is not re-scored.",
+  "majority_class_fail": true,
+  "per_label_recall": {
+    "RFI": 1.0,
+    "submittal": 0.8461538461538461,
+    "transmittal": 1.0,
+    "VO/CO": 0.7272727272727273,
+    "claim": 0.0,
+    "payment application": 1.0,
+    "payment certificate": null,
+    "drawing": 0.9230769230769231,
+    "specification": 1.0,
+    "schedule": 0.35714285714285715,
+    "report": 1.0,
+    "correspondence": 0.16666666666666666,
+    "BOQ": 0.0,
+    "contract": 0.0,
+    "method statement": 0.14285714285714285,
+    "meeting minutes": 0.0,
+    "NCR": 0.0,
+    "inspection request": null,
+    "site instruction": 0.0,
+    "register/log": 0.0,
+    "other": 0.0
+  },
+  "labels_n_lt_12": [
+    "RFI",
+    "transmittal",
+    "VO/CO",
+    "claim",
+    "payment application",
+    "payment certificate",
+    "meeting minutes",
+    "NCR",
+    "inspection request",
+    "site instruction"
+  ],
+  "main_only": {
+    "n": 164,
+    "macro_recall": 0.4844645550527903,
+    "correct": 69,
+    "accuracy": 0.42073170731707316
+  },
+  "addendum_only": {
+    "n": 21,
+    "macro_recall": 0.38095238095238093,
+    "correct": 9,
+    "accuracy": 0.42857142857142855
+  },
+  "constant_predictors": {
+    "RFI": {
+      "macro_recall": 0.05263157894736842,
+      "accuracy": 0.021621621621621623,
+      "model_beats": true
+    },
+    "submittal": {
+      "macro_recall": 0.05263157894736842,
+      "accuracy": 0.07027027027027027,
+      "model_beats": true
+    },
+    "transmittal": {
+      "macro_recall": 0.05263157894736842,
+      "accuracy": 0.043243243243243246,
+      "model_beats": true
+    },
+    "VO/CO": {
+      "macro_recall": 0.05263157894736842,
+      "accuracy": 0.05945945945945946,
+      "model_beats": true
+    },
+    "claim": {
+      "macro_recall": 0.05263157894736842,
+      "accuracy": 0.010810810810810811,
+      "model_beats": true
+    },
+    "payment application": {
+      "macro_recall": 0.05263157894736842,
+      "accuracy": 0.005405405405405406,
+      "model_beats": true
+    },
+    "payment certificate": {
+      "macro_recall": 0.0,
+      "accuracy": 0.0,
+      "model_beats": true
+    },
+    "drawing": {
+      "macro_recall": 0.05263157894736842,
+      "accuracy": 0.07027027027027027,
+      "model_beats": true
+    },
+    "specification": {
+      "macro_recall": 0.05263157894736842,
+      "accuracy": 0.06486486486486487,
+      "model_beats": true
+    },
+    "schedule": {
+      "macro_recall": 0.05263157894736842,
+      "accuracy": 0.07567567567567568,
+      "model_beats": true
+    },
+    "report": {
+      "macro_recall": 0.05263157894736842,
+      "accuracy": 0.07027027027027027,
+      "model_beats": true
+    },
+    "correspondence": {
+      "macro_recall": 0.05263157894736842,
+      "accuracy": 0.06486486486486487,
+      "model_beats": true
+    },
+    "BOQ": {
+      "macro_recall": 0.05263157894736842,
+      "accuracy": 0.06486486486486487,
+      "model_beats": true
+    },
+    "contract": {
+      "macro_recall": 0.05263157894736842,
+      "accuracy": 0.06486486486486487,
+      "model_beats": true
+    },
+    "method statement": {
+      "macro_recall": 0.05263157894736842,
+      "accuracy": 0.07567567567567568,
+      "model_beats": true
+    },
+    "meeting minutes": {
+      "macro_recall": 0.05263157894736842,
+      "accuracy": 0.02702702702702703,
+      "model_beats": true
+    },
+    "NCR": {
+      "macro_recall": 0.05263157894736842,
+      "accuracy": 0.010810810810810811,
+      "model_beats": true
+    },
+    "inspection request": {
+      "macro_recall": 0.0,
+      "accuracy": 0.0,
+      "model_beats": true
+    },
+    "site instruction": {
+      "macro_recall": 0.05263157894736842,
+      "accuracy": 0.043243243243243246,
+      "model_beats": true
+    },
+    "register/log": {
+      "macro_recall": 0.05263157894736842,
+      "accuracy": 0.08108108108108109,
+      "model_beats": true
+    },
+    "other": {
+      "macro_recall": 0.05263157894736842,
+      "accuracy": 0.07567567567567568,
+      "model_beats": true
+    }
+  },
+  "confusion_matrix_gold_rows_pred_cols": {
+    "RFI": {
+      "RFI": 4
+    },
+    "submittal": {
+      "submittal": 11,
+      "RFI": 2
+    },
+    "transmittal": {
+      "transmittal": 8
+    },
+    "VO/CO": {
+      "VO/CO": 8,
+      "RFI": 3
+    },
+    "claim": {
+      "RFI": 2
+    },
+    "payment application": {
+      "payment application": 1
+    },
+    "payment certificate": {},
+    "drawing": {
+      "drawing": 12,
+      "specification": 1
+    },
+    "specification": {
+      "specification": 12
+    },
+    "schedule": {
+      "claim": 3,
+      "schedule": 5,
+      "report": 3,
+      "RFI": 2,
+      "payment application": 1
+    },
+    "report": {
+      "report": 13
+    },
+    "correspondence": {
+      "correspondence": 2,
+      "RFI": 8,
+      "payment certificate": 2
+    },
+    "BOQ": {
+      "payment application": 6,
+      "specification": 2,
+      "schedule": 2,
+      "RFI": 1,
+      "report": 1
+    },
+    "contract": {
+      "payment application": 6,
+      "RFI": 5,
+      "claim": 1
+    },
+    "method statement": {
+      "specification": 12,
+      "method statement": 2
+    },
+    "meeting minutes": {
+      "correspondence": 5
+    },
+    "NCR": {
+      "transmittal": 1,
+      "claim": 1
+    },
+    "inspection request": {},
+    "site instruction": {
+      "RFI": 6,
+      "report": 1,
+      "correspondence": 1
+    },
+    "register/log": {
+      "drawing": 7,
+      "RFI": 4,
+      "report": 2,
+      "VO/CO": 1,
+      "unsure": 1
+    },
+    "other": {
+      "RFI": 2,
+      "payment certificate": 10,
+      "payment application": 1,
+      "specification": 1
+    }
+  },
+  "pred_counts": {
+    "submittal": 11,
+    "payment application": 15,
+    "report": 20,
+    "specification": 28,
+    "drawing": 19,
+    "correspondence": 8,
+    "claim": 5,
+    "transmittal": 9,
+    "schedule": 7,
+    "RFI": 39,
+    "VO/CO": 9,
+    "payment certificate": 12,
+    "method statement": 2,
+    "unsure": 1
+  },
+  "labels_outside_training_12": [
+    "payment application",
+    "BOQ",
+    "contract",
+    "method statement",
+    "meeting minutes",
+    "NCR",
+    "inspection request",
+    "site instruction",
+    "register/log"
+  ],
+  "pred_counts_for_labels_outside_training_12": {
+    "payment application": 15,
+    "BOQ": 0,
+    "contract": 0,
+    "method statement": 2,
+    "meeting minutes": 0,
+    "NCR": 0,
+    "inspection request": 0,
+    "site instruction": 0,
+    "register/log": 0
+  },
+  "extra_repo_literal_majority_check_on_model": {
+    "passed": true,
+    "reason": "not a majority-class predictor"
+  },
+  "sampling": {
+    "temperature": 0,
+    "top_p": 1,
+    "max_tokens": 32,
+    "enable_thinking": false,
+    "system": "router.teacher_label.prompt_for(labels)",
+    "input": "router.content.content_text(candidate) from candidates_v8.jsonl / candidates_v8_addendum.jsonl",
+    "parser": "router.parse_label.parse_router_output"
+  },
+  "v8_spent_for_adapter": true
+}

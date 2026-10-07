@@ -1,0 +1,19 @@
+﻿PRE_RUN_NOTE - router v8 sealed (main + addendum), written 2026-10-07T05:27:47+04:00 (Asia/Dubai) BEFORE the addendum run.
+
+Main (V8-001..167): 164 sealed rows scored ONCE on 2026-10-07 04:34:00-04:35:13 (+04:00), before the addendum existed.
+  No pre-run note was written for the main run. Result then: macro 0.4845, accuracy 0.4207 (69/164),
+  gate_v2.passed=True, router_passed=False. Those 164 predictions are reused unchanged; the main rows are NOT re-scored.
+Dropped before seal: V8-096, V8-110, V8-157 (unsure ticked / no single label).
+Addendum (V8-168..188): 21 rows, 0 unsure. Scored ONCE with the same checkpoint, prompt, sampling and parser:
+  checkpoint tinker://b0857111-57c4-56f6-bf9b-ed3f8021826b:train:0/sampler_weights/router-qwen3.5-4b-lora-r16-epoch2
+  repo 756ed728b6c42ed01af640d638eb6f12b58a6db9; system=router.teacher_label.prompt_for(labels);
+  user=router.content.content_text(candidate) from candidates_v8_addendum.jsonl;
+  SamplingParams(max_tokens=32, temperature=0, top_p=1, seed=lora.seed), enable_thinking=False;
+  parser router.parse_label.parse_router_output (v8 exact aliases). Nothing about reading answers changes.
+Combined evaluation (fixed now): evaluate_sealed_gate_v8 on all 185 rows, labels = configs/router/labels.json (21 v8 labels),
+  majority_class_fail from configs/router/sealed_eval.json. Gate unchanged, MIN_SEALED_PER_LABEL=12.
+Expected: router_passed=False. Combined gold n<12 for RFI 4, transmittal 8, VO/CO 11, claim 2, payment application 1,
+  payment certificate 0, meeting minutes 5, NCR 2, inspection request 0, site instruction 8.
+The adapter was trained on the old 12-label set (RFI, submittal, transmittal, VO/CO, claim, payment certificate, drawing,
+  spec, schedule, report, correspondence, other). v8 labels outside that set never appeared as training targets.
+After this run v8 is spent for this adapter. No sealed doc or label goes into training.
