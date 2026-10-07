@@ -23,7 +23,7 @@
   "register/log",
   "other"
  ],
- "base_commit_note": "data PR pr5 must land on main at 868e5af (v9 label set, PR #41) or later",
+ "base_commit_note": "data PR pr7 must land on main at a35e160 (PR #42) or later",
  "sealed_exclusions": {
   "files": [
    "data/eval/router_unseen/sealed_labels.jsonl",
@@ -313,7 +313,7 @@
    "other": 76
   },
   "drawing_before_cap": 3296,
-  "other_before_cap": 791,
+  "other_before_cap": 790,
   "label_set": "v9"
  },
  "thin_labels_under_30_train": {
@@ -414,5 +414,32 @@
   },
   "rows_in": 5869,
   "kept_at_floor": 5869
+ },
+ "encoded_bytes_rule": {
+  "rule": "router.content.is_mostly_encoded: encoded runs (>=64 chars of [A-Za-z0-9+/=_-], no whitespace) above 0.5 of non-whitespace characters = no content; applied in router.train_router.training_examples",
+  "rows_dropped_from_sources": {
+   "teacher_labels": 1,
+   "additions_owner_laptop": 0,
+   "additions_owner_sources_pr2": 0,
+   "additions_change_request_v9": 0
+  },
+  "rows_dropped_by_split_on_a35e160": {
+   "train": 1,
+   "val": 0
+  },
+  "resplit_same_seed_and_caps": {
+   "train": [
+    1602,
+    1602
+   ],
+   "val": [
+    880,
+    880
+   ],
+   "label_counts_changed": false,
+   "rows_swapped_train": 335,
+   "rows_swapped_val": 14,
+   "note": "one fewer pool row shifts group order and the other-cap sample; label counts are unchanged"
+  }
  }
 }

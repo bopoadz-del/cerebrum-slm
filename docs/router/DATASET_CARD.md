@@ -22,6 +22,12 @@ Allowed labels:
 
 Labels come from document content only. Filename, folder, source path, source site and form number do not decide a label and do not appear in training text.
 
+## pr7: encoded-bytes content rule
+
+Text that is mostly encoded bytes has no content. `router.content.is_mostly_encoded` counts encoded runs: unbroken stretches of at least 64 characters from the base64 / hex / url-safe alphabet (ASCII letters, digits, `+ / = _ -`) with no whitespace. When those runs exceed 0.5 of the non-whitespace characters, the row is not content. `router.train_router.training_examples` skips such rows, so they reach neither train nor val. The rule is structural, with no ids, names, labels or lists. Words in any language, codes, numbers and URLs fall far below the threshold; the highest non-encoded row in the committed data scores 0.45.
+
+Effect: 1 pool row dropped (an archive dumped as base64, label `other`, about 24k tokens). It was in train on a35e160 and in no val row. The split was re-run with the same seed and caps: train 1602, val 880, label counts unchanged. Because one pool row fewer shifts group order and the `other`-cap sample, 335 train rows and 14 val rows changed membership. Isolation: sealed rejected 0.
+
 ## pr5: unmasked pr2 owner sources and v9 change-request rows (label set v9, 22 labels)
 
 Masking ruling (owner, 2026-10-07): the router adapter trains on unmasked rows. See `docs/audit/router_masking_ruling.md`. The name-blind check (`scripts/router/name_blind.py`) is the gate that replaces masking for the router.

@@ -12,6 +12,7 @@ import json
 import random
 from pathlib import Path
 
+from router.content import is_mostly_encoded
 from router.guard import RouterWall
 from router.isolation import load_exclusions, require_isolated
 from router.labels import load_labels, load_sealed_config, repo_root
@@ -83,6 +84,9 @@ def require_no_paths(rows: list[dict]) -> list[dict]:
 def training_examples(rows: list[dict], labels: list[str]) -> list[dict]:
     """Assistant text is the teacher label only. Path fields are not copied.
 
+    Rows whose excerpt is mostly encoded bytes (``router.content.is_mostly_encoded``)
+    have no content and are not made into examples, so they reach neither train nor val.
+
     Source tags and file paths are stripped from the excerpt before it becomes
     the user message, and the result is checked again by ``require_no_paths``.
     """
@@ -96,6 +100,8 @@ def training_examples(rows: list[dict], labels: list[str]) -> list[dict]:
             excerpt = strip_source_tags(excerpt)
         if label not in allowed or not isinstance(excerpt, str) or not excerpt.strip():
             continue
+        if is_mostly_encoded(excerpt):
+            continue  # encoded bytes are not content (router.content encoded-bytes rule)
         item = {
             "project_id": row.get("project_id"),
             "messages": [
