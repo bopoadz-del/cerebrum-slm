@@ -1,0 +1,10 @@
+seals verified on main 868e5aff8dbee6e7d0ef65b3f7f598a01ce248a4 (279 blobs)
+env names loaded: 1; checkpoint=tinker://34e98763-665a-534a-906f-651cc7e8c6f3:train:0/sampler_weights/router-v3-qwen3.5-4b-lora-r16-epoch1; phase=score
+v5: n=64 macro=0.63992673992674 acc=0.6094 gate_v2=True router_passed=False
+v8: n=185 macro=0.6585068440331598 acc=0.7405 gate_v2=True router_passed=False
+DONE score
+seals verified on main 868e5aff8dbee6e7d0ef65b3f7f598a01ce248a4 (279 blobs)
+env names loaded: 1; checkpoint=tinker://34e98763-665a-534a-906f-651cc7e8c6f3:train:0/sampler_weights/router-v3-qwen3.5-4b-lora-r16-epoch1; phase=blind
+v5 name-blind: flips=2 gate={'passed': True, 'failing_passable_classes': [], 'min_per_label': 12}
+v8 name-blind: flips=4 gate={'passed': False, 'failing_passable_classes': ['BOQ', 'register/log'], 'min_per_label': 12}
+DONE blind

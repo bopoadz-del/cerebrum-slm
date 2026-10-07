@@ -1,0 +1,1 @@
+{"started": "2026-10-07T17:07:44+0400", "checkpoint": "tinker://34e98763-665a-534a-906f-651cc7e8c6f3:train:0/sampler_weights/router-v3-qwen3.5-4b-lora-r16-epoch1", "n": {"v5": 64, "v8": 185}, "system_sha256": "4bb6ee17041e680147008f87b8fc6faf5fa02cf36926b1e02e66a19231dac56b", "name_blind_sha256": "ddab8598152fcb17f2da072b756954f154a24bd60fb578d9a1569e9b47bdeabf"}
