@@ -1,0 +1,40 @@
+PRE_RUN_NOTE - router v5 epoch 1: sealed score on the v9 sealed sets (v5 re-tick, v8 re-tick, change-request addendum), plus the name-blind check
+Written 2026-10-07T21:47:52+0400 (Asia/Dubai), BEFORE any sealed prediction for this adapter.
+
+Owner order 2026-10-07 21:33 +04, step 2. Main: 584443f7c377b8dd43f1dc374ea3d7e9fb7da54a.
+  PR #45 (pr11, v6 mechanism) merged as f1bd032; PR #46 (pr9, CR addendum) merged as 584443f.
+  The local copy was rebuilt and every blob was checked against the GitHub tree (git LF bytes). 415 tests passed.
+  The driver re-checks every blob, and each sealed file against its sealed_labels.jsonl.sha256, before it samples.
+
+Adapter: tinker://4ec9bca9-f838-5d1a-ad89-7157820a3f09:train:0/sampler_weights/router-v5-qwen3.5-4b-lora-r16-epoch1
+  (Qwen/Qwen3.5-4B LoRA r16, run v5, v9 22-label prompt; change request was a training target: train 24, val 4).
+Why epoch 1: chosen BEFORE any sealed score on val macro recall (0.6579 vs 0.5317 for epoch 2), not on accuracy
+  (accuracy 0.8602 vs 0.8648). Recorded in docs/router/runs/v5/epoch_choice.json (PR #44).
+This adapter has never been scored on any sealed set. Each set is scored ONCE. No other adapter or epoch is scored.
+
+Sets (configs/router/sealed_eval.json v9_sealed, as merged):
+  v5_retick:   data/eval/router_unseen/v9_retick/v5/sealed_labels.jsonl  (64 rows, sha256 811ee9a7...8a125f37)
+  v8_retick:   data/eval/router_unseen/v9_retick/v8/sealed_labels.jsonl  (185 rows, sha256 ea7f175f...cf576d02)
+  cr_addendum: data/eval/router_unseen/v9_cr_addendum/sealed_labels.jsonl (14 rows, sha256 86429629...79587485)
+Each set is gated separately. The combined view is the three sets' predictions concatenated in that order, per v9_sealed.combined
+  (263 rows). Nothing is re-sampled, swapped or dropped for it. The addendum alone is single-label, so its own gate_v2 is degenerate,
+  and the gate is read on the combined view as v9_sealed.addendum_note says.
+Input text: user = router.content.content_text(candidate), the same as the v3 and v8 sealed runs. A content sha256 check against each
+  sealed row runs first. Dry check (no sampling): all 263 rows join, the shas match, and no text is empty.
+  Candidates: v5 = candidates_v5.jsonl + candidates_addendum.jsonl; v8 = candidates_v8.jsonl + candidates_v8_addendum.jsonl;
+  cr = router-cr/cand/candidates_sealed.jsonl (the pre-registered candidates).
+System prompt: router.teacher_label.prompt_for(labels), labels = configs/router/labels.json (v9, 22) at 584443f.
+Sampling: SamplingParams(max_tokens=32, temperature=0, top_p=1, seed=0), enable_thinking=False, using router.train_router._complete.
+Parser: router.train_router._as_label (parse_router_output, v9 exact aliases). Nothing about reading answers changes after the scores are seen.
+Gate: router.sealed_gate.evaluate_sealed_gate_v8 (gate v2 + MIN_SEALED_PER_LABEL=12), unchanged; majority_class_fail from sealed_eval.json.
+Expected: router_passed=False on every set and on the combined view.
+  The combined view has labels with n<12 (inspection request 0, NCR 2, payment application 3, payment certificate 3, claim 4,
+  meeting minutes 5, site instruction 8, RFI 9), so they are not passable. Change request n=14 in the combined view is passable.
+
+Name-blind check (phase 2, run only after the score is written). Same adapter, prompt, sampling and parser.
+  Blanker: scripts/router/name_blind.py, sha256 ddab8598152fcb17f2da072b756954f154a24bd60fb578d9a1569e9b47bdeabf (unchanged since the v3 run).
+  Rows with at least one blanked field (dry count): v5 41/64, v8 95/185, cr 11/14.
+  A flip is a changed prediction. Any flip on a passable class (gold n>=12 in that set or view) is a FAIL. The fix is more rows from
+  other projects, never a patch.
+Driver: score_v5e1_v9.py, sha256 59945b32ffae2904adb01deeaba8aa14dcf9f04174bf502ced25b436eba60b76. Each phase refuses a second run.
+Sealed rows and labels never enter training.
