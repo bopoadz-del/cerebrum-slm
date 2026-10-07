@@ -1,0 +1,12 @@
+{
+  "artifact_id": "router-v3-qwen3.5-4b-lora-r16-epoch2",
+  "base_model": "Qwen/Qwen3.5-4B",
+  "configured_base_model": "Qwen/Qwen3-4B",
+  "label_set": "v8 (21 labels)",
+  "rank": 16,
+  "epochs": 2,
+  "checkpoint": "tinker://34e98763-665a-534a-906f-651cc7e8c6f3:train:0/sampler_weights/router-v3-qwen3.5-4b-lora-r16-epoch2",
+  "status": "trained_substitute_base",
+  "wall": "WALL: Tinker does not serve Qwen/Qwen3-4B; trained on Qwen/Qwen3.5-4B with the same LoRA config.",
+  "note": "Run record only. configs/serve/router-epoch2.json in the repo is not changed by this run. No sealed score: v8 is spent; a sealed score needs a fresh v9."
+}
