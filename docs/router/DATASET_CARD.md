@@ -78,32 +78,34 @@ Isolation: `router.isolation.require_isolated` on every example against sealed v
 | label | train | val |
 | --- | ---: | ---: |
 | RFI | 29 | 7 |
-| submittal | 29 | 4 |
+| submittal | 31 | 4 |
 | transmittal | 12 | 1 |
-| VO/CO | 7 | 1 |
-| claim | 1 | 0 |
-| payment application | 4 | 1 |
-| payment certificate | 7 | 1 |
-| drawing | 400 | 652 |
-| specification | 66 | 3 |
-| schedule | 49 | 8 |
-| report | 107 | 43 |
-| correspondence | 71 | 7 |
-| BOQ | 73 | 2 |
-| contract | 134 | 11 |
-| method statement | 29 | 3 |
+| VO/CO | 8 | 1 |
+| claim | 10 | 1 |
+| payment application | 9 | 1 |
+| payment certificate | 11 | 2 |
+| drawing | 400 | 658 |
+| specification | 66 | 7 |
+| schedule | 50 | 8 |
+| report | 121 | 43 |
+| correspondence | 79 | 10 |
+| BOQ | 76 | 8 |
+| contract | 136 | 11 |
+| method statement | 27 | 5 |
 | meeting minutes | 58 | 10 |
-| NCR | 4 | 0 |
-| inspection request | 27 | 7 |
+| NCR | 18 | 3 |
+| inspection request | 50 | 7 |
 | site instruction | 48 | 8 |
-| register/log | 27 | 3 |
+| register/log | 43 | 6 |
 | other | 300 | 76 |
 
 ### Thin labels (train &lt; 30)
 
-RFI=29, submittal=29, transmittal=12, VO/CO=7, claim=1, payment application=4, payment certificate=7, method statement=29, NCR=4, inspection request=27, register/log=27
+RFI=29, transmittal=12, VO/CO=8, claim=10, payment application=9, payment certificate=11, method statement=27, NCR=18
 
 Full machine-readable summary: `data/router/split_counts.json`.
+
+Totals after pr2: train 1582, val 877 (was 1482 / 848). Train went up for claim 1→10, NCR 4→18, inspection request 27→50, payment application 4→9, payment certificate 7→11, VO/CO 7→8 and register/log 27→43. Transmittal stays at 12. Val holds no pr2 row. Some main rows moved between train and val because the grouped stratified split was re-run.
 
 ## Human agreement
 
@@ -114,3 +116,14 @@ Unchanged from the previous card (done; 0.875 / kappa 0.864). Sealed gate record
 - Additions batch (145) and thin-label top-up from the owner's laptop: provenance `owner laptop, content-labelled`. Outside DG2/Master Folder. Per-project caps about 10.
 - Public thin-label top-up: real project documents from NSIP published packs and other public archives. Domains already used for sealed v8 were excluded entirely. 12-word phrase check against sealed rows. Bot-check walls logged, never bypassed (see agent walls log).
 - Nothing from sealed v5 or sealed v8 enters training.
+
+## pr2: owner sources (internal corpus only, never publish)
+
+- 219 rows from six owner sources: an owner IPC/document bundle (one project), a QA/QC folder, a tender-document transfer, two QA/QC zips (processes; forms and templates) and one mobilisation/pricing zip. File: `data/router/additions_owner_sources_pr2.jsonl`.
+- Labels are set from document content only. Every row went through the v8 teacher (Qwen3-8B, temperature 0) at the 0.7 floor. No filename, folder, source path, site or form number decides a label or appears in the text. Form numbers and document codes are scrubbed.
+- Isolation runs on the original text against sealed v5 and v8: sha, excerpt sha, first 300 characters, 12-word shingles, filename/stem, and project/organisation entities. 0 project or organisation hits. Rows with shingle overlap were dropped. Dedupe against the main pool by file sha also dropped rows, including BOQ files already in main.
+- Redaction is a plain black-out. Detected project, location and organisation spans become `███`, found with spaCy NER plus title-block/header patterns and no word lists. Structure and form wording are kept. Emails and phones become `[EMAIL]`/`[PHONE]`. The 1482/848 rows merged earlier are NOT redacted; a follow-up PR is needed for them.
+- Blank forms and templates are negatives: label `other`, provenance `template`, tag `template`. They are train only, inside the other cap of 300 (20 rows), and never in val.
+- Procedure bodies: chunks carrying codes, numbering schemes, workflow/PM-system steps or sign-off chains were left out. Procedure chunks given an instance label (IR/NCR/RFI/submittal) were dropped, because a procedure is not an instance.
+- Filled audit or observation records with entries are positives. The teacher labelled 19 multi-item observation/defect/snag records as IR/NCR/site instruction, which v8 `is_not` excludes. These are labelled `register/log` (and 1 completed vendor audit `report`) from the v8 definitions, with `label_source: v8_definition_rule` and `teacher_label` kept for owner review.
+- Caps: about 15 per label per project, about 20 other per project, at most 10 chunks per document (25 for BOQ), at most 2 per template document. Project ids are opaque (`pr2_pNN`).
