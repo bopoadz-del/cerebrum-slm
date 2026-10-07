@@ -52,7 +52,7 @@ def test_prompt_uses_the_file_and_not_a_label_outside_it(tmp_path: Path) -> None
     assert "Combined forms: alpha stays alpha." in prompt
     assert "Use the document text only." in prompt
     assert "RFI" not in prompt
-    assert '{"label": "<one list entry or unsure>", "reason": "<one line>", "confidence": 0}' in prompt
+    assert '{"label": "<one list entry or unsure>", "reason": "<one line>", "confidence": <your confidence, a number between 0 and 1>}' in prompt
     assert "Use only the document text in the next message." in prompt
 
 

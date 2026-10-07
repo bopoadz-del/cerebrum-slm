@@ -15,7 +15,7 @@ The list is the only label set. Do not add a label.
 Use only the document text in the next message.
 Do not use a filename, a folder, a document id, or a project name. They are not provided.
 Reply with one JSON object and no other text:
-{"label": "<one list entry or unsure>", "reason": "<one line>", "confidence": 0}
+{"label": "<one list entry or unsure>", "reason": "<one line>", "confidence": <your confidence, a number between 0 and 1>}
 Allowed labels:
 {label_list}
 ```
