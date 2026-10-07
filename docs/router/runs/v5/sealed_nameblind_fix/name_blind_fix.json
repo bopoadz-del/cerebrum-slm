@@ -1,0 +1,618 @@
+{
+  "kind": "name-blind CHECK FIX (not a re-score)",
+  "checkpoint": "tinker://4ec9bca9-f838-5d1a-ad89-7157820a3f09:train:0/sampler_weights/router-v5-qwen3.5-4b-lora-r16-epoch1",
+  "base_commit": "64b1df9697c998c47f9a0160ec1906f8cc27bf0b",
+  "blanker": "scripts/router/name_blind.py (fixed)",
+  "blanker_sha256": "a235de3cbe5246b8cddc783bdfd0cc5d4ef6dae6dca6b04317de79b6e403e73c",
+  "old_blanker_sha256": "ddab8598152fcb17f2da072b756954f154a24bd60fb578d9a1569e9b47bdeabf",
+  "unblanked_side": "stored sealed_predictions.jsonl from the one sealed score",
+  "sets": {
+    "v5_retick": {
+      "n": 64,
+      "rows_with_blanked_fields": 39,
+      "fields_blanked": 106,
+      "flips_total": 2,
+      "flips_passable": 0,
+      "flips_not_passable": 2,
+      "flips_on_rows_with_nothing_blanked": 0,
+      "per_class": {
+        "RFI": {
+          "n": 5,
+          "flips": 0,
+          "correct_before": 5,
+          "correct_after": 5
+        },
+        "submittal": {
+          "n": 5,
+          "flips": 0,
+          "correct_before": 5,
+          "correct_after": 5
+        },
+        "transmittal": {
+          "n": 5,
+          "flips": 0,
+          "correct_before": 5,
+          "correct_after": 5
+        },
+        "VO/CO": {
+          "n": 5,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "change request": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "claim": {
+          "n": 2,
+          "flips": 0,
+          "correct_before": 2,
+          "correct_after": 2
+        },
+        "payment application": {
+          "n": 2,
+          "flips": 0,
+          "correct_before": 2,
+          "correct_after": 2
+        },
+        "payment certificate": {
+          "n": 3,
+          "flips": 0,
+          "correct_before": 1,
+          "correct_after": 1
+        },
+        "drawing": {
+          "n": 5,
+          "flips": 0,
+          "correct_before": 5,
+          "correct_after": 5
+        },
+        "specification": {
+          "n": 6,
+          "flips": 0,
+          "correct_before": 3,
+          "correct_after": 3
+        },
+        "schedule": {
+          "n": 5,
+          "flips": 0,
+          "correct_before": 3,
+          "correct_after": 3
+        },
+        "report": {
+          "n": 8,
+          "flips": 0,
+          "correct_before": 5,
+          "correct_after": 5
+        },
+        "correspondence": {
+          "n": 6,
+          "flips": 2,
+          "correct_before": 5,
+          "correct_after": 3
+        },
+        "BOQ": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "contract": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "method statement": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "meeting minutes": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "NCR": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "inspection request": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "site instruction": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "register/log": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "other": {
+          "n": 7,
+          "flips": 0,
+          "correct_before": 2,
+          "correct_after": 2
+        }
+      },
+      "gate": {
+        "passed": true,
+        "failing_passable_classes": [],
+        "min_per_label": 12
+      },
+      "accuracy_before": 0.671875,
+      "accuracy_after": 0.640625
+    },
+    "v8_retick": {
+      "n": 185,
+      "rows_with_blanked_fields": 89,
+      "fields_blanked": 214,
+      "flips_total": 2,
+      "flips_passable": 2,
+      "flips_not_passable": 0,
+      "flips_on_rows_with_nothing_blanked": 0,
+      "per_class": {
+        "RFI": {
+          "n": 4,
+          "flips": 0,
+          "correct_before": 4,
+          "correct_after": 4
+        },
+        "submittal": {
+          "n": 13,
+          "flips": 0,
+          "correct_before": 13,
+          "correct_after": 13
+        },
+        "transmittal": {
+          "n": 8,
+          "flips": 0,
+          "correct_before": 8,
+          "correct_after": 8
+        },
+        "VO/CO": {
+          "n": 11,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "change request": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "claim": {
+          "n": 2,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "payment application": {
+          "n": 1,
+          "flips": 0,
+          "correct_before": 1,
+          "correct_after": 1
+        },
+        "payment certificate": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "drawing": {
+          "n": 13,
+          "flips": 0,
+          "correct_before": 12,
+          "correct_after": 12
+        },
+        "specification": {
+          "n": 12,
+          "flips": 0,
+          "correct_before": 12,
+          "correct_after": 12
+        },
+        "schedule": {
+          "n": 14,
+          "flips": 0,
+          "correct_before": 12,
+          "correct_after": 12
+        },
+        "report": {
+          "n": 13,
+          "flips": 0,
+          "correct_before": 8,
+          "correct_after": 8
+        },
+        "correspondence": {
+          "n": 12,
+          "flips": 0,
+          "correct_before": 11,
+          "correct_after": 11
+        },
+        "BOQ": {
+          "n": 12,
+          "flips": 0,
+          "correct_before": 6,
+          "correct_after": 6
+        },
+        "contract": {
+          "n": 12,
+          "flips": 0,
+          "correct_before": 11,
+          "correct_after": 11
+        },
+        "method statement": {
+          "n": 14,
+          "flips": 0,
+          "correct_before": 13,
+          "correct_after": 13
+        },
+        "meeting minutes": {
+          "n": 5,
+          "flips": 0,
+          "correct_before": 5,
+          "correct_after": 5
+        },
+        "NCR": {
+          "n": 2,
+          "flips": 0,
+          "correct_before": 1,
+          "correct_after": 1
+        },
+        "inspection request": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "site instruction": {
+          "n": 8,
+          "flips": 0,
+          "correct_before": 6,
+          "correct_after": 6
+        },
+        "register/log": {
+          "n": 15,
+          "flips": 1,
+          "correct_before": 4,
+          "correct_after": 4
+        },
+        "other": {
+          "n": 14,
+          "flips": 1,
+          "correct_before": 8,
+          "correct_after": 7
+        }
+      },
+      "gate": {
+        "passed": false,
+        "failing_passable_classes": [
+          "other",
+          "register/log"
+        ],
+        "min_per_label": 12
+      },
+      "accuracy_before": 0.7297297297297297,
+      "accuracy_after": 0.7243243243243244
+    },
+    "cr_addendum": {
+      "n": 14,
+      "rows_with_blanked_fields": 11,
+      "fields_blanked": 25,
+      "flips_total": 0,
+      "flips_passable": 0,
+      "flips_not_passable": 0,
+      "flips_on_rows_with_nothing_blanked": 0,
+      "per_class": {
+        "RFI": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "submittal": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "transmittal": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "VO/CO": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "change request": {
+          "n": 14,
+          "flips": 0,
+          "correct_before": 14,
+          "correct_after": 14
+        },
+        "claim": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "payment application": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "payment certificate": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "drawing": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "specification": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "schedule": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "report": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "correspondence": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "BOQ": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "contract": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "method statement": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "meeting minutes": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "NCR": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "inspection request": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "site instruction": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "register/log": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "other": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        }
+      },
+      "gate": {
+        "passed": true,
+        "failing_passable_classes": [],
+        "min_per_label": 12
+      },
+      "accuracy_before": 1.0,
+      "accuracy_after": 1.0
+    },
+    "combined": {
+      "n": 263,
+      "rows_with_blanked_fields": 139,
+      "fields_blanked": 345,
+      "flips_total": 4,
+      "flips_passable": 4,
+      "flips_not_passable": 0,
+      "flips_on_rows_with_nothing_blanked": 0,
+      "per_class": {
+        "RFI": {
+          "n": 9,
+          "flips": 0,
+          "correct_before": 9,
+          "correct_after": 9
+        },
+        "submittal": {
+          "n": 18,
+          "flips": 0,
+          "correct_before": 18,
+          "correct_after": 18
+        },
+        "transmittal": {
+          "n": 13,
+          "flips": 0,
+          "correct_before": 13,
+          "correct_after": 13
+        },
+        "VO/CO": {
+          "n": 16,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "change request": {
+          "n": 14,
+          "flips": 0,
+          "correct_before": 14,
+          "correct_after": 14
+        },
+        "claim": {
+          "n": 4,
+          "flips": 0,
+          "correct_before": 2,
+          "correct_after": 2
+        },
+        "payment application": {
+          "n": 3,
+          "flips": 0,
+          "correct_before": 3,
+          "correct_after": 3
+        },
+        "payment certificate": {
+          "n": 3,
+          "flips": 0,
+          "correct_before": 1,
+          "correct_after": 1
+        },
+        "drawing": {
+          "n": 18,
+          "flips": 0,
+          "correct_before": 17,
+          "correct_after": 17
+        },
+        "specification": {
+          "n": 18,
+          "flips": 0,
+          "correct_before": 15,
+          "correct_after": 15
+        },
+        "schedule": {
+          "n": 19,
+          "flips": 0,
+          "correct_before": 15,
+          "correct_after": 15
+        },
+        "report": {
+          "n": 21,
+          "flips": 0,
+          "correct_before": 13,
+          "correct_after": 13
+        },
+        "correspondence": {
+          "n": 18,
+          "flips": 2,
+          "correct_before": 16,
+          "correct_after": 14
+        },
+        "BOQ": {
+          "n": 12,
+          "flips": 0,
+          "correct_before": 6,
+          "correct_after": 6
+        },
+        "contract": {
+          "n": 12,
+          "flips": 0,
+          "correct_before": 11,
+          "correct_after": 11
+        },
+        "method statement": {
+          "n": 14,
+          "flips": 0,
+          "correct_before": 13,
+          "correct_after": 13
+        },
+        "meeting minutes": {
+          "n": 5,
+          "flips": 0,
+          "correct_before": 5,
+          "correct_after": 5
+        },
+        "NCR": {
+          "n": 2,
+          "flips": 0,
+          "correct_before": 1,
+          "correct_after": 1
+        },
+        "inspection request": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "site instruction": {
+          "n": 8,
+          "flips": 0,
+          "correct_before": 6,
+          "correct_after": 6
+        },
+        "register/log": {
+          "n": 15,
+          "flips": 1,
+          "correct_before": 4,
+          "correct_after": 4
+        },
+        "other": {
+          "n": 21,
+          "flips": 1,
+          "correct_before": 10,
+          "correct_after": 9
+        }
+      },
+      "gate": {
+        "passed": false,
+        "failing_passable_classes": [
+          "correspondence",
+          "other",
+          "register/log"
+        ],
+        "min_per_label": 12
+      },
+      "accuracy_before": 0.7300380228136882,
+      "accuracy_after": 0.7186311787072244
+    }
+  }
+}

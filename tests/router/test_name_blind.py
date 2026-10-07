@@ -87,3 +87,56 @@ def test_signature_names_are_blanked_whole() -> None:
     for value in ("Alpha", "Beta", "Gamma", "Delta", "Epsilon"):
         assert value not in out
     assert "Title : Manager" in out
+
+
+# Check fix (owner order 2026-10-07 22:20 +04): blank the party value only, never the
+# headings, table headers, line items or body text that follow it in flattened text.
+
+
+def test_flat_title_block_keeps_the_next_all_caps_label() -> None:
+    text = "NAME OF CONTRACTOR: Omega Paving Inc. ADDRESS OF CONTRACTOR: 12 Alpha Road, Unit Q, Betatown ZZ1 9QQ NAME OF CERTIFIER: Kappa Lambda"
+    out, n = blank_fields(text)
+    for value in ("Omega Paving", "12 Alpha Road", "Betatown"):
+        assert value not in out
+    assert "ADDRESS OF CONTRACTOR:" in out and "NAME OF CERTIFIER:" in out
+    assert n == 2
+
+
+def test_a_number_field_blanks_the_code_only_and_keeps_the_table() -> None:
+    text = "Project No: 1234/5 ITEM NO. DESCRIPTION UNIT QTY 1.19 f) Water supplies, electric power Sum 1"
+    out, n = blank_fields(text)
+    assert n == 1 and "1234/5" not in out
+    assert "ITEM NO. DESCRIPTION UNIT QTY 1.19 f) Water supplies, electric power Sum 1" in out
+
+
+def test_body_text_after_a_salutation_or_heading_is_not_a_party_value() -> None:
+    for text in (
+        "Dear Contractor: Pursuant to your contract dated you are hereby notified to proceed with the work",
+        "INSTRUCTIONS TO CONTRACTOR: Please sign both copies of this notice and return one copy to the owner",
+    ):
+        assert blank_fields(text) == (text, 0)
+
+
+def test_an_empty_form_field_blanks_nothing() -> None:
+    text = "CONTRACTOR: ____________ _ CONTRACTOR ADDRESS: ____________ Signature: ................"
+    assert blank_fields(text) == (text, 0)
+
+
+def test_a_name_before_body_text_is_still_blanked() -> None:
+    out, n = blank_fields("ATTN: Alpha Beta Site instructions are issued only for the quantity shown below")
+    assert n == 1 and "Alpha" not in out and "Beta" not in out
+    assert "Site instructions are issued only for the quantity shown below" in out
+    out, n = blank_fields("FROM: ______________ Kappa Lambda, Project Manager")
+    assert n == 1 and "Kappa" not in out
+
+
+def test_capitals_inside_a_name_do_not_cut_it() -> None:
+    for text, values in (
+        ("Contractor: OMEGA BUILD CO LTD", ("OMEGA", "BUILD", "LTD")),
+        ("Client: Gamma RTA Delta", ("Gamma", "RTA", "Delta")),
+        ("From: Delta Epsilon, Zeta QEA, LLC", ("Delta", "Zeta", "QEA")),
+    ):
+        out, n = blank_fields(text)
+        assert n == 1
+        for value in values:
+            assert value not in out
