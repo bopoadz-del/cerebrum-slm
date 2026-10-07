@@ -24,7 +24,7 @@ from pathlib import Path
 
 from router.isolation import load_exclusions, require_isolated
 from router.labels import load_labels, load_sealed_config, repo_root
-from router.train_router import rows_from_pool, training_examples
+from router.train_router import require_no_paths, rows_from_pool, training_examples
 
 _SERIES = re.compile(
     r"^([A-Z]{2,}-[A-Z]{2,}-\d{3})-\d{4}-[A-Z]{2,}-([A-Z]{2,})-([A-Z]{2,})-(\d{3})-",
@@ -328,8 +328,8 @@ def main(argv: list[str] | None = None) -> int:
     def write(path: Path, rows: list[dict]) -> None:
         path.write_text("".join(json.dumps(row, ensure_ascii=False) + "\n" for row in rows), encoding="utf-8")
 
-    write(out / "train.jsonl", train)
-    write(out / "val.jsonl", val)
+    write(out / "train.jsonl", require_no_paths(train))
+    write(out / "val.jsonl", require_no_paths(val))
     (out / "split_summary.json").write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
     print(
         json.dumps(

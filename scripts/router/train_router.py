@@ -17,6 +17,7 @@ from router.isolation import load_exclusions, require_isolated
 from router.labels import load_labels, load_sealed_config, repo_root
 from router.prepare_pool import prepare_pool
 from router.split_projects import project_grouped_split
+from router.strip_source_tags import row_has_path, strip_source_tags
 from router.teacher_label import prompt_for
 from router.val_metrics import per_label_recall, refuse_sealed_score
 
@@ -71,14 +72,28 @@ def pool_report(root: Path) -> dict:
     }
 
 
+def require_no_paths(rows: list[dict]) -> list[dict]:
+    """Refuse training rows whose text still holds a source tag or a file path."""
+    bad = sum(1 for row in rows if row_has_path(row))
+    if bad:
+        raise RouterWall(f"WALL: {bad} training rows hold a file path or [source:] tag")
+    return rows
+
+
 def training_examples(rows: list[dict], labels: list[str]) -> list[dict]:
-    """Assistant text is the teacher label only. Path fields are not copied."""
+    """Assistant text is the teacher label only. Path fields are not copied.
+
+    Source tags and file paths are stripped from the excerpt before it becomes
+    the user message, and the result is checked again by ``require_no_paths``.
+    """
     allowed = set(labels)
     system = prompt_for(labels)
     examples: list[dict] = []
     for row in rows:
         label = row.get("label")
         excerpt = row.get("excerpt")
+        if isinstance(excerpt, str):
+            excerpt = strip_source_tags(excerpt)
         if label not in allowed or not isinstance(excerpt, str) or not excerpt.strip():
             continue
         item = {
@@ -94,7 +109,7 @@ def training_examples(rows: list[dict], labels: list[str]) -> list[dict]:
         if isinstance(row.get("file_sha256"), str):
             item["file_sha256"] = row["file_sha256"]
         examples.append(item)
-    return examples
+    return require_no_paths(examples)
 
 
 def guarded_split(rows: list[dict], sealed_path: Path, val_fraction: float) -> tuple[list[dict], list[dict]]:

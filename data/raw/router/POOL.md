@@ -4,7 +4,9 @@ This file is a raw document pool for later router labelling. It is not training 
 
 `labels.jsonl` has one row per stored Fork document excerpt. Row count is unchanged from the export: **6580**.
 
-sha256: `99263feadf1b9a0b6f5182c0b527e9481a323d7f158124bdff9e682344122cc5`
+sha256: `29d75c0a89268bc5fa13d21fc75e30e0525ff0623c38359cfdfce5378bb1f02f`
+
+Path tags removed: the Fork export prepended `[source: <drive path>]` tags to 2343 excerpts, and 16 excerpts quoted a file path in their own text. `scripts/router/strip_source_tags.py` removed them from `first_512_tokens` in 2359 rows. Row count, `doc_id`, `filename` and every other column are unchanged. The digest before the strip was `99263feadf1b9a0b6f5182c0b527e9481a323d7f158124bdff9e682344122cc5`.
 
 The previous digest `2ee2b8204feaec33c6cfce0abad0afcc677b166fd1de41f1a69e46890eade903` was the same 6580 rows before column renames. No documents were added or dropped.
 

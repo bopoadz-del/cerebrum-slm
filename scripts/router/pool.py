@@ -9,6 +9,7 @@ from collections import Counter
 from pathlib import Path
 
 from router.guard import RouterWall, refuse_sealed_input
+from router.strip_source_tags import strip_source_tags
 
 # Integrity columns carried through when the source row has them.
 _OPTIONAL = ("content_sha256", "doc_id_source")
@@ -24,7 +25,7 @@ def normalize_row(row: dict) -> dict:
     for key in _EXCERPT_IN:
         value = row.get(key)
         if isinstance(value, str):
-            excerpt = value
+            excerpt = strip_source_tags(value)
             break
     declared = None
     for key in _TYPE_IN:
