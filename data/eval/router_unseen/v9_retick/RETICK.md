@@ -6,10 +6,10 @@ The original seals stay where they are, unchanged, because the recorded v5 and v
 
 | Set | Rows | Original file | Original sha256 (actual bytes) | Re-sealed file | New sha256 |
 | --- | --- | --- | --- | --- | --- |
-| v5 | 64 | `data/eval/router_unseen/sealed_labels.jsonl` | `7219399f57469e1e8b0ce0eff14a31a7d21af4c241e1e94c43bc47fcdb50b6e8` | `data/eval/router_unseen/v9_retick/v5/sealed_labels.jsonl` | `811ee9a7f4ad5a2830ff1ddf4211f3918e6409b4b2cdb9f71c25198f8a125f37` |
+| v5 | 64 | `data/eval/router_unseen/sealed_labels.jsonl` | `408f85e7e18b58104c3e2da87c1dbebb2042c36be03a976002367706abc4b89e` | `data/eval/router_unseen/v9_retick/v5/sealed_labels.jsonl` | `811ee9a7f4ad5a2830ff1ddf4211f3918e6409b4b2cdb9f71c25198f8a125f37` |
 | v8 | 185 | `data/eval/router_unseen/v8/sealed_labels.jsonl` | `a2471d0be2353e75878cfe447154ac2e4feacd5c947ac51013ad9e2fcdecd22c` | `data/eval/router_unseen/v9_retick/v8/sealed_labels.jsonl` | `ea7f175fe86f694329e5b4fc983aa02803b119d88ee4cdacfa6bca7bcf576d02` |
 
-Integrity note (from before this change): `data/eval/router_unseen/SHA256SUMS` and `sealed_labels.jsonl.sha256` record `408f85e7e18b58104c3e2da87c1dbebb2042c36be03a976002367706abc4b89e` for the v5 file. The committed bytes hash to `7219399f57469e1e8b0ce0eff14a31a7d21af4c241e1e94c43bc47fcdb50b6e8`, and so does every earlier repo copy we checked. This PR does not touch the v5 file or its sums. The owner should decide which value is authoritative.
+Integrity note: `408f85e7e18b58104c3e2da87c1dbebb2042c36be03a976002367706abc4b89e` is the committed LF bytes of `data/eval/router_unseen/sealed_labels.jsonl` and matches `data/eval/router_unseen/SHA256SUMS` and `sealed_labels.jsonl.sha256`. `7219399f57469e1e8b0ce0eff14a31a7d21af4c241e1e94c43bc47fcdb50b6e8` was a CRLF artefact of the bundle build. There is no stale sum. This PR does not touch the v5 file or its sums.
 
 ## Label changes (8)
 
