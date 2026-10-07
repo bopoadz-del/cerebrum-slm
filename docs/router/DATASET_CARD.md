@@ -1,6 +1,6 @@
 # Router dataset card
 
-Status: pr5 adds the unmasked pr2 owner-source rows and v9 change-request rows and re-runs the split on the v9 label set (see the pr5 section). Earlier status: v8 21-label teacher relabel of the cleaned training pool, plus owner-laptop additions and a thin-label public/laptop top-up. Human agreement remains as recorded (0.875, kappa 0.864). Sealed v5 and sealed v8 are untouched. No training run in this PR.
+Status: thin-v9 adds public filled VO/CO, payment application, claim and RFI rows and re-runs the split (see the thin-v9 section). Before that, pr5 added the unmasked pr2 owner-source rows and v9 change-request rows and re-runs the split on the v9 label set (see the pr5 section). Earlier status: v8 21-label teacher relabel of the cleaned training pool, plus owner-laptop additions and a thin-label public/laptop top-up. Human agreement remains as recorded (0.875, kappa 0.864). Sealed v5 and sealed v8 are untouched. No training run in this PR.
 
 Model version: Qwen/Qwen3-8B
 
@@ -21,6 +21,16 @@ Allowed labels:
 ```
 
 Labels come from document content only. Filename, folder, source path, source site and form number do not decide a label and do not appear in training text.
+
+## thin-v9: public filled VO/CO, payment application, claim and RFI rows (label set v9, 22 labels)
+
+- `data/router/additions_thin_v9.jsonl`: 93 rows from public FILLED documents about the works (issued or signed change orders, variation orders, construction change directives and contract change orders; contractor pay applications with the certifier block blank; claims and extension-of-time letters with particulars; RFIs). No blank templates and no staff reports that only approve a document. 50 projects; at most about 25 rows from one document. Project ids are opaque (`th9_pNN`); one project per source domain, and each project is one split group. Rows from a domain already used by the v9 change-request rows reuse that row's group so a project never spans train and val (6 groups). Source sites are not stored; a domain hash is kept for the isolation test. Internal only.
+- Labels come from content only: the v9 teacher (Qwen/Qwen3-8B, temperature 0, v9 prompt) at the 0.7 floor. No filename, folder, site or form number decides a label. Result: VO/CO 40 rows (26 projects), payment application 33 (20), RFI 9 (4), claim 5 (5), change request 4, correspondence 1, payment certificate 1.
+- `router.strip_source_tags.strip_source_tags` is applied to every row. 3 rows held a file path; they were re-labelled on the stripped text (labels unchanged).
+- Isolation gate: 100 collected rows; 7 dropped because they share a 12-word shingle with a sealed excerpt (form boilerplate). sha, project and first-300 checks against sealed v5, v8, both v9 re-tick copies and the v9 change-request addendum: 0 hits. Source domains are disjoint from every sealed set and from the pending candidates.
+- Split re-run with the same procedure (CANARY drop, 0.7 floor, sealed exclusion now over 5 sealed files with 0 rows rejected, split_v2 grouped stratified, seed 20261006, drawing cap 400, other cap 300, templates train-only): train 1602 -> 1681, val 880 -> 894. Thin rows: 70 train, 23 val. Train counts: VO/CO 5 -> 39, payment application 9 -> 37, RFI 27 -> 37, claim 10 -> 14, change request 24 -> 27, payment certificate 11 -> 12, correspondence 79 -> 80, submittal 31 -> 30, NCR 19 -> 18; other labels unchanged. Val: VO/CO 1 -> 7, payment application 1 -> 6, RFI 7 -> 6, claim 1 -> 2, change request 4 -> 5, NCR 2 -> 3, submittal 4 -> 5. The extra groups shift group order and the capped samples, so 22 val rows moved to train, 15 train rows moved to val, and 272 capped `drawing`/`other` train rows changed membership.
+- Short of the 30-train target: claim (14). Sealed claim candidates: 0.
+- Sealed v9 thin-class candidates (55, from other projects and other domains) are with the owner for ticking. They are not in the sealed set and not in training. `data/router/thin_v9_sealed_candidates_isolation.json` holds only their hashes.
 
 ## pr7: encoded-bytes content rule
 
