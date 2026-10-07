@@ -57,7 +57,7 @@ def test_prompt_uses_the_file_and_not_a_label_outside_it(tmp_path: Path) -> None
 
 
 def test_prompt_loads_the_approved_label_set_at_call_time(repo_root: Path, tmp_path: Path) -> None:
-    data = json.loads((repo_root / "configs" / "router" / "label_set_v8.json").read_text(encoding="utf-8"))
+    data = json.loads((repo_root / "configs" / "router" / "label_set_v9.json").read_text(encoding="utf-8"))
     names = [item["label"] for item in data["labels"]]
     prompt = prompt_for(names)
     for rule in data["design_rules"]:

@@ -19,6 +19,11 @@ def labels_path(root: Path | None = None) -> Path:
 
 
 def label_set_path(root: Path | None = None) -> Path:
+    """The approved label set in force (v9). Older sets stay on disk for replay."""
+    return (root or repo_root()) / "configs" / "router" / "label_set_v9.json"
+
+
+def label_set_v8_path(root: Path | None = None) -> Path:
     return (root or repo_root()) / "configs" / "router" / "label_set_v8.json"
 
 

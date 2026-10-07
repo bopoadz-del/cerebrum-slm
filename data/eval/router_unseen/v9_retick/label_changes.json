@@ -1,0 +1,115 @@
+{
+  "label_set": "v9",
+  "sets": [
+    {
+      "set": "v5",
+      "rows": 64,
+      "source": "data/eval/router_unseen/sealed_labels.jsonl",
+      "old_sha256": "7219399f57469e1e8b0ce0eff14a31a7d21af4c241e1e94c43bc47fcdb50b6e8",
+      "new_sha256": "811ee9a7f4ad5a2830ff1ddf4211f3918e6409b4b2cdb9f71c25198f8a125f37",
+      "path": "data/eval/router_unseen/v9_retick/v5/sealed_labels.jsonl",
+      "counts_v9": {
+        "report": 8,
+        "other": 7,
+        "correspondence": 6,
+        "specification": 6,
+        "RFI": 5,
+        "VO/CO": 5,
+        "drawing": 5,
+        "schedule": 5,
+        "submittal": 5,
+        "transmittal": 5,
+        "payment certificate": 3,
+        "claim": 2,
+        "payment application": 2
+      }
+    },
+    {
+      "set": "v8",
+      "rows": 185,
+      "source": "data/eval/router_unseen/v8/sealed_labels.jsonl",
+      "old_sha256": "a2471d0be2353e75878cfe447154ac2e4feacd5c947ac51013ad9e2fcdecd22c",
+      "new_sha256": "ea7f175fe86f694329e5b4fc983aa02803b119d88ee4cdacfa6bca7bcf576d02",
+      "path": "data/eval/router_unseen/v9_retick/v8/sealed_labels.jsonl",
+      "counts_v9": {
+        "register/log": 15,
+        "method statement": 14,
+        "other": 14,
+        "schedule": 14,
+        "drawing": 13,
+        "report": 13,
+        "submittal": 13,
+        "BOQ": 12,
+        "contract": 12,
+        "correspondence": 12,
+        "specification": 12,
+        "VO/CO": 11,
+        "site instruction": 8,
+        "transmittal": 8,
+        "meeting minutes": 5,
+        "RFI": 4,
+        "NCR": 2,
+        "claim": 2,
+        "payment application": 1
+      }
+    }
+  ],
+  "changes": [
+    {
+      "set": "v5",
+      "sheet_id": "S5-006",
+      "old": "spec",
+      "new": "specification",
+      "reason": "CSI specification section text (cast-in-place concrete); v9 name for v5 \"spec\"."
+    },
+    {
+      "set": "v5",
+      "sheet_id": "S5-010",
+      "old": "spec",
+      "new": "specification",
+      "reason": "CSI specification section text (submittals section); v9 name for v5 \"spec\"."
+    },
+    {
+      "set": "v5",
+      "sheet_id": "S5-027",
+      "old": "payment certificate",
+      "new": "payment application",
+      "reason": "G702 with the contractor application filled and the certifier block blank (no amount certified, not signed): combined-form rule."
+    },
+    {
+      "set": "v5",
+      "sheet_id": "S5-032",
+      "old": "spec",
+      "new": "specification",
+      "reason": "CSI specification section text (submittals section); v9 name for v5 \"spec\"."
+    },
+    {
+      "set": "v5",
+      "sheet_id": "S5-037",
+      "old": "spec",
+      "new": "specification",
+      "reason": "Master specification section text (cast-in-place concrete); v9 name for v5 \"spec\"."
+    },
+    {
+      "set": "v5",
+      "sheet_id": "S5-038",
+      "old": "payment certificate",
+      "new": "payment application",
+      "reason": "G702 with the contractor application filled and the architect block blank (no amount certified, not signed): combined-form rule."
+    },
+    {
+      "set": "v5",
+      "sheet_id": "S5-049",
+      "old": "spec",
+      "new": "specification",
+      "reason": "Special provision clauses prescribing schedule requirements; v9 name for v5 \"spec\"."
+    },
+    {
+      "set": "v5",
+      "sheet_id": "S5-052",
+      "old": "spec",
+      "new": "specification",
+      "reason": "CSI specification section text (cast-in-place concrete); v9 name for v5 \"spec\"."
+    }
+  ]
+}

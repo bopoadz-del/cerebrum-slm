@@ -1,6 +1,6 @@
 """Teacher labelling from document content. Dry-run writes nothing.
 
-The system prompt is built at call time from configs/router/label_set_v8.json.
+The system prompt is built at call time from configs/router/label_set_v9.json.
 Definitions, "Is not" lines, regional names, notes, and the design rules are
 not copied into this module. The allowed label names are read from
 configs/router/labels.json at call time. Unsure and low-confidence rows are
@@ -49,7 +49,7 @@ def prompt_for(
     """List each label's approved definition and "Is not" line.
 
     Regional names and notes are included when the label-set file has them.
-    The five design rules are copied from that file verbatim. Pass ``label_set``
+    The design rules are copied from that file verbatim. Pass ``label_set``
     or ``path`` in tests; otherwise the approved file is read at call time.
     """
     data = label_set if label_set is not None else load_label_set(path)

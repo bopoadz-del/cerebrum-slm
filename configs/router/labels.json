@@ -1,10 +1,11 @@
 {
-  "label_set": "v8",
+  "label_set": "v9",
   "labels": [
     "RFI",
     "submittal",
     "transmittal",
     "VO/CO",
+    "change request",
     "claim",
     "payment application",
     "payment certificate",
