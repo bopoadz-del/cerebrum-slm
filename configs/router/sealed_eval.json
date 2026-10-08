@@ -53,7 +53,7 @@
       {
         "name": "thin_c_addendum",
         "sealed_labels": "data/eval/router_unseen/v9_thin_c_addendum/sealed_labels.jsonl",
-        "rows": 1,
+        "rows": 2,
         "addendum": true
       },
       {
@@ -65,7 +65,7 @@
     ],
     "combined": {
       "rule": "concatenation of the sets in this order; nothing swapped; per-label n counts rows of every set",
-      "rows": 277,
+      "rows": 278,
       "per_label_n": {
         "RFI": 9,
         "submittal": 18,
@@ -83,7 +83,7 @@
         "BOQ": 12,
         "contract": 12,
         "method statement": 14,
-        "meeting minutes": 8,
+        "meeting minutes": 9,
         "NCR": 8,
         "inspection request": 0,
         "site instruction": 8,
