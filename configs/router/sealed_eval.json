@@ -55,11 +55,17 @@
         "sealed_labels": "data/eval/router_unseen/v9_thin_c_addendum/sealed_labels.jsonl",
         "rows": 1,
         "addendum": true
+      },
+      {
+        "name": "thin_d_addendum",
+        "sealed_labels": "data/eval/router_unseen/v9_thin_d_addendum/sealed_labels.jsonl",
+        "rows": 13,
+        "addendum": true
       }
     ],
     "combined": {
       "rule": "concatenation of the sets in this order; nothing swapped; per-label n counts rows of every set",
-      "rows": 264,
+      "rows": 277,
       "per_label_n": {
         "RFI": 9,
         "submittal": 18,
@@ -67,18 +73,18 @@
         "VO/CO": 16,
         "change request": 14,
         "claim": 4,
-        "payment application": 3,
-        "payment certificate": 3,
+        "payment application": 4,
+        "payment certificate": 4,
         "drawing": 18,
         "specification": 18,
         "schedule": 19,
-        "report": 21,
-        "correspondence": 18,
+        "report": 23,
+        "correspondence": 19,
         "BOQ": 12,
         "contract": 12,
         "method statement": 14,
-        "meeting minutes": 6,
-        "NCR": 2,
+        "meeting minutes": 8,
+        "NCR": 8,
         "inspection request": 0,
         "site instruction": 8,
         "register/log": 15,
