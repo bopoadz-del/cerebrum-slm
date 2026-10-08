@@ -9,6 +9,7 @@ from pathlib import Path
 from gates.augment import check_augmentation
 from gates.blind_seal import blind_summary, check_blind
 from gates.findings import Finding
+from gates.held_out_shards import check_held_out_shards
 from gates.no_hardwiring import check_hardwiring
 from gates.prove import ProofError, run_proofs
 from gates.raw_manifest import check_raw
@@ -17,7 +18,14 @@ from gates.split import check_split
 
 def evaluate(root: Path) -> list[Finding]:
     findings: list[Finding] = []
-    for checker in (check_raw, check_hardwiring, check_split, check_blind, check_augmentation):
+    for checker in (
+        check_raw,
+        check_hardwiring,
+        check_split,
+        check_blind,
+        check_augmentation,
+        check_held_out_shards,
+    ):
         findings.extend(checker(root))
     return findings
 

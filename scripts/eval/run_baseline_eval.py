@@ -20,7 +20,13 @@ for _entry in (_ROOT / "scripts", _ROOT / "src", _ROOT):
 from eval.baselines.prompt_only import load_system_prompt
 from eval.readers import EvalReadError
 from eval.stop_gate import StopGateError
-from eval.tuned import TunedEvalError, format_scores, run_tuned_eval
+from eval.tuned import (
+    TunedEvalError,
+    format_scores,
+    format_shard_scores,
+    run_shard_eval,
+    run_tuned_eval,
+)
 from model.sampling import TinkerKeyMissing, default_client_factory, sample_messages
 
 
@@ -32,6 +38,7 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Use the committed prompt-only system prompt",
     )
+    _cli().add_shard_arguments(parser)
     args = parser.parse_args(argv)
 
     # One shared client (avoid per-sample ServiceClient / connection leak).
@@ -48,6 +55,19 @@ def main(argv: list[str] | None = None) -> int:
     # Checkpoint field records the base model id for baseline runs.
     checkpoint = "base://Qwen/Qwen3-8B"
     try:
+        if args.shard:
+            payload = run_shard_eval(
+                checkpoint,
+                args.output,
+                args.shard,
+                prompt_only_system_prompt=args.prompt_only_system_prompt,
+                sampler=sampler,
+                item_results=args.item_results,
+                replies=args.replies,
+            )
+            print(format_shard_scores(payload))
+            print(f"wrote {args.output}")
+            return 0
         payload = run_tuned_eval(
             checkpoint,
             args.output,
@@ -59,7 +79,19 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     print(format_scores(payload))
     print(f"wrote {args.output}")
+    _cli().print_shard_lines(args.output)
     return 0
+
+
+def _cli():
+    """Shared --shard arguments and shard-line printing from run_tuned_eval.py."""
+    import importlib.util
+
+    path = Path(__file__).resolve().parent / "run_tuned_eval.py"
+    spec = importlib.util.spec_from_file_location("run_tuned_eval_cli", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 if __name__ == "__main__":
