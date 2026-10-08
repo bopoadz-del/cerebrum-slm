@@ -11,8 +11,9 @@ Rule:
             Capped classes are fixed at share_cap and the rest are rescaled so the mean stays 1.0; repeated until stable.
 
 The weight multiplies the loss weights of the assistant label tokens (Tinker cross_entropy), exactly as in v6.
-The computed weights are written to ``data/router/v7/class_weights.json``. Training reads that file and refuses it
-when it does not equal a recomputation from the counts of the examples it is about to train on.
+The computed weights are written to ``data/router/v7/class_weights.json`` (v7b: ``data/router/v7b/class_weights.json``,
+named by ``configs/router/train_v7b.json``). Training reads that file and refuses it when it does not equal a
+recomputation from the counts of the examples it is about to train on.
 """
 
 from __future__ import annotations
@@ -58,9 +59,17 @@ def tempered_class_weights(row_labels: Iterable[str], exponent: float, share_cap
         capped |= over
 
 
-def load_v7_config(root: Path) -> dict:
-    """Read configs/router/train_v7.json onto the LoRA file and refuse anything off-rule."""
-    data = json.loads((root / CONFIG_FILE).read_text(encoding="utf-8"))
+def weights_file_for(data: dict) -> str:
+    """The class-weight data file a train config must name: data/router/<run>/class_weights.json."""
+    run = data.get("run")
+    if not isinstance(run, str) or not run.replace("_", "").isalnum():
+        raise BalanceConfigError("train config run must be a plain run name")
+    return f"data/router/{run}/class_weights.json"
+
+
+def load_v7_config(root: Path, config_file: str = CONFIG_FILE) -> dict:
+    """Read a v7-family train config (default configs/router/train_v7.json) onto the LoRA file and refuse anything off-rule."""
+    data = json.loads((root / config_file).read_text(encoding="utf-8"))
     lora = json.loads((root / data["lora_config"]).read_text(encoding="utf-8"))
     lora.update(data["overrides"])
     epochs = lora.get("epochs")
@@ -70,8 +79,8 @@ def load_v7_config(root: Path) -> dict:
     if weighting.get("method") != WEIGHTING_METHOD:
         raise BalanceConfigError("class_weighting.method is not the tempered inverse-frequency loss weight")
     tempered_class_weights(["probe"], weighting.get("exponent"), weighting.get("share_cap"))
-    if weighting.get("weights_file") != WEIGHTS_FILE:
-        raise BalanceConfigError("class_weighting.weights_file is not the v7 data file")
+    if weighting.get("weights_file") != weights_file_for(data):
+        raise BalanceConfigError("class_weighting.weights_file is not the run's data file")
     selection = data.get("selection", {})
     if selection.get("metric") != SELECTION_METRIC:
         raise BalanceConfigError(f"selection.metric must be {SELECTION_METRIC}")
@@ -84,6 +93,7 @@ def load_v7_config(root: Path) -> dict:
         "share_cap": float(weighting["share_cap"]),
         "patience": patience,
         "max_epochs": epochs,
+        "weights_file": weighting["weights_file"],
         "config": data,
     }
 
@@ -92,9 +102,9 @@ def v7_example_labels(base_rows: list[dict], pair_refs: list[dict]) -> list[str]
     return [row["messages"][-1]["content"] for row in base_rows] + [ref["label"] for ref in pair_refs]
 
 
-def weights_payload(root: Path, example_labels: list[str]) -> dict:
+def weights_payload(root: Path, example_labels: list[str], config_file: str = CONFIG_FILE) -> dict:
     """The data file content: counts, natural and effective shares, and the weights."""
-    cfg = load_v7_config(root)
+    cfg = load_v7_config(root, config_file)
     counts = Counter(example_labels)
     total = sum(counts.values())
     weights = tempered_class_weights(example_labels, cfg["exponent"], cfg["share_cap"])
@@ -103,7 +113,9 @@ def weights_payload(root: Path, example_labels: list[str]) -> dict:
         "method": WEIGHTING_METHOD,
         "exponent": cfg["exponent"],
         "share_cap": cfg["share_cap"],
-        "source": "label counts of the v7 training examples (data/router/train.jsonl + data/router/v7/pairs_*.jsonl)",
+        "source": "label counts of the {0} training examples (data/router/train.jsonl + data/router/{0}/pairs_*.jsonl)".format(
+            cfg["config"]["run"]
+        ),
         "examples": total,
         "classes": len(counts),
         "counts": {label: counts[label] for label in ordered},
@@ -114,10 +126,11 @@ def weights_payload(root: Path, example_labels: list[str]) -> dict:
     }
 
 
-def read_weights(root: Path, example_labels: list[str]) -> dict[str, float]:
+def read_weights(root: Path, example_labels: list[str], config_file: str = CONFIG_FILE) -> dict[str, float]:
     """Weights for training, read from the data file. Refuses a file that is not the recomputation from these examples."""
-    stored = json.loads((root / WEIGHTS_FILE).read_text(encoding="utf-8"))
-    fresh = weights_payload(root, example_labels)
+    cfg = load_v7_config(root, config_file)
+    stored = json.loads((root / cfg["weights_file"]).read_text(encoding="utf-8"))
+    fresh = weights_payload(root, example_labels, config_file)
     if stored.get("counts") != fresh["counts"]:
         raise BalanceConfigError("class_weights.json counts do not match the training examples")
     for label, weight in fresh["weights"].items():

@@ -274,19 +274,25 @@ def fit_router_v6(root: Path, train_rows: list[dict], val_rows: list[dict], labe
     }
 
 
-def fit_router_v7(root: Path, train_rows: list[dict], val_rows: list[dict], labels: list[str], *, sdk=None) -> dict:
+def fit_router_v7(
+    root: Path, train_rows: list[dict], val_rows: list[dict], labels: list[str], *, sdk=None, config_file: str | None = None
+) -> dict:
     """v7: tempered class weights read from data/router/v7/class_weights.json; otherwise the v6 loop unchanged.
+
+    ``config_file`` selects a v7-family train config (default configs/router/train_v7.json; v7b passes
+    configs/router/train_v7b.json, whose weights live in data/router/v7b/class_weights.json).
 
     ``train_rows`` are the v7 training examples (router.v7_pairs.v7_training_examples). The weights file must equal a
     recomputation from these examples' label counts (router.balance_v7.read_weights), or training is refused.
     Early stop and epoch choice read val macro recall over present classes only. Nothing here names a label.
     """
     from router.balance import SELECTION_METRIC, macro_recall_present, select_epoch, should_stop
-    from router.balance_v7 import load_v7_config, read_weights
+    from router.balance_v7 import CONFIG_FILE, load_v7_config, read_weights
 
-    v7 = load_v7_config(root)
+    config_file = config_file or CONFIG_FILE
+    v7 = load_v7_config(root, config_file)
     lora = v7["lora"]
-    weights = read_weights(root, [row["messages"][-1]["content"] for row in train_rows])
+    weights = read_weights(root, [row["messages"][-1]["content"] for row in train_rows], config_file)
     gold = [row["messages"][-1]["content"] for row in val_rows]
     history: list[dict] = []
 
