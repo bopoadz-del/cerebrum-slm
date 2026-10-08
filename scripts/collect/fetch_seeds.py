@@ -173,17 +173,17 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--listings", type=Path, help="jsonl of {url, pattern, class} listing pages")
     args = ap.parse_args(argv)
 
-    seeds = DEFAULT_SEEDS
+    seeds = [{"url": u, "class": ""} for u in DEFAULT_SEEDS]
     if args.seeds:
-        seeds = [json.loads(l)["url"] for l in args.seeds.read_text(encoding="utf-8").splitlines() if l.strip()]
+        seeds = [json.loads(l) for l in args.seeds.read_text(encoding="utf-8").splitlines() if l.strip()]
     listings = DEFAULT_LISTINGS
     if args.listings:
         listings = [json.loads(l) for l in args.listings.read_text(encoding="utf-8").splitlines() if l.strip()]
 
     f = Fetcher(args.out)
     results: list[Result] = []
-    for url in seeds:
-        results.append(f.fetch(url))
+    for seed in seeds:
+        results.append(f.fetch(seed["url"], seed.get("class", "")))
     for spec in listings:
         results.extend(f.listing(spec["url"], spec["pattern"], spec.get("class", "")))
 
