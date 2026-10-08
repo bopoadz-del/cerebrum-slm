@@ -54,13 +54,13 @@ def seal_sheet(
     output_dir.mkdir(parents=True, exist_ok=True)
     labels_path = output_dir / "sealed_labels.jsonl"
     payload = "".join(json.dumps(row, ensure_ascii=False) + "\n" for row in sealed)
-    labels_path.write_text(payload, encoding="utf-8")
+    labels_path.write_text(payload, encoding="utf-8", newline="\n")
     written = ["sealed_labels.jsonl"]
     agreement_path = output_dir / "agreement.json"
     if proposed is not None:
         before = labels_path.read_bytes()
         stats = agreement(sealed, _read_proposed(proposed), labels)
-        agreement_path.write_text(json.dumps(stats, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        agreement_path.write_text(json.dumps(stats, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
         if labels_path.read_bytes() != before:
             raise RouterWall("WALL: agreement rewrote a sealed label")
         written.append("agreement.json")
@@ -434,8 +434,8 @@ def _write_digests(directory: Path, names: list[str]) -> None:
         digest = hashlib.sha256((directory / name).read_bytes()).hexdigest()
         line = f"{digest}  {name}\n"
         lines.append(line)
-        (directory / f"{name}.sha256").write_text(line, encoding="utf-8")
-    (directory / "SHA256SUMS").write_text("".join(lines), encoding="utf-8")
+        (directory / f"{name}.sha256").write_text(line, encoding="utf-8", newline="\n")
+    (directory / "SHA256SUMS").write_text("".join(lines), encoding="utf-8", newline="\n")
 
 
 def main(argv: list[str] | None = None) -> int:
