@@ -67,19 +67,25 @@
         "sealed_labels": "data/eval/router_unseen/v9_web_f_addendum/sealed_labels.jsonl",
         "rows": 34,
         "addendum": true
+      },
+      {
+        "name": "web_g_addendum",
+        "sealed_labels": "data/eval/router_unseen/v9_web_g_addendum/sealed_labels.jsonl",
+        "rows": 7,
+        "addendum": true
       }
     ],
     "combined": {
       "rule": "concatenation of the sets in this order; nothing swapped; per-label n counts rows of every set",
-      "rows": 312,
+      "rows": 319,
       "per_label_n": {
         "RFI": 12,
         "submittal": 18,
         "transmittal": 13,
         "VO/CO": 16,
         "change request": 14,
-        "claim": 9,
-        "payment application": 6,
+        "claim": 10,
+        "payment application": 10,
         "payment certificate": 15,
         "drawing": 18,
         "specification": 18,
@@ -92,7 +98,7 @@
         "meeting minutes": 14,
         "NCR": 12,
         "inspection request": 3,
-        "site instruction": 9,
+        "site instruction": 11,
         "register/log": 15,
         "other": 21
       }
