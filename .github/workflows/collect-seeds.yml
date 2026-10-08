@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       seeds:
-        description: "jsonl of {url, class} seeds fetched from the laptop search leg"
+        description: "base64 of jsonl {url, class} seeds fetched from the laptop search leg"
         required: false
         default: ""
 
@@ -24,7 +24,7 @@ jobs:
         if: ${{ github.event.inputs.seeds != '' }}
         run: |
           mkdir -p out
-          printf '%s' "${{ github.event.inputs.seeds }}" > out/search_seeds.jsonl
+          printf '%s' "${{ github.event.inputs.seeds }}" | base64 -d > out/search_seeds.jsonl
           echo "seeds:" && cat out/search_seeds.jsonl
       - name: Search leg (Bing RSS, not walled on Actions)
         if: ${{ github.event.inputs.seeds == '' }}
