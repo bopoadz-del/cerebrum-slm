@@ -32,6 +32,7 @@ jobs:
             data/router/additions_thin_v9.jsonl \
             data/router/additions_thin_v9b.jsonl \
             data/router/additions_thin_v9c.jsonl \
+            data/router/additions_thin_v9f.jsonl \
             data/router/additions_thin_d.jsonl \
             data/router/additions_change_request_v9.jsonl \
             data/router/additions_owner_sources_pr2.jsonl \

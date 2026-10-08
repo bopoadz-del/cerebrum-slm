@@ -263,15 +263,15 @@
   "no_duplication_or_synthesis": true,
   "other_cap_train": 300,
   "other_train_before_cap": 718,
-  "train": 1712,
-  "val": 900,
+  "train": 1719,
+  "val": 901,
   "train_counts": {
-   "RFI": 37,
+   "RFI": 36,
    "submittal": 31,
    "transmittal": 12,
-   "VO/CO": 49,
-   "change request": 45,
-   "claim": 19,
+   "VO/CO": 48,
+   "change request": 47,
+   "claim": 25,
    "payment application": 37,
    "payment certificate": 12,
    "drawing": 400,
@@ -279,7 +279,7 @@
    "schedule": 50,
    "report": 123,
    "correspondence": 80,
-   "BOQ": 75,
+   "BOQ": 76,
    "contract": 134,
    "method statement": 27,
    "meeting minutes": 58,
@@ -290,12 +290,12 @@
    "other": 300
   },
   "val_counts": {
-   "RFI": 6,
+   "RFI": 7,
    "submittal": 4,
    "transmittal": 1,
-   "VO/CO": 7,
-   "change request": 8,
-   "claim": 3,
+   "VO/CO": 8,
+   "change request": 6,
+   "claim": 5,
    "payment application": 6,
    "payment certificate": 2,
    "drawing": 658,
@@ -303,7 +303,7 @@
    "schedule": 8,
    "report": 43,
    "correspondence": 10,
-   "BOQ": 9,
+   "BOQ": 8,
    "contract": 13,
    "method statement": 5,
    "meeting minutes": 10,
@@ -552,32 +552,32 @@
  },
  "thin_v9b": {
   "rows": 38,
-  "rows_in_train": 34,
-  "rows_in_val": 3,
+  "rows_in_train": 29,
+  "rows_in_val": 9,
   "by_label": {
    "change request": {
     "rows": 21,
     "projects": 16,
-    "train": 18,
-    "val": 3
+    "train": 17,
+    "val": 4
    },
    "VO/CO": {
     "rows": 10,
     "projects": 8,
-    "train": 10,
-    "val": 0
+    "train": 8,
+    "val": 2
    },
    "other": {
     "rows": 1,
     "projects": 1,
-    "train": 0,
+    "train": 1,
     "val": 0
    },
    "claim": {
     "rows": 6,
     "projects": 2,
-    "train": 6,
-    "val": 0
+    "train": 3,
+    "val": 3
    }
   },
   "pairs": {
@@ -644,7 +644,81 @@
     "other": 76
    }
   },
-  "rows_not_in_split": 1,
-  "rows_not_in_split_note": "rows kept in the additions file but not in train/val: the \"other\" train cap (300) drops them by the fixed-seed cap, as for every other \"other\" row"
+  "rows_not_in_split": 0,
+  "rows_not_in_split_note": "rows kept in the additions file but not in train/val: the \"other\" train cap (300) drops them by the fixed-seed cap, as for every other \"other\" row",
+  "placement_note": "placement counts updated by the thin-v9f split re-run (same procedure); rows and labels unchanged"
+ },
+ "thin_v9f": {
+  "rows": 8,
+  "rows_in_train": 7,
+  "rows_in_val": 1,
+  "projects": 5,
+  "new_projects": 2,
+  "by_label": {
+   "claim": {
+    "rows": 8,
+    "projects": 5,
+    "train": 7,
+    "val": 1
+   }
+  },
+  "gate_dropped": 4,
+  "rejected_sealed_in_split": 0,
+  "sealed_exclusion_files": 7,
+  "grouping": "one project per source domain; a domain already used by thin-v9, thin-v9b or v9 change-request rows keeps that project id and split group",
+  "provenance": "every row records source_url, fetch_timestamp, http_status, content_sha256 and page_title (collection provenance rule)",
+  "not_in_split_note": "additions_thin_v9c.jsonl and additions_thin_d.jsonl are not in train/val on main f3be637 and stay out of this split re-run, unchanged",
+  "previous_split": {
+   "train": 1712,
+   "val": 900,
+   "train_counts": {
+    "RFI": 37,
+    "submittal": 31,
+    "transmittal": 12,
+    "VO/CO": 49,
+    "change request": 45,
+    "claim": 19,
+    "payment application": 37,
+    "payment certificate": 12,
+    "drawing": 400,
+    "specification": 66,
+    "schedule": 50,
+    "report": 123,
+    "correspondence": 80,
+    "BOQ": 75,
+    "contract": 134,
+    "method statement": 27,
+    "meeting minutes": 58,
+    "NCR": 18,
+    "inspection request": 48,
+    "site instruction": 48,
+    "register/log": 43,
+    "other": 300
+   },
+   "val_counts": {
+    "RFI": 6,
+    "submittal": 4,
+    "transmittal": 1,
+    "VO/CO": 7,
+    "change request": 8,
+    "claim": 3,
+    "payment application": 6,
+    "payment certificate": 2,
+    "drawing": 658,
+    "specification": 7,
+    "schedule": 8,
+    "report": 43,
+    "correspondence": 10,
+    "BOQ": 9,
+    "contract": 13,
+    "method statement": 5,
+    "meeting minutes": 10,
+    "NCR": 3,
+    "inspection request": 7,
+    "site instruction": 8,
+    "register/log": 6,
+    "other": 76
+   }
+  }
  }
 }

@@ -22,6 +22,15 @@ Allowed labels:
 
 Labels come from document content only. Filename, folder, source path, source site and form number do not decide a label and do not appear in training text.
 
+## thin-v9f: claim rows (label set v9, 22 labels)
+
+- Why: claim was still thin at 19 train / 3 val after thin-v9b.
+- `data/router/additions_thin_v9f.jsonl`: 8 rows, all labelled claim by the v9 teacher (Qwen/Qwen3-8B, temperature 0, 0.7 floor, current v9 prompt, text passed through `router.strip_source_tags`). They are contractor entitlement submissions from public FILLED documents: contract time-extension requests with particulars (delay causes, dates, days requested), a time-extension summary letter, and contractor claim/entitlement letters attached to agenda items. Sources: public county, school-district, airport-authority and town agenda packets (5 source groups). No court records are used. The teacher label is never changed; candidates the teacher labelled anything other than claim were dropped.
+- Provenance: every row records `source_url`, `fetch_timestamp`, `http_status`, `content_sha256` and `page_title` (collection provenance rule), and the file is in the CI provenance check. These fields are row metadata only; the training text is the excerpt.
+- Grouping: one project per source domain. A domain already used by thin-v9, thin-v9b or v9 change-request rows keeps that project id and split group.
+- Isolation: sha, project, 12-word shingle, first-300 and source-domain checks against every sealed set under `data/eval/router_unseen` (7 files, found by glob) came back 0. Rows were also gated (hashes only, kept outside the repo) against all pending sealed candidates (thin-v9 b/c/d batches, the laptop batch e pool and the web_f batch): 0 hits.
+- Split re-run with the same procedure (seed 20261006, drawing cap 400, other cap 300, templates train-only); with no new rows it reproduces main's train.jsonl and val.jsonl byte for byte. The sealed exclusion reads all 7 sealed files: 0 rejected. Train 1712 -> 1719, val 900 -> 901. Claim train 19 -> 25, val 3 -> 5. Whole source groups move between train and val in a grouped re-run; thin-v9b placement counts in `split_counts.json` are updated to match. `additions_thin_v9c.jsonl` and `additions_thin_d.jsonl` are not in train/val on main and stay out of this re-run, unchanged.
+
 ## thin-v9b: VO/CO vs change-request contrastive pairs and claim rows (label set v9, 22 labels)
 
 - Why: on the v5 sealed score VO/CO was 0/16, with 15 rows predicted as change request. These pairs show the model the issued instrument and the request for the SAME change side by side.
