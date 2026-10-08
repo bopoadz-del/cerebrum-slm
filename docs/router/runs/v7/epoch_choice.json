@@ -1,0 +1,22 @@
+{
+  "run": "v7",
+  "run_id": "06e01fff-72b3-585a-ac27-ea306c30443e:train:0",
+  "rule": "router.balance.select_epoch on val_macro_recall_present_classes (tie keeps the earlier epoch), before any sealed score; never accuracy",
+  "val_macro_recall_present_classes": {
+    "1": 0.5366624625146982,
+    "2": 0.5926177241250551,
+    "3": 0.6500993950579226
+  },
+  "accuracy_report_only": {
+    "1": 0.8102108768035516,
+    "2": 0.8268590455049944,
+    "3": 0.8390677025527192
+  },
+  "epochs_run": 3,
+  "early_stopped": false,
+  "chosen_epoch": 3,
+  "chosen_checkpoint": "tinker://06e01fff-72b3-585a-ac27-ea306c30443e:train:0/sampler_weights/router-v7-qwen3.5-4b-lora-r16-epoch3",
+  "sealed_read": false,
+  "sealed_scored": false,
+  "written": "2026-10-08T20:59:36+0400"
+}

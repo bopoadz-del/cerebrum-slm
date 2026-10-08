@@ -1,0 +1,15 @@
+{
+  "base_commit": "729a35859a46172b24a1ef53e2398105ff6d270a",
+  "training_tree": "73e5d4f68c905fb743572e3824c076ab53932dbd",
+  "pairs": {
+    "contrastive": 797,
+    "catch_all": 183
+  },
+  "train_rows": 2699,
+  "val_rows": 901,
+  "train_max": 6482,
+  "train_over_limit": 0,
+  "val_prompt_max": 6507,
+  "val_over_limit": 0,
+  "limit": 6656
+}

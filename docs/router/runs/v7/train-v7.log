@@ -1,0 +1,69 @@
+training tree 73e5d4f68c905fb743572e3824c076ab53932dbd verified (= base 729a358 tree 9e0de89 + bundle A)
+DATA {"train": {"merged_rows": 1719, "rebuilt_rows": 1719, "merged_system_prompt_equals_prompt_for": 1719, "user_text_unchanged": 1719, "label_unchanged": 1719}, "val": {"merged_rows": 901, "rebuilt_rows": 901, "merged_system_prompt_equals_prompt_for": 901, "user_text_unchanged": 901, "label_unchanged": 901}, "pairs": {"contrastive": 797, "catch_all": 183}, "v7_examples": 2699, "labels": 22, "system_sha256": "b1ac9472219a4bea8b0447c2418854a85d60bcb7f154eff2252c7ef8718e3879"}
+RECIPE {"base_model": "Qwen/Qwen3.5-4B", "rank": 16, "alpha": 16, "epochs": 3, "learning_rate": 0.000473, "batch_size": 16, "seed": 0, "max_sequence_length": 6656, "checkpoint_name": "router-v7-qwen3.5-4b-lora-r16"}
+WEIGHTS {"drawing": 0.5599, "other": 0.6353, "report": 0.8008, "contract": 0.8785, "correspondence": 0.8933, "BOQ": 1.0643, "register/log": 1.0643, "specification": 1.11, "meeting minutes": 1.1511, "schedule": 1.1972, "VO/CO": 1.2096, "change request": 1.2224, "inspection request": 1.2224, "site instruction": 1.2356, "payment application": 1.3871, "RFI": 1.4931, "submittal": 1.5174, "method statement": 1.6279, "claim": 1.676, "NCR": 1.9752, "payment certificate": 2.4191, "transmittal": 2.4191}
+env loaded: 1 name(s), values not logged
+fit start rows=2699 steps_per_epoch=169 max_epochs=3
+create_lora_training_client {"base_model": "Qwen/Qwen3.5-4B", "rank": 16, "seed": 0, "train_mlp": true, "train_attn": true, "train_unembed": false, "user_metadata": {"checkpoint": "router-v7-qwen3.5-4b-lora-r16"}}
+training run model_id=06e01fff-72b3-585a-ac27-ea306c30443e:train:0
+[transformers] PyTorch was not found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+step 1/<= 507 elapsed_s=34 {'loss:sum': 408.5942802429199}
+step 10/<= 507 elapsed_s=56 {'loss:sum': 13.735261226072907}
+step 20/<= 507 elapsed_s=88 {'loss:sum': 9.413707561441697}
+step 30/<= 507 elapsed_s=118 {'loss:sum': 7.277984448825009}
+step 40/<= 507 elapsed_s=144 {'loss:sum': 30.14657001197338}
+step 50/<= 507 elapsed_s=174 {'loss:sum': 17.980378825217485}
+step 60/<= 507 elapsed_s=203 {'loss:sum': 32.7612768902909}
+step 70/<= 507 elapsed_s=234 {'loss:sum': 10.660666169598699}
+step 80/<= 507 elapsed_s=263 {'loss:sum': 7.913621658459306}
+step 90/<= 507 elapsed_s=293 {'loss:sum': 32.47212417726405}
+step 100/<= 507 elapsed_s=321 {'loss:sum': 12.746515630744398}
+step 110/<= 507 elapsed_s=348 {'loss:sum': 4.202869565226138}
+step 120/<= 507 elapsed_s=378 {'loss:sum': 25.294629778712988}
+step 130/<= 507 elapsed_s=404 {'loss:sum': 13.919044559122995}
+step 140/<= 507 elapsed_s=431 {'loss:sum': 2.725423915311694}
+step 150/<= 507 elapsed_s=465 {'loss:sum': 17.7231733542867}
+step 160/<= 507 elapsed_s=498 {'loss:sum': 15.5295314155519}
+saved router-v7-qwen3.5-4b-lora-r16-epoch1 path=tinker://06e01fff-72b3-585a-ac27-ea306c30443e:train:0/sampler_weights/router-v7-qwen3.5-4b-lora-r16-epoch1 step=169
+EVAL epoch1 val_macro_recall_present_classes=0.536662 accuracy(report only)=0.810211
+step 170/<= 507 elapsed_s=621 {'loss:sum': 6.141982950270176}
+step 180/<= 507 elapsed_s=646 {'loss:sum': 4.096342863864265}
+step 190/<= 507 elapsed_s=676 {'loss:sum': 4.090197472833097}
+step 200/<= 507 elapsed_s=707 {'loss:sum': 1.9262856744462624}
+step 210/<= 507 elapsed_s=732 {'loss:sum': 23.620690420561004}
+step 220/<= 507 elapsed_s=757 {'loss:sum': 6.657473121769726}
+step 230/<= 507 elapsed_s=782 {'loss:sum': 4.389333751401864}
+step 240/<= 507 elapsed_s=807 {'loss:sum': 5.957571288570762}
+step 250/<= 507 elapsed_s=831 {'loss:sum': 22.186897128354758}
+step 260/<= 507 elapsed_s=857 {'loss:sum': 9.706195675767958}
+step 270/<= 507 elapsed_s=883 {'loss:sum': 3.9430843936279416}
+step 280/<= 507 elapsed_s=918 {'loss:sum': 21.47923985484522}
+step 290/<= 507 elapsed_s=945 {'loss:sum': 1.2645261480356567}
+step 300/<= 507 elapsed_s=970 {'loss:sum': 16.544777993112803}
+step 310/<= 507 elapsed_s=995 {'loss:sum': 19.866597467917018}
+step 320/<= 507 elapsed_s=1020 {'loss:sum': 0.7757011502544628}
+step 330/<= 507 elapsed_s=1044 {'loss:sum': 16.03428465775505}
+saved router-v7-qwen3.5-4b-lora-r16-epoch2 path=tinker://06e01fff-72b3-585a-ac27-ea306c30443e:train:0/sampler_weights/router-v7-qwen3.5-4b-lora-r16-epoch2 step=338
+EVAL epoch2 val_macro_recall_present_classes=0.592618 accuracy(report only)=0.826859
+step 340/<= 507 elapsed_s=1177 {'loss:sum': 2.421066739130765}
+step 350/<= 507 elapsed_s=1202 {'loss:sum': 16.74587031234114}
+step 360/<= 507 elapsed_s=1227 {'loss:sum': 31.729680808552075}
+step 370/<= 507 elapsed_s=1252 {'loss:sum': 16.196810331675806}
+step 380/<= 507 elapsed_s=1278 {'loss:sum': 0.8522691244725138}
+step 390/<= 507 elapsed_s=1304 {'loss:sum': 2.569128566654399}
+step 400/<= 507 elapsed_s=1330 {'loss:sum': 10.871667947154492}
+step 410/<= 507 elapsed_s=1365 {'loss:sum': 15.325538529083133}
+step 420/<= 507 elapsed_s=1390 {'loss:sum': 1.123482235649135}
+step 430/<= 507 elapsed_s=1415 {'loss:sum': 21.54730594076682}
+step 440/<= 507 elapsed_s=1440 {'loss:sum': 21.6604611587245}
+step 450/<= 507 elapsed_s=1465 {'loss:sum': 5.26985422661528}
+step 460/<= 507 elapsed_s=1490 {'loss:sum': 10.058436635416001}
+step 470/<= 507 elapsed_s=1514 {'loss:sum': 0.9501055602449924}
+step 480/<= 507 elapsed_s=1539 {'loss:sum': 6.833511968841776}
+step 490/<= 507 elapsed_s=1571 {'loss:sum': 3.052211834175978}
+step 500/<= 507 elapsed_s=1600 {'loss:sum': 1.5682212009269278}
+saved router-v7-qwen3.5-4b-lora-r16-epoch3 path=tinker://06e01fff-72b3-585a-ac27-ea306c30443e:train:0/sampler_weights/router-v7-qwen3.5-4b-lora-r16-epoch3 step=507
+EVAL epoch3 val_macro_recall_present_classes=0.650099 accuracy(report only)=0.839068
+FIT {"steps": 507, "epoch_samplers": ["tinker://06e01fff-72b3-585a-ac27-ea306c30443e:train:0/sampler_weights/router-v7-qwen3.5-4b-lora-r16-epoch1", "tinker://06e01fff-72b3-585a-ac27-ea306c30443e:train:0/sampler_weights/router-v7-qwen3.5-4b-lora-r16-epoch2", "tinker://06e01fff-72b3-585a-ac27-ea306c30443e:train:0/sampler_weights/router-v7-qwen3.5-4b-lora-r16-epoch3"], "selected_epoch": 3, "selected_sampler": "tinker://06e01fff-72b3-585a-ac27-ea306c30443e:train:0/sampler_weights/router-v7-qwen3.5-4b-lora-r16-epoch3", "selection_metric": "val_macro_recall_present_classes", "history": [{"epoch": 1, "sampler": "tinker://06e01fff-72b3-585a-ac27-ea306c30443e:train:0/sampler_weights/router-v7-qwen3.5-4b-lora-r16-epoch1", "val_macro_recall_present_classes": 0.5366624625146982}, {"epoch": 2, "sampler": "tinker://06e01fff-72b3-585a-ac27-ea306c30443e:train:0/sampler_weights/router-v7-qwen3.5-4b-lora-r16-epoch2", "val_macro_recall_present_classes": 0.5926177241250551}, {"epoch": 3, "sampler": "tinker://06e01fff-72b3-585a-ac27-ea306c30443e:train:0/sampler_weights/router-v7-qwen3.5-4b-lora-r16-epoch3", "val_macro_recall_present_classes": 0.6500993950579226}]}
+CHOICE {"run": "v7", "run_id": "06e01fff-72b3-585a-ac27-ea306c30443e:train:0", "rule": "router.balance.select_epoch on val_macro_recall_present_classes (tie keeps the earlier epoch), before any sealed score; never accuracy", "val_macro_recall_present_classes": {"1": 0.5366624625146982, "2": 0.5926177241250551, "3": 0.6500993950579226}, "accuracy_report_only": {"1": 0.8102108768035516, "2": 0.8268590455049944, "3": 0.8390677025527192}, "epochs_run": 3, "early_stopped": false, "chosen_epoch": 3, "chosen_checkpoint": "tinker://06e01fff-72b3-585a-ac27-ea306c30443e:train:0/sampler_weights/router-v7-qwen3.5-4b-lora-r16-epoch3", "sealed_read": false, "sealed_scored": false, "written": "2026-10-08T20:59:36+0400"}
+DONE
