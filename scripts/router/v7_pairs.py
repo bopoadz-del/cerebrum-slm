@@ -27,6 +27,17 @@ prompt used for validation and sealed scoring are unchanged.
 
 Pair files store references (doc_id, file_sha256, label, menu), not text. ``materialise``
 rebuilds the chats from data/router/train.jsonl and refuses any mismatch.
+
+v7b options (``configs/router/pairs_v7b.json``; absent keys keep the v7 behaviour above byte for byte):
+row_order = project_round_robin: within a class, projects are ordered by a seeded hash and their
+   rows (each in seeded-hash order) are interleaved, so one project cannot fill a class budget.
+contrastive.neighbour_choice = named_in_head_first: rows whose own text head (first head_chars)
+   names one of the class's Is-not neighbours (label name or unambiguous regional name) fill the
+   budget first; such a row is paired with the least-used named neighbour whose edge is below
+   edge_cap_factor x the round-robin share (ceil(rows / neighbours)); otherwise, and for rows
+   naming none, with the least-used neighbour (ties in label-set order).
+catch_all.sibling_pairs: each selected catch-all row also gets a two-label menu with one sibling
+   catch-all label, the least-used sibling (ties in label-set order).
 """
 
 from __future__ import annotations
@@ -205,6 +216,37 @@ def _order_key(seed: int, *parts: str) -> str:
     return hashlib.sha256("|".join([str(seed), *parts]).encode("utf-8")).hexdigest()
 
 
+def pair_files(rules: dict) -> dict[str, str]:
+    """Pair file per generator under the rules' output_dir (v7 default: data/router/v7)."""
+    out = rules.get("output_dir", "data/router/v7")
+    keys = ["contrastive", "combined_form", "catch_all"]
+    if rules["catch_all"].get("sibling_pairs"):
+        keys.append("catch_all_sibling")
+    return {key: f"{out}/pairs_{key}.jsonl" for key in keys}
+
+
+def summary_file(rules: dict) -> str:
+    return f'{rules.get("output_dir", "data/router/v7")}/pairs_summary.json'
+
+
+def _project_round_robin(rows: list[dict], seed: int, label: str) -> list[dict]:
+    groups: dict[str, list[dict]] = defaultdict(list)
+    for row in rows:
+        groups[str(row.get("project_id"))].append(row)
+    projects = sorted(groups, key=lambda project: _order_key(seed, label, "project", project))
+    out: list[dict] = []
+    depth = max((len(g) for g in groups.values()), default=0)
+    for i in range(depth):
+        for project in projects:
+            if i < len(groups[project]):
+                out.append(groups[project][i])
+    return out
+
+
+def _least_used(candidates: list[str], used: Counter, label: str) -> str:
+    return min(candidates, key=lambda n: (used[f"{label} | {n}"], candidates.index(n)))
+
+
 def class_budget(train_rows: list[dict]) -> int:
     counts = Counter(_row_label(row) for row in train_rows)
     return int(statistics.median(counts.values()))
@@ -238,8 +280,14 @@ def build_pairs(train_rows: list[dict], label_set: dict, labels: list[str], rule
             by_label[_row_label(row)].append(row)
         else:
             gate_fail[_row_label(row)] += 1
+    row_order = rules.get("row_order", "hash")
+    if row_order not in ("hash", "project_round_robin"):
+        raise RouterWall("WALL: unknown row_order")
     for label in by_label:
         by_label[label].sort(key=lambda row: _order_key(seed, label, row["doc_id"]))
+        if row_order == "project_round_robin":
+            by_label[label] = _project_round_robin(by_label[label], seed, label)
+    matcher = AliasMatcher(label_aliases(label_set))
 
     # 1c combined form
     cf = rules["combined_form"]
@@ -268,30 +316,55 @@ def build_pairs(train_rows: list[dict], label_set: dict, labels: list[str], rule
     governed = {app_label, cert_label}
     contrastive: list[dict] = []
     edge_counts: Counter = Counter()
+    choice = rules["contrastive"].get("neighbour_choice", "round_robin")
+    if choice not in ("round_robin", "named_in_head_first"):
+        raise RouterWall("WALL: unknown contrastive.neighbour_choice")
+    named_rows: Counter = Counter()
     for label in order:
         hood = [n for n in neighbours.get(label, []) if n in rank and not ({label, n} == governed)]
         if not hood:
             continue
-        for i, row in enumerate(by_label.get(label, [])[:budget]):
-            neighbour = hood[i % len(hood)]
-            contrastive.append(_ref(row, menu_of([label, neighbour]), "contrastive", neighbour=neighbour))
+        if choice == "round_robin":
+            for i, row in enumerate(by_label.get(label, [])[:budget]):
+                neighbour = hood[i % len(hood)]
+                contrastive.append(_ref(row, menu_of([label, neighbour]), "contrastive", neighbour=neighbour))
+                edge_counts[f"{label} | {neighbour}"] += 1
+            continue
+        head_c = int(rules["contrastive"]["head_chars"])
+        named = [(row, [n for n in hood if n in matcher.labels_in(_row_text(row)[:head_c], set(hood))]) for row in by_label.get(label, [])]
+        ordered = ([x for x in named if x[1]] + [x for x in named if not x[1]])[:budget]
+        edge_cap = float(rules["contrastive"]["edge_cap_factor"]) * -(-len(ordered) // len(hood))
+        for row, in_head in ordered:
+            open_named = [n for n in in_head if edge_counts[f"{label} | {n}"] < edge_cap]
+            neighbour = _least_used(open_named or hood, edge_counts, label)
+            if open_named:
+                named_rows[label] += 1
+            contrastive.append(_ref(row, menu_of([label, neighbour]), "contrastive", neighbour=neighbour, named_in_head=bool(open_named)))
             edge_counts[f"{label} | {neighbour}"] += 1
 
     # 1d catch-all
     ca = rules["catch_all"]
     catch_all = [label for label in ca["labels"] if label in rank]
     instruments = [label for label in order if label not in set(catch_all)]
-    matcher = AliasMatcher(label_aliases(label_set))
     head = int(ca["head_chars"])
     catch_rows: list[dict] = []
+    sibling_rows: list[dict] = []
+    sibling_edges: Counter = Counter()
     qualifying: dict[str, int] = {}
     for label in catch_all:
         passed = [row for row in by_label.get(label, []) if not matcher.labels_in(_row_text(row)[:head], set(instruments))]
         qualifying[label] = len(passed)
+        siblings = [x for x in catch_all if x != label]
         for row in passed[:budget]:
             catch_rows.append(_ref(row, menu_of([label, *instruments]), "catch_all"))
+            if ca.get("sibling_pairs") and siblings:
+                sibling = _least_used(siblings, sibling_edges, label)
+                sibling_rows.append(_ref(row, menu_of([label, sibling]), "catch_all_sibling", neighbour=sibling))
+                sibling_edges[f"{label} | {sibling}"] += 1
 
     pairs = {"contrastive": contrastive, "combined_form": combined, "catch_all": catch_rows}
+    if ca.get("sibling_pairs"):
+        pairs["catch_all_sibling"] = sibling_rows
     summary = {
         "train_rows": len(train_rows),
         "content_gate_failed_by_label": dict(sorted(gate_fail.items())),
@@ -306,6 +379,15 @@ def build_pairs(train_rows: list[dict], label_set: dict, labels: list[str], rule
         },
         "catch_all": {"instrument_labels": instruments, "qualifying": qualifying, "rows": len(catch_rows), "by_label": dict(Counter(r["label"] for r in catch_rows))},
     }
+    if row_order != "hash":
+        summary["row_order"] = row_order
+    if choice != "round_robin":
+        summary["contrastive"]["named_in_head_rows_by_label"] = dict(named_rows)
+    if ca.get("sibling_pairs"):
+        summary["catch_all_sibling"] = {
+            "rows": len(sibling_rows),
+            "by_edge": dict(sorted(sibling_edges.items())),
+        }
     return pairs, summary
 
 
@@ -339,28 +421,31 @@ def load_rows(path: Path) -> list[dict]:
     return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
 
 
-def load_rules(root: Path) -> dict:
-    return json.loads((root / "configs" / "router" / "pairs_v7.json").read_text(encoding="utf-8"))
+RULES_FILE = "configs/router/pairs_v7.json"
 
 
-def generate(root: Path) -> tuple[dict[str, list[dict]], dict]:
-    rules = load_rules(root)
+def load_rules(root: Path, rules_file: str = RULES_FILE) -> dict:
+    return json.loads((root / rules_file).read_text(encoding="utf-8"))
+
+
+def generate(root: Path, rules_file: str = RULES_FILE) -> tuple[dict[str, list[dict]], dict]:
+    rules = load_rules(root, rules_file)
     label_set = load_label_set(root / rules["label_set"])
     labels = load_labels(root / "configs" / "router" / "labels.json")
     train_rows = load_rows(root / "data" / "router" / "train.jsonl")
     return build_pairs(train_rows, label_set, labels, rules)
 
 
-def v7_training_examples(root: Path) -> tuple[list[dict], list[dict]]:
+def v7_training_examples(root: Path, rules_file: str = RULES_FILE) -> tuple[list[dict], list[dict]]:
     """(examples, pair_refs): the merged train rows unchanged, then every committed pair ref materialised in file order."""
     from router.train_router import require_no_paths
 
-    rules = load_rules(root)
+    rules = load_rules(root, rules_file)
     label_set = load_label_set(root / rules["label_set"])
     base = load_rows(root / "data" / "router" / "train.jsonl")
     refs: list[dict] = []
-    for key in ("contrastive", "combined_form", "catch_all"):
-        refs.extend(load_rows(root / PAIR_FILES[key]))
+    for rel in pair_files(rules).values():
+        refs.extend(load_rows(root / rel))
     return require_no_paths(base + materialise(refs, base, label_set)), refs
 
 
@@ -368,25 +453,32 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Generate router v7 pair refs and the tempered class weights")
     parser.add_argument("--root", type=Path, default=Path.cwd())
     parser.add_argument("--check", action="store_true", help="Regenerate in memory and compare with the committed files")
+    parser.add_argument("--train-config", default=None, help="v7-family train config (default configs/router/train_v7.json)")
     args = parser.parse_args(argv)
-    from router.balance_v7 import weights_payload, v7_example_labels
+    from router.balance_v7 import CONFIG_FILE, load_v7_config, weights_payload, v7_example_labels
 
     root = args.root.resolve()
-    pairs, summary = generate(root)
-    files = {PAIR_FILES[k]: "".join(json.dumps(r, ensure_ascii=False, sort_keys=True) + "\n" for r in v) for k, v in pairs.items()}
-    files[SUMMARY_FILE] = json.dumps(summary, indent=2, ensure_ascii=False) + "\n"
+    config_file = args.train_config or CONFIG_FILE
+    cfg = load_v7_config(root, config_file)
+    rules_file = cfg["config"]["training_examples"]["pair_rules"]
+    rules = load_rules(root, rules_file)
+    paths = pair_files(rules)
+    if list(paths.values()) != cfg["config"]["training_examples"]["pairs"]:
+        raise RouterWall("WALL: train config pair files do not match the pair rules")
+    pairs, summary = generate(root, rules_file)
+    files = {paths[k]: "".join(json.dumps(r, ensure_ascii=False, sort_keys=True) + "\n" for r in v) for k, v in pairs.items()}
+    files[summary_file(rules)] = json.dumps(summary, indent=2, ensure_ascii=False) + "\n"
     base = load_rows(root / "data" / "router" / "train.jsonl")
     labels_all = v7_example_labels(base, [r for v in pairs.values() for r in v])
-    payload = weights_payload(root, labels_all)
-    from router.balance_v7 import WEIGHTS_FILE
-
-    files[WEIGHTS_FILE] = json.dumps(payload, indent=2, ensure_ascii=False) + "\n"
+    payload = weights_payload(root, labels_all, config_file)
+    files[cfg["weights_file"]] = json.dumps(payload, indent=2, ensure_ascii=False) + "\n"
+    run = cfg["config"]["run"]
     if args.check:
         stale = [p for p, text in files.items() if not (root / p).is_file() or (root / p).read_text(encoding="utf-8") != text]
         if stale:
             print("stale: " + ", ".join(stale))
             return 1
-        print("v7 pairs and weights match the committed files")
+        print(f"{run} pairs and weights match the committed files")
         return 0
     for p, text in files.items():
         (root / p).parent.mkdir(parents=True, exist_ok=True)
