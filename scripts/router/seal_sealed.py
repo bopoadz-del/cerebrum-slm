@@ -37,6 +37,39 @@ def corpus_project(source_path: object) -> str | None:
     return parts[0]
 
 
+MAX_PER_PROJECT_PER_CLASS = 3
+
+
+def project_key(row: dict) -> str:
+    """Source project for the diversity rule. Counts projects, not files.
+
+    ``web_public`` rows carry a ``source_url``; the project is the host plus the
+    first path segment, so every document from one public body counts as one
+    project regardless of how many files it published.
+    """
+    if row.get("project") == "web_public":
+        url = row.get("source_url") or ""
+        parts = url.replace("https://", "").replace("http://", "").split("/")
+        host = parts[0] if parts else ""
+        first = parts[1] if len(parts) > 1 else ""
+        return f"{host}/{first}" if first else host
+    return str(row.get("project") or "")
+
+
+def enforce_project_diversity(sealed: list[dict], limit: int = MAX_PER_PROJECT_PER_CLASS) -> None:
+    """At most ``limit`` sealed rows per (source project, label). Raises on breach."""
+    counts: dict[tuple[str, str], int] = {}
+    for row in sealed:
+        key = (project_key(row), str(row.get("label") or ""))
+        counts[key] = counts.get(key, 0) + 1
+    for (project, label), count in counts.items():
+        if count > limit:
+            raise RouterWall(
+                f"WALL: {count} sealed rows for {label!r} from project {project!r} "
+                f"(limit {limit})"
+            )
+
+
 def seal_sheet(
     sheet: Path | list[Path],
     output_dir: Path,
@@ -51,6 +84,7 @@ def seal_sheet(
         raise RouterWall("WALL: no sheet")
     rows = _collect_rows(paths, labels)
     sealed, dropped = _select(rows, labels, _read_meta(list(meta or [])))
+    enforce_project_diversity(sealed)
     output_dir.mkdir(parents=True, exist_ok=True)
     labels_path = output_dir / "sealed_labels.jsonl"
     payload = "".join(json.dumps(row, ensure_ascii=False) + "\n" for row in sealed)
