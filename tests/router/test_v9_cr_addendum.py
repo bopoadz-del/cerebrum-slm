@@ -26,9 +26,11 @@ def _v9(repo_root: Path) -> dict:
 
 
 def _addendum(repo_root: Path) -> Path:
+    """The v9 change-request addendum specifically (other addenda may exist)."""
     sets = [item for item in _v9(repo_root)["sets"] if item.get("addendum")]
-    assert len(sets) == 1
-    path = repo_root / sets[0]["sealed_labels"]
+    mine = [s for s in sets if s["sealed_labels"].endswith("v9_cr_addendum/sealed_labels.jsonl")]
+    assert len(mine) == 1
+    path = repo_root / mine[0]["sealed_labels"]
     assert path.parent == repo_root / ADDENDUM_DIR
     return path
 
