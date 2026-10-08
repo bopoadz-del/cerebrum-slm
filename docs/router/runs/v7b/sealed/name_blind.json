@@ -1,0 +1,1066 @@
+{
+  "variant": "v7b",
+  "checkpoint": "tinker://467096c8-5c73-595c-b5a8-e92039dba560:train:0/sampler_weights/router-v7b-qwen3.5-4b-lora-r16-epoch1",
+  "repo_tree": "4f5fa14a622c0baea5906f51caed262d14b0d323",
+  "blanker": "scripts/router/name_blind.py",
+  "blanker_sha256": "a235de3cbe5246b8cddc783bdfd0cc5d4ef6dae6dca6b04317de79b6e403e73c",
+  "sets": {
+    "v5_retick": {
+      "n": 64,
+      "rows_with_blanked_fields": 39,
+      "fields_blanked": 106,
+      "flips_total": 3,
+      "flips_passable": 0,
+      "flips_not_passable": 3,
+      "flips_on_rows_with_nothing_blanked": 0,
+      "per_class": {
+        "RFI": {
+          "n": 5,
+          "flips": 0,
+          "correct_before": 5,
+          "correct_after": 5
+        },
+        "submittal": {
+          "n": 5,
+          "flips": 2,
+          "correct_before": 2,
+          "correct_after": 2
+        },
+        "transmittal": {
+          "n": 5,
+          "flips": 0,
+          "correct_before": 2,
+          "correct_after": 2
+        },
+        "VO/CO": {
+          "n": 5,
+          "flips": 0,
+          "correct_before": 5,
+          "correct_after": 5
+        },
+        "change request": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "claim": {
+          "n": 2,
+          "flips": 0,
+          "correct_before": 2,
+          "correct_after": 2
+        },
+        "payment application": {
+          "n": 2,
+          "flips": 0,
+          "correct_before": 2,
+          "correct_after": 2
+        },
+        "payment certificate": {
+          "n": 3,
+          "flips": 0,
+          "correct_before": 1,
+          "correct_after": 1
+        },
+        "drawing": {
+          "n": 5,
+          "flips": 0,
+          "correct_before": 5,
+          "correct_after": 5
+        },
+        "specification": {
+          "n": 6,
+          "flips": 0,
+          "correct_before": 2,
+          "correct_after": 2
+        },
+        "schedule": {
+          "n": 5,
+          "flips": 0,
+          "correct_before": 5,
+          "correct_after": 5
+        },
+        "report": {
+          "n": 8,
+          "flips": 0,
+          "correct_before": 4,
+          "correct_after": 4
+        },
+        "correspondence": {
+          "n": 6,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "BOQ": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "contract": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "method statement": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "meeting minutes": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "NCR": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "inspection request": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "site instruction": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "register/log": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "other": {
+          "n": 7,
+          "flips": 1,
+          "correct_before": 1,
+          "correct_after": 0
+        }
+      },
+      "gate": {
+        "passed": true,
+        "failing_passable_classes": [],
+        "min_per_label": 12
+      },
+      "accuracy_before": 0.5625,
+      "accuracy_after": 0.546875
+    },
+    "v8_retick": {
+      "n": 185,
+      "rows_with_blanked_fields": 89,
+      "fields_blanked": 214,
+      "flips_total": 3,
+      "flips_passable": 2,
+      "flips_not_passable": 1,
+      "flips_on_rows_with_nothing_blanked": 0,
+      "per_class": {
+        "RFI": {
+          "n": 4,
+          "flips": 0,
+          "correct_before": 4,
+          "correct_after": 4
+        },
+        "submittal": {
+          "n": 13,
+          "flips": 1,
+          "correct_before": 8,
+          "correct_after": 7
+        },
+        "transmittal": {
+          "n": 8,
+          "flips": 0,
+          "correct_before": 5,
+          "correct_after": 5
+        },
+        "VO/CO": {
+          "n": 11,
+          "flips": 0,
+          "correct_before": 9,
+          "correct_after": 9
+        },
+        "change request": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "claim": {
+          "n": 2,
+          "flips": 0,
+          "correct_before": 2,
+          "correct_after": 2
+        },
+        "payment application": {
+          "n": 1,
+          "flips": 0,
+          "correct_before": 1,
+          "correct_after": 1
+        },
+        "payment certificate": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "drawing": {
+          "n": 13,
+          "flips": 0,
+          "correct_before": 13,
+          "correct_after": 13
+        },
+        "specification": {
+          "n": 12,
+          "flips": 0,
+          "correct_before": 11,
+          "correct_after": 11
+        },
+        "schedule": {
+          "n": 14,
+          "flips": 0,
+          "correct_before": 13,
+          "correct_after": 13
+        },
+        "report": {
+          "n": 13,
+          "flips": 0,
+          "correct_before": 12,
+          "correct_after": 12
+        },
+        "correspondence": {
+          "n": 12,
+          "flips": 1,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "BOQ": {
+          "n": 12,
+          "flips": 0,
+          "correct_before": 12,
+          "correct_after": 12
+        },
+        "contract": {
+          "n": 12,
+          "flips": 0,
+          "correct_before": 11,
+          "correct_after": 11
+        },
+        "method statement": {
+          "n": 14,
+          "flips": 0,
+          "correct_before": 14,
+          "correct_after": 14
+        },
+        "meeting minutes": {
+          "n": 5,
+          "flips": 0,
+          "correct_before": 5,
+          "correct_after": 5
+        },
+        "NCR": {
+          "n": 2,
+          "flips": 0,
+          "correct_before": 1,
+          "correct_after": 1
+        },
+        "inspection request": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "site instruction": {
+          "n": 8,
+          "flips": 1,
+          "correct_before": 3,
+          "correct_after": 3
+        },
+        "register/log": {
+          "n": 15,
+          "flips": 0,
+          "correct_before": 2,
+          "correct_after": 2
+        },
+        "other": {
+          "n": 14,
+          "flips": 0,
+          "correct_before": 9,
+          "correct_after": 9
+        }
+      },
+      "gate": {
+        "passed": false,
+        "failing_passable_classes": [
+          "correspondence",
+          "submittal"
+        ],
+        "min_per_label": 12
+      },
+      "accuracy_before": 0.7297297297297297,
+      "accuracy_after": 0.7243243243243244
+    },
+    "cr_addendum": {
+      "n": 14,
+      "rows_with_blanked_fields": 11,
+      "fields_blanked": 25,
+      "flips_total": 0,
+      "flips_passable": 0,
+      "flips_not_passable": 0,
+      "flips_on_rows_with_nothing_blanked": 0,
+      "per_class": {
+        "RFI": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "submittal": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "transmittal": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "VO/CO": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "change request": {
+          "n": 14,
+          "flips": 0,
+          "correct_before": 14,
+          "correct_after": 14
+        },
+        "claim": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "payment application": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "payment certificate": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "drawing": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "specification": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "schedule": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "report": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "correspondence": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "BOQ": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "contract": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "method statement": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "meeting minutes": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "NCR": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "inspection request": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "site instruction": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "register/log": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "other": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        }
+      },
+      "gate": {
+        "passed": true,
+        "failing_passable_classes": [],
+        "min_per_label": 12
+      },
+      "accuracy_before": 1.0,
+      "accuracy_after": 1.0
+    },
+    "thin_c_addendum": {
+      "n": 2,
+      "rows_with_blanked_fields": 1,
+      "fields_blanked": 3,
+      "flips_total": 0,
+      "flips_passable": 0,
+      "flips_not_passable": 0,
+      "flips_on_rows_with_nothing_blanked": 0,
+      "per_class": {
+        "RFI": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "submittal": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "transmittal": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "VO/CO": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "change request": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "claim": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "payment application": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "payment certificate": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "drawing": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "specification": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "schedule": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "report": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "correspondence": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "BOQ": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "contract": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "method statement": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "meeting minutes": {
+          "n": 2,
+          "flips": 0,
+          "correct_before": 2,
+          "correct_after": 2
+        },
+        "NCR": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "inspection request": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "site instruction": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "register/log": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "other": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        }
+      },
+      "gate": {
+        "passed": true,
+        "failing_passable_classes": [],
+        "min_per_label": 12
+      },
+      "accuracy_before": 1.0,
+      "accuracy_after": 1.0
+    },
+    "thin_d_addendum": {
+      "n": 13,
+      "rows_with_blanked_fields": 8,
+      "fields_blanked": 33,
+      "flips_total": 0,
+      "flips_passable": 0,
+      "flips_not_passable": 0,
+      "flips_on_rows_with_nothing_blanked": 0,
+      "per_class": {
+        "RFI": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "submittal": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "transmittal": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "VO/CO": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "change request": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "claim": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "payment application": {
+          "n": 1,
+          "flips": 0,
+          "correct_before": 1,
+          "correct_after": 1
+        },
+        "payment certificate": {
+          "n": 1,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "drawing": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "specification": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "schedule": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "report": {
+          "n": 2,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "correspondence": {
+          "n": 1,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "BOQ": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "contract": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "method statement": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "meeting minutes": {
+          "n": 2,
+          "flips": 0,
+          "correct_before": 2,
+          "correct_after": 2
+        },
+        "NCR": {
+          "n": 6,
+          "flips": 0,
+          "correct_before": 6,
+          "correct_after": 6
+        },
+        "inspection request": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "site instruction": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "register/log": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "other": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        }
+      },
+      "gate": {
+        "passed": true,
+        "failing_passable_classes": [],
+        "min_per_label": 12
+      },
+      "accuracy_before": 0.6923076923076923,
+      "accuracy_after": 0.6923076923076923
+    },
+    "web_f_addendum": {
+      "n": 34,
+      "rows_with_blanked_fields": 23,
+      "fields_blanked": 63,
+      "flips_total": 0,
+      "flips_passable": 0,
+      "flips_not_passable": 0,
+      "flips_on_rows_with_nothing_blanked": 0,
+      "per_class": {
+        "RFI": {
+          "n": 3,
+          "flips": 0,
+          "correct_before": 3,
+          "correct_after": 3
+        },
+        "submittal": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "transmittal": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "VO/CO": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "change request": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "claim": {
+          "n": 5,
+          "flips": 0,
+          "correct_before": 5,
+          "correct_after": 5
+        },
+        "payment application": {
+          "n": 2,
+          "flips": 0,
+          "correct_before": 2,
+          "correct_after": 2
+        },
+        "payment certificate": {
+          "n": 11,
+          "flips": 0,
+          "correct_before": 5,
+          "correct_after": 5
+        },
+        "drawing": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "specification": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "schedule": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "report": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "correspondence": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "BOQ": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "contract": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "method statement": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "meeting minutes": {
+          "n": 5,
+          "flips": 0,
+          "correct_before": 5,
+          "correct_after": 5
+        },
+        "NCR": {
+          "n": 4,
+          "flips": 0,
+          "correct_before": 3,
+          "correct_after": 3
+        },
+        "inspection request": {
+          "n": 3,
+          "flips": 0,
+          "correct_before": 3,
+          "correct_after": 3
+        },
+        "site instruction": {
+          "n": 1,
+          "flips": 0,
+          "correct_before": 1,
+          "correct_after": 1
+        },
+        "register/log": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "other": {
+          "n": 0,
+          "flips": 0,
+          "correct_before": 0,
+          "correct_after": 0
+        }
+      },
+      "gate": {
+        "passed": true,
+        "failing_passable_classes": [],
+        "min_per_label": 12
+      },
+      "accuracy_before": 0.7941176470588235,
+      "accuracy_after": 0.7941176470588235
+    },
+    "combined": {
+      "n": 312,
+      "rows_with_blanked_fields": 171,
+      "fields_blanked": 444,
+      "flips_total": 6,
+      "flips_passable": 5,
+      "flips_not_passable": 1,
+      "flips_on_rows_with_nothing_blanked": 0,
+      "per_class": {
+        "RFI": {
+          "n": 12,
+          "flips": 0,
+          "correct_before": 12,
+          "correct_after": 12
+        },
+        "submittal": {
+          "n": 18,
+          "flips": 3,
+          "correct_before": 10,
+          "correct_after": 9
+        },
+        "transmittal": {
+          "n": 13,
+          "flips": 0,
+          "correct_before": 7,
+          "correct_after": 7
+        },
+        "VO/CO": {
+          "n": 16,
+          "flips": 0,
+          "correct_before": 14,
+          "correct_after": 14
+        },
+        "change request": {
+          "n": 14,
+          "flips": 0,
+          "correct_before": 14,
+          "correct_after": 14
+        },
+        "claim": {
+          "n": 9,
+          "flips": 0,
+          "correct_before": 9,
+          "correct_after": 9
+        },
+        "payment application": {
+          "n": 6,
+          "flips": 0,
+          "correct_before": 6,
+          "correct_after": 6
+        },
+        "payment certificate": {
+          "n": 15,
+          "flips": 0,
+          "correct_before": 6,
+          "correct_after": 6
+        },
+        "drawing": {
+          "n": 18,
+          "flips": 0,
+          "correct_before": 18,
+          "correct_after": 18
+        },
+        "specification": {
+          "n": 18,
+          "flips": 0,
+          "correct_before": 13,
+          "correct_after": 13
+        },
+        "schedule": {
+          "n": 19,
+          "flips": 0,
+          "correct_before": 18,
+          "correct_after": 18
+        },
+        "report": {
+          "n": 23,
+          "flips": 0,
+          "correct_before": 16,
+          "correct_after": 16
+        },
+        "correspondence": {
+          "n": 19,
+          "flips": 1,
+          "correct_before": 0,
+          "correct_after": 0
+        },
+        "BOQ": {
+          "n": 12,
+          "flips": 0,
+          "correct_before": 12,
+          "correct_after": 12
+        },
+        "contract": {
+          "n": 12,
+          "flips": 0,
+          "correct_before": 11,
+          "correct_after": 11
+        },
+        "method statement": {
+          "n": 14,
+          "flips": 0,
+          "correct_before": 14,
+          "correct_after": 14
+        },
+        "meeting minutes": {
+          "n": 14,
+          "flips": 0,
+          "correct_before": 14,
+          "correct_after": 14
+        },
+        "NCR": {
+          "n": 12,
+          "flips": 0,
+          "correct_before": 10,
+          "correct_after": 10
+        },
+        "inspection request": {
+          "n": 3,
+          "flips": 0,
+          "correct_before": 3,
+          "correct_after": 3
+        },
+        "site instruction": {
+          "n": 9,
+          "flips": 1,
+          "correct_before": 4,
+          "correct_after": 4
+        },
+        "register/log": {
+          "n": 15,
+          "flips": 0,
+          "correct_before": 2,
+          "correct_after": 2
+        },
+        "other": {
+          "n": 21,
+          "flips": 1,
+          "correct_before": 10,
+          "correct_after": 9
+        }
+      },
+      "gate": {
+        "passed": false,
+        "failing_passable_classes": [
+          "correspondence",
+          "other",
+          "submittal"
+        ],
+        "min_per_label": 12
+      },
+      "accuracy_before": 0.7147435897435898,
+      "accuracy_after": 0.7083333333333334
+    }
+  }
+}

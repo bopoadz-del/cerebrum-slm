@@ -1,0 +1,53 @@
+training tree 4f5fa14a622c0baea5906f51caed262d14b0d323 verified (= base f7b6ff3 + bundle B + bundle C)
+DATA {"train": {"merged_rows": 1719, "rebuilt_rows": 1719, "merged_system_prompt_equals_prompt_for": 1719, "user_text_unchanged": 1719, "label_unchanged": 1719}, "val": {"merged_rows": 901, "rebuilt_rows": 901, "merged_system_prompt_equals_prompt_for": 901, "user_text_unchanged": 901, "label_unchanged": 901}, "pairs": {"contrastive": 797, "catch_all": 183, "catch_all_sibling": 183}, "v7b_examples": 2882, "labels": 22, "system_sha256": "b1ac9472219a4bea8b0447c2418854a85d60bcb7f154eff2252c7ef8718e3879"}
+RECIPE {"base_model": "Qwen/Qwen3.5-4B", "rank": 16, "alpha": 16, "epochs": 3, "learning_rate": 0.000473, "batch_size": 16, "seed": 0, "max_sequence_length": 6656, "checkpoint_name": "router-v7b-qwen3.5-4b-lora-r16"}
+WEIGHTS {"drawing": 0.5822, "other": 0.6193, "report": 0.7542, "correspondence": 0.8234, "contract": 0.9135, "register/log": 0.9653, "BOQ": 1.1067, "specification": 1.1542, "meeting minutes": 1.197, "schedule": 1.2449, "VO/CO": 1.2578, "change request": 1.2711, "inspection request": 1.2711, "site instruction": 1.2848, "payment application": 1.4424, "RFI": 1.5526, "submittal": 1.5779, "method statement": 1.6928, "claim": 1.7428, "NCR": 2.0539, "payment certificate": 2.5156, "transmittal": 2.5156}
+env loaded: 1 name(s), values not logged
+fit start rows=2882 steps_per_epoch=181 max_epochs=3
+create_lora_training_client {"base_model": "Qwen/Qwen3.5-4B", "rank": 16, "seed": 0, "train_mlp": true, "train_attn": true, "train_unembed": false, "user_metadata": {"checkpoint": "router-v7b-qwen3.5-4b-lora-r16"}}
+training run model_id=467096c8-5c73-595c-b5a8-e92039dba560:train:0
+[transformers] PyTorch was not found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+step 1/<= 543 elapsed_s=35 {'loss:sum': 342.79228019714355}
+step 10/<= 543 elapsed_s=62 {'loss:sum': 11.504253521561623}
+step 20/<= 543 elapsed_s=92 {'loss:sum': 4.804611396044493}
+step 30/<= 543 elapsed_s=123 {'loss:sum': 1.9114735275506973}
+step 40/<= 543 elapsed_s=153 {'loss:sum': 8.273283971473575}
+step 50/<= 543 elapsed_s=183 {'loss:sum': 5.146505534648895}
+step 60/<= 543 elapsed_s=217 {'loss:sum': 10.551713682711124}
+step 70/<= 543 elapsed_s=252 {'loss:sum': 3.677765602245927}
+step 80/<= 543 elapsed_s=286 {'loss:sum': 5.12320748064667}
+step 90/<= 543 elapsed_s=314 {'loss:sum': 4.58730611926876}
+step 100/<= 543 elapsed_s=344 {'loss:sum': 13.044238172471523}
+step 110/<= 543 elapsed_s=375 {'loss:sum': 14.0026014582254}
+step 120/<= 543 elapsed_s=406 {'loss:sum': 3.904935921076685}
+step 130/<= 543 elapsed_s=436 {'loss:sum': 12.771951474249363}
+step 140/<= 543 elapsed_s=469 {'loss:sum': 6.997645993673359}
+step 150/<= 543 elapsed_s=506 {'loss:sum': 6.469743105582893}
+step 160/<= 543 elapsed_s=536 {'loss:sum': 3.53284493915271}
+step 170/<= 543 elapsed_s=568 {'loss:sum': 7.5251585389487445}
+step 180/<= 543 elapsed_s=601 {'loss:sum': 60.35997835546732}
+saved router-v7b-qwen3.5-4b-lora-r16-epoch1 path=tinker://467096c8-5c73-595c-b5a8-e92039dba560:train:0/sampler_weights/router-v7b-qwen3.5-4b-lora-r16-epoch1 step=181
+EVAL epoch1 val_macro_recall_present_classes=0.658324 accuracy(report only)=0.816870
+step 190/<= 543 elapsed_s=754 {'loss:sum': 27.53665833454579}
+step 200/<= 543 elapsed_s=787 {'loss:sum': 8.688132695155218}
+step 210/<= 543 elapsed_s=813 {'loss:sum': 19.848548248410225}
+step 220/<= 543 elapsed_s=845 {'loss:sum': 6.329742911504582}
+step 230/<= 543 elapsed_s=874 {'loss:sum': 8.059441563498694}
+step 240/<= 543 elapsed_s=905 {'loss:sum': 20.100194366415963}
+step 250/<= 543 elapsed_s=941 {'loss:sum': 19.98597567807883}
+step 260/<= 543 elapsed_s=967 {'loss:sum': 13.167873898521066}
+step 270/<= 543 elapsed_s=999 {'loss:sum': 4.493643221445382}
+step 280/<= 543 elapsed_s=1030 {'loss:sum': 3.0505753085017204}
+step 290/<= 543 elapsed_s=1063 {'loss:sum': 7.152705383487046}
+step 300/<= 543 elapsed_s=1094 {'loss:sum': 5.578177153132856}
+step 310/<= 543 elapsed_s=1126 {'loss:sum': 18.311860357825935}
+step 320/<= 543 elapsed_s=1163 {'loss:sum': 2.7912617176771164}
+step 330/<= 543 elapsed_s=1200 {'loss:sum': 0.1364509608829394}
+step 340/<= 543 elapsed_s=1232 {'loss:sum': 16.04807482054457}
+step 350/<= 543 elapsed_s=1264 {'loss:sum': 13.609204671432963}
+step 360/<= 543 elapsed_s=1295 {'loss:sum': 14.713827185332775}
+saved router-v7b-qwen3.5-4b-lora-r16-epoch2 path=tinker://467096c8-5c73-595c-b5a8-e92039dba560:train:0/sampler_weights/router-v7b-qwen3.5-4b-lora-r16-epoch2 step=362
+EVAL epoch2 val_macro_recall_present_classes=0.586221 accuracy(report only)=0.809101
+FIT {"steps": 362, "epoch_samplers": ["tinker://467096c8-5c73-595c-b5a8-e92039dba560:train:0/sampler_weights/router-v7b-qwen3.5-4b-lora-r16-epoch1", "tinker://467096c8-5c73-595c-b5a8-e92039dba560:train:0/sampler_weights/router-v7b-qwen3.5-4b-lora-r16-epoch2"], "selected_epoch": 1, "selected_sampler": "tinker://467096c8-5c73-595c-b5a8-e92039dba560:train:0/sampler_weights/router-v7b-qwen3.5-4b-lora-r16-epoch1", "selection_metric": "val_macro_recall_present_classes", "history": [{"epoch": 1, "sampler": "tinker://467096c8-5c73-595c-b5a8-e92039dba560:train:0/sampler_weights/router-v7b-qwen3.5-4b-lora-r16-epoch1", "val_macro_recall_present_classes": 0.6583238451783205}, {"epoch": 2, "sampler": "tinker://467096c8-5c73-595c-b5a8-e92039dba560:train:0/sampler_weights/router-v7b-qwen3.5-4b-lora-r16-epoch2", "val_macro_recall_present_classes": 0.5862212176696278}]}
+CHOICE {"run": "v7b", "run_id": "467096c8-5c73-595c-b5a8-e92039dba560:train:0", "rule": "router.balance.select_epoch on val_macro_recall_present_classes (tie keeps the earlier epoch), before any sealed score; never accuracy", "val_macro_recall_present_classes": {"1": 0.6583238451783205, "2": 0.5862212176696278}, "accuracy_report_only": {"1": 0.8168701442841287, "2": 0.8091009988901221}, "epochs_run": 2, "early_stopped": true, "chosen_epoch": 1, "chosen_checkpoint": "tinker://467096c8-5c73-595c-b5a8-e92039dba560:train:0/sampler_weights/router-v7b-qwen3.5-4b-lora-r16-epoch1", "sealed_read": false, "sealed_scored": false, "written": "2026-10-08T21:37:49+0400"}
+DONE

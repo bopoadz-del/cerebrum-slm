@@ -1,0 +1,149 @@
+{
+  "run": "v7b",
+  "repair_attempt": "1 of 2 (the last allowed)",
+  "status": "scored once; NOT PROMOTED (0 of 5 acceptance criteria met); router PARKED, no v7c",
+  "written_after_scoring": true,
+  "pre_run_note": null,
+  "data_commit": "b3e1001959a85fef8bbd464f2a2a717c1ab87203",
+  "training_tree": "4f5fa14a622c0baea5906f51caed262d14b0d323",
+  "training_tree_proof": "git tree of the training copy == tree of merged squash commit b3e1001 (PR #66, after PR #67 9747f70), all 525 blobs",
+  "base_model": "Qwen/Qwen3.5-4B",
+  "lora_rank": 16,
+  "lora_alpha": 16,
+  "learning_rate": 0.000473,
+  "batch_size": 16,
+  "seed": 0,
+  "max_seq": 6656,
+  "max_epochs": 3,
+  "patience": 1,
+  "config": "configs/router/train_v7b.json",
+  "pair_rules": "configs/router/pairs_v7b.json",
+  "sampler": {
+    "method": "tempered_inverse_frequency_loss_weight",
+    "exponent": 0.5,
+    "share_cap": 3.0,
+    "weights_file": "data/router/v7b/class_weights.json",
+    "weights_file_sha256": "2b6b57a4e2f3b7431c3de9003a8cf8319cb99b79c056b9daac4c0353f5b82cea"
+  },
+  "pairs": {
+    "contrastive": 797,
+    "combined_form": 0,
+    "catch_all": 183,
+    "catch_all_sibling": 183,
+    "files": "data/router/v7b/pairs_*.jsonl"
+  },
+  "train_rows": 2882,
+  "val_rows": 901,
+  "tinker_run_id": "467096c8-5c73-595c-b5a8-e92039dba560:train:0",
+  "checkpoints": [
+    "tinker://467096c8-5c73-595c-b5a8-e92039dba560:train:0/sampler_weights/router-v7b-qwen3.5-4b-lora-r16-epoch1",
+    "tinker://467096c8-5c73-595c-b5a8-e92039dba560:train:0/sampler_weights/router-v7b-qwen3.5-4b-lora-r16-epoch2"
+  ],
+  "epoch_choice": {
+    "rule": "router.balance.select_epoch on val_macro_recall_present_classes (tie keeps the earlier epoch), before any sealed score; never accuracy",
+    "val_macro_recall_present_classes": {
+      "1": 0.6583238451783205,
+      "2": 0.5862212176696278
+    },
+    "early_stopped": true,
+    "chosen_epoch": 1
+  },
+  "chosen_checkpoint": "tinker://467096c8-5c73-595c-b5a8-e92039dba560:train:0/sampler_weights/router-v7b-qwen3.5-4b-lora-r16-epoch1",
+  "sealed": {
+    "scored_once": true,
+    "n": 312,
+    "macro_recall": 0.7517376438715111,
+    "accuracy": 0.7147435897435898,
+    "gate_v2_passed": true,
+    "router_passed": false,
+    "per_set": {
+      "v5_retick": {
+        "n": 64,
+        "macro_recall": 0.6238095238095238,
+        "accuracy": 0.5625
+      },
+      "v8_retick": {
+        "n": 185,
+        "macro_recall": 0.7576178207757155,
+        "accuracy": 0.7297297297297297
+      },
+      "cr_addendum": {
+        "n": 14,
+        "macro_recall": 1.0,
+        "accuracy": 1.0
+      },
+      "thin_c_addendum": {
+        "n": 2,
+        "macro_recall": 1.0,
+        "accuracy": 1.0
+      },
+      "thin_d_addendum": {
+        "n": 13,
+        "macro_recall": 0.5,
+        "accuracy": 0.6923076923076923
+      },
+      "web_f_addendum": {
+        "n": 34,
+        "macro_recall": 0.9005681818181818,
+        "accuracy": 0.7941176470588235
+      }
+    },
+    "v6_combined": {
+      "macro_recall": 0.7857,
+      "accuracy": 0.7372
+    },
+    "v7_combined": {
+      "macro_recall": 0.7842698078682061,
+      "accuracy": 0.7532051282051282
+    }
+  },
+  "name_blind": {
+    "combined_flips": {
+      "v6": 6,
+      "v7": 3,
+      "v7b": 6
+    },
+    "combined_gate_passed": false,
+    "failing_passable_classes": [
+      "correspondence",
+      "other",
+      "submittal"
+    ]
+  },
+  "acceptance": [
+    {
+      "criterion": "correspondence recall >= 0.5",
+      "value": 0.0,
+      "pass": false
+    },
+    {
+      "criterion": "payment certificate recall >= 0.75",
+      "value": 0.4,
+      "pass": false
+    },
+    {
+      "criterion": "no class precision < 0.5 (labels predicted or present; never-predicted present label = 0)",
+      "value": {
+        "claim": 0.375,
+        "payment application": 0.2857142857142857,
+        "correspondence": 0.0,
+        "inspection request": 0.42857142857142855,
+        "other": 0.3333333333333333
+      },
+      "pass": false
+    },
+    {
+      "criterion": "VO/CO >= 15/16",
+      "value": "14/16",
+      "pass": false
+    },
+    {
+      "criterion": "change request precision >= 0.75",
+      "value": 0.7,
+      "pass": false
+    }
+  ],
+  "promoted": false,
+  "parked": true,
+  "park_statement": "Router parked after v7b (repair 2 of 2 budget used: v7, v7b). v6 stays the serving router. payment certificate needs certificate-side training rows (certified amount + certifier signature/date); correspondence needs clean, multi-project letter/email rows whose subject is an instrument topic."
+}
