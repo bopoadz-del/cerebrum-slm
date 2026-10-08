@@ -1,0 +1,89 @@
+{
+  "v7_examples": 2699,
+  "base_train_rows": 1719,
+  "pair_rows": 980,
+  "unique_texts": 1672,
+  "pair_texts_are_base_train_texts": true,
+  "shingle_note": "shared 12-word shingles are reported as the largest share of a sealed text's shingles found in one training text. They come from the base train rows, which v6 trained on unchanged; pairs reuse those texts, so v7 adds no new text and no new overlap (shingle12_rows_v7 == shingle12_rows_base_train).",
+  "method": "file_sha256/doc_id vs sealed file sha; sha256(text); 12-word shingles; first 300 chars; project id. Sealed text = router.content.content_text(candidate) from the box candidate files (sha-checked).",
+  "sets": {
+    "v5_retick": {
+      "rows": 64,
+      "rows_with_text": 64,
+      "overlaps": {
+        "file_sha256": 0,
+        "text_sha256": 0,
+        "first300": 0,
+        "project": 0
+      },
+      "shingle12_rows_v7": 9,
+      "shingle12_rows_base_train": 9,
+      "shingle12_max_share": 0.3181
+    },
+    "v8_retick": {
+      "rows": 185,
+      "rows_with_text": 185,
+      "overlaps": {
+        "file_sha256": 0,
+        "text_sha256": 0,
+        "first300": 0,
+        "project": 0
+      },
+      "shingle12_rows_v7": 4,
+      "shingle12_rows_base_train": 4,
+      "shingle12_max_share": 0.0437
+    },
+    "cr_addendum": {
+      "rows": 14,
+      "rows_with_text": 14,
+      "overlaps": {
+        "file_sha256": 0,
+        "text_sha256": 0,
+        "first300": 0,
+        "project": 0
+      },
+      "shingle12_rows_v7": 5,
+      "shingle12_rows_base_train": 5,
+      "shingle12_max_share": 0.2694
+    },
+    "thin_c_addendum": {
+      "rows": 2,
+      "rows_with_text": 2,
+      "overlaps": {
+        "file_sha256": 0,
+        "text_sha256": 0,
+        "first300": 0,
+        "project": 0
+      },
+      "shingle12_rows_v7": 0,
+      "shingle12_rows_base_train": 0,
+      "shingle12_max_share": 0.0
+    },
+    "thin_d_addendum": {
+      "rows": 13,
+      "rows_with_text": 13,
+      "overlaps": {
+        "file_sha256": 0,
+        "text_sha256": 0,
+        "first300": 0,
+        "project": 0
+      },
+      "shingle12_rows_v7": 2,
+      "shingle12_rows_base_train": 2,
+      "shingle12_max_share": 0.2458
+    },
+    "web_f_addendum": {
+      "rows": 34,
+      "rows_with_text": 34,
+      "overlaps": {
+        "file_sha256": 0,
+        "text_sha256": 0,
+        "first300": 0,
+        "project": 0
+      },
+      "shingle12_rows_v7": 5,
+      "shingle12_rows_base_train": 5,
+      "shingle12_max_share": 0.2167
+    }
+  }
+}

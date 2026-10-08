@@ -274,6 +274,39 @@ def fit_router_v6(root: Path, train_rows: list[dict], val_rows: list[dict], labe
     }
 
 
+def fit_router_v7(root: Path, train_rows: list[dict], val_rows: list[dict], labels: list[str], *, sdk=None) -> dict:
+    """v7: tempered class weights read from data/router/v7/class_weights.json; otherwise the v6 loop unchanged.
+
+    ``train_rows`` are the v7 training examples (router.v7_pairs.v7_training_examples). The weights file must equal a
+    recomputation from these examples' label counts (router.balance_v7.read_weights), or training is refused.
+    Early stop and epoch choice read val macro recall over present classes only. Nothing here names a label.
+    """
+    from router.balance import SELECTION_METRIC, macro_recall_present, select_epoch, should_stop
+    from router.balance_v7 import load_v7_config, read_weights
+
+    v7 = load_v7_config(root)
+    lora = v7["lora"]
+    weights = read_weights(root, [row["messages"][-1]["content"] for row in train_rows])
+    gold = [row["messages"][-1]["content"] for row in val_rows]
+    history: list[dict] = []
+
+    def on_epoch(epoch: int, path: str) -> bool:
+        pred = predict_labels(lora, val_rows, path, labels, sdk=sdk)
+        history.append({"epoch": epoch, "sampler": path, SELECTION_METRIC: macro_recall_present(gold, pred)})
+        return should_stop(history, v7["patience"], v7["max_epochs"])
+
+    trained = fit_router(lora, train_rows, sdk=sdk, class_weight=weights, on_epoch=on_epoch)
+    chosen = select_epoch(history)
+    return {
+        **trained,
+        "class_weights": weights,
+        "history": history,
+        "selected_epoch": chosen,
+        "selected_sampler": next(entry["sampler"] for entry in history if entry["epoch"] == chosen),
+        "selection_metric": SELECTION_METRIC,
+    }
+
+
 def predict_labels(
     lora: dict,
     rows: list[dict],
