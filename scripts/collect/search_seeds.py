@@ -43,6 +43,34 @@ QUERIES = [
 ]
 
 
+def _unwrap_bing(link: str) -> str:
+    """Bing RSS wraps result URLs in /ck/a redirects; decode the u= target."""
+    import base64
+
+    parts = urllib.parse.urlsplit(link)
+    if "bing.com/ck/a" not in parts.netloc + parts.path:
+        return link
+    q = urllib.parse.parse_qs(parts.query)
+    u = q.get("u", [""])[0]
+    if not u:
+        return link
+    for pref in ("a1", "a2"):
+        if u.startswith(pref):
+            try:
+                decoded = base64.urlsafe_b64decode(u[len(pref):] + "==").decode("utf-8", "replace")
+                if decoded.startswith("http"):
+                    return decoded
+            except Exception:  # noqa: BLE001
+                pass
+    try:
+        decoded = urllib.parse.unquote(u)
+        if decoded.startswith("http"):
+            return decoded
+    except Exception:  # noqa: BLE001
+        pass
+    return link
+
+
 def search_bing(query: str, count: int = 20) -> list[str]:
     url = "https://www.bing.com/search?" + urllib.parse.urlencode(
         {"q": query, "format": "rss", "count": count}
@@ -55,7 +83,7 @@ def search_bing(query: str, count: int = 20) -> list[str]:
     for item in root.iter("item"):
         for child in item:
             if child.tag == "link" and child.text:
-                links.append(child.text.strip())
+                links.append(_unwrap_bing(child.text.strip()))
     return links
 
 

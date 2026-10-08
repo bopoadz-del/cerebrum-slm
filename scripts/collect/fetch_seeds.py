@@ -174,9 +174,10 @@ def main(argv: list[str] | None = None) -> int:
     args = ap.parse_args(argv)
 
     seeds = [{"url": u, "class": ""} for u in DEFAULT_SEEDS]
+    listings = DEFAULT_LISTINGS
     if args.seeds:
         seeds = [json.loads(l) for l in args.seeds.read_text(encoding="utf-8").splitlines() if l.strip()]
-    listings = DEFAULT_LISTINGS
+        listings = []  # a search-driven run re-fetches nothing from the default lists
     if args.listings:
         listings = [json.loads(l) for l in args.listings.read_text(encoding="utf-8").splitlines() if l.strip()]
 
