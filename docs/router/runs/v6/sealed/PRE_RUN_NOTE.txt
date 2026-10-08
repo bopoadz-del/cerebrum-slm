@@ -1,0 +1,29 @@
+[Restored copy. The scorer session wrote this note at 2026-10-08T16:05:07+0400, before RUN_STARTED_score.json (16:05:11).
+ The on-box copy was overwritten at 16:08:04 by a concurrent process, after both phases had started; this is the original
+ text re-written from the scoring session. Nothing below was changed after the scores were seen.]
+
+PRE_RUN_NOTE - router v6 epoch 3: sealed score ONCE on every registered v9 sealed set, then the name-blind check
+Written 2026-10-08T16:05:07+0400 (Asia/Dubai), BEFORE any sealed prediction for this adapter.
+
+Main: 39945a967dc6c720bf36987e0e3b6f3e53e8bdde, rebuilt fresh from the GitHub tree: the recursive tree listing was re-hashed bottom-up and
+  matches GitHub's top-level entries for 39945a9; all 383 blobs verified by git blob sha1 (none trusted by path). The driver re-checks every blob.
+Adapter: tinker://93552b55-3c20-5862-8bbf-2320fb04b236:train:0/sampler_weights/router-v6-qwen3.5-4b-lora-r16-epoch3
+  (Qwen/Qwen3.5-4B LoRA r16, class-weighted, trained on main 3f72300: train 1712 / val 900; train/val blobs identical at 39945a9).
+Why epoch 3: chosen BEFORE any sealed read on val macro recall over present classes (0.6622 / 0.7287 / 0.7409), never accuracy.
+  epoch_choice.json: sealed_read=false, sealed_scored=false. This adapter has never been scored on any sealed set.
+Sets (configs/router/sealed_eval.json v9_sealed at 39945a9; each seal checked against its sealed_labels.jsonl.sha256 and SHA256SUMS: OK):
+  v5_retick 64, v8_retick 185, cr_addendum 14, thin_c_addendum 2, thin_d_addendum 13; combined = concatenation in that order (278).
+Isolation (router.isolation.rejected_rows, v6 train 1712 + val 900 vs each set): 0 rejected on every set. Exact text overlap (first 300 chars) 0.
+Note (not a fix): thin_d V9D-D003 is the same file (sha256 13a32dd2...) and label as v5_retick S5-027; combined counts it twice, as registered.
+Input text: router.content.content_text(candidate); content sha checked against each sealed row first. Dry check: 278/278 join, 0 empty.
+  Candidates: v5/v8/cr as in the v5 run; thin_c = router-rows-v9b/cand_sealed_c/candidates_sealed.jsonl; thin_d = built from the source PDFs
+  (6 NRC PDFs from the owner's Drive folder because nrc.gov returns 403 here, 7 from their public URLs), each matched by sha256 == sealed
+  file_sha256, text rule as router-cr/build.py (pdftotext, whitespace collapsed, OCR only if <200 chars, first 6000 chars).
+System prompt: prompt_for(labels) sha256 b1ac9472... == the prompt v6 trained with (driver refuses otherwise).
+Sampling: max_tokens 32, temperature 0, top_p 1, seed 0, enable_thinking false (router.train_router._complete). Parser: router.train_router._as_label (v9 exact aliases).
+Gate: router.sealed_gate.evaluate_sealed_gate_v8 (gate v2 + MIN_SEALED_PER_LABEL=12), unchanged; majority_class_fail from sealed_eval.json.
+Name-blind (phase 2, only after the score is written): blanker scripts/router/name_blind.py at 39945a9, sha256 a235de3c... (the PR #50 party-only fix).
+  Unblanked side = the stored sealed predictions from phase 1 (not re-sampled). Dry count of rows with a blanked field: v5 39/64, v8 89/185, cr 11/14,
+  thin_c 1/2, thin_d 8/13. A flip on a passable class (gold n>=12 in that set/view) is a FAIL.
+Resume rule: if calls fail mid-run, a re-run samples only rows missing from the partial file and logs it. A finished phase refuses a second run.
+Driver: score_v6_v9.py sha256 b014ffaf2317b551c1661d3e79eafecd4928f196d0d7e383c248b1f60b7a3bca. Nothing is selected or changed on sealed results.

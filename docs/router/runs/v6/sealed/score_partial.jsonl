@@ -1,0 +1,278 @@
+{"set": "v5_retick", "sheet_id": "S5-005", "raw": "substantial completion", "pred": "unsure"}
+{"set": "v5_retick", "sheet_id": "S5-010", "raw": "submittal", "pred": "submittal"}
+{"set": "v5_retick", "sheet_id": "S5-017", "raw": "payment certificate", "pred": "payment certificate"}
+{"set": "v5_retick", "sheet_id": "S5-018", "raw": "schedule", "pred": "schedule"}
+{"set": "v5_retick", "sheet_id": "S5-008", "raw": "claim", "pred": "claim"}
+{"set": "v5_retick", "sheet_id": "S5-001", "raw": "submittal", "pred": "submittal"}
+{"set": "v5_retick", "sheet_id": "S5-013", "raw": "report", "pred": "report"}
+{"set": "v5_retick", "sheet_id": "S5-012", "raw": "change request", "pred": "change request"}
+{"set": "v5_retick", "sheet_id": "S5-006", "raw": "other", "pred": "other"}
+{"set": "v5_retick", "sheet_id": "S5-016", "raw": "submittal", "pred": "submittal"}
+{"set": "v5_retick", "sheet_id": "S5-009", "raw": "transmittal", "pred": "transmittal"}
+{"set": "v5_retick", "sheet_id": "S5-007", "raw": "payment application", "pred": "payment application"}
+{"set": "v5_retick", "sheet_id": "S5-015", "raw": "contract", "pred": "contract"}
+{"set": "v5_retick", "sheet_id": "S5-002", "raw": "site instruction", "pred": "site instruction"}
+{"set": "v5_retick", "sheet_id": "S5-004", "raw": "claim", "pred": "claim"}
+{"set": "v5_retick", "sheet_id": "S5-014", "raw": "site instruction", "pred": "site instruction"}
+{"set": "v5_retick", "sheet_id": "S5-003", "raw": "transmittal", "pred": "transmittal"}
+{"set": "v5_retick", "sheet_id": "S5-011", "raw": "VO/CO", "pred": "VO/CO"}
+{"set": "v5_retick", "sheet_id": "S5-020", "raw": "RFI", "pred": "RFI"}
+{"set": "v5_retick", "sheet_id": "S5-019", "raw": "report", "pred": "report"}
+{"set": "v5_retick", "sheet_id": "S5-022", "raw": "RFI", "pred": "RFI"}
+{"set": "v5_retick", "sheet_id": "S5-025", "raw": "report", "pred": "report"}
+{"set": "v5_retick", "sheet_id": "S5-029", "raw": "RFI", "pred": "RFI"}
+{"set": "v5_retick", "sheet_id": "S5-030", "raw": "schedule", "pred": "schedule"}
+{"set": "v5_retick", "sheet_id": "S5-028", "raw": "other", "pred": "other"}
+{"set": "v5_retick", "sheet_id": "S5-033", "raw": "schedule", "pred": "schedule"}
+{"set": "v5_retick", "sheet_id": "S5-026", "raw": "site instruction", "pred": "site instruction"}
+{"set": "v5_retick", "sheet_id": "S5-034", "raw": "transmittal", "pred": "transmittal"}
+{"set": "v5_retick", "sheet_id": "S5-021", "raw": "payment certificate", "pred": "payment certificate"}
+{"set": "v5_retick", "sheet_id": "S5-023", "raw": "site instruction", "pred": "site instruction"}
+{"set": "v5_retick", "sheet_id": "S5-024", "raw": "claim", "pred": "claim"}
+{"set": "v5_retick", "sheet_id": "S5-027", "raw": "payment application", "pred": "payment application"}
+{"set": "v5_retick", "sheet_id": "S5-031", "raw": "inspection request", "pred": "inspection request"}
+{"set": "v5_retick", "sheet_id": "S5-032", "raw": "submittal", "pred": "submittal"}
+{"set": "v5_retick", "sheet_id": "S5-035", "raw": "change request", "pred": "change request"}
+{"set": "v5_retick", "sheet_id": "S5-036", "raw": "payment application", "pred": "payment application"}
+{"set": "v5_retick", "sheet_id": "S5-037", "raw": "specification", "pred": "specification"}
+{"set": "v5_retick", "sheet_id": "S5-050", "raw": "drawing", "pred": "drawing"}
+{"set": "v5_retick", "sheet_id": "S5-040", "raw": "inspection request", "pred": "inspection request"}
+{"set": "v5_retick", "sheet_id": "S5-046", "raw": "drawing", "pred": "drawing"}
+{"set": "v5_retick", "sheet_id": "S5-043", "raw": "RFI", "pred": "RFI"}
+{"set": "v5_retick", "sheet_id": "S5-042", "raw": "meeting minutes", "pred": "meeting minutes"}
+{"set": "v5_retick", "sheet_id": "S5-045", "raw": "RFI", "pred": "RFI"}
+{"set": "v5_retick", "sheet_id": "S5-041", "raw": "submittal", "pred": "submittal"}
+{"set": "v5_retick", "sheet_id": "S5-039", "raw": "VO/CO", "pred": "VO/CO"}
+{"set": "v5_retick", "sheet_id": "S5-048", "raw": "site instruction", "pred": "site instruction"}
+{"set": "v5_retick", "sheet_id": "S5-044", "raw": "submittal", "pred": "submittal"}
+{"set": "v5_retick", "sheet_id": "S5-038", "raw": "payment application", "pred": "payment application"}
+{"set": "v5_retick", "sheet_id": "S5-047", "raw": "meeting minutes", "pred": "meeting minutes"}
+{"set": "v5_retick", "sheet_id": "S5-049", "raw": "schedule", "pred": "schedule"}
+{"set": "v5_retick", "sheet_id": "S5-053", "raw": "claim", "pred": "claim"}
+{"set": "v5_retick", "sheet_id": "S5-051", "raw": "transmittal", "pred": "transmittal"}
+{"set": "v5_retick", "sheet_id": "S5-052", "raw": "submittal", "pred": "submittal"}
+{"set": "v5_retick", "sheet_id": "S5-057", "raw": "change request", "pred": "change request"}
+{"set": "v5_retick", "sheet_id": "S5-056", "raw": "change request", "pred": "change request"}
+{"set": "v5_retick", "sheet_id": "S5-060", "raw": "drawing", "pred": "drawing"}
+{"set": "v8_retick", "sheet_id": "V8-001", "raw": "submittal", "pred": "submittal"}
+{"set": "v5_retick", "sheet_id": "S5-064", "raw": "VO/CO", "pred": "VO/CO"}
+{"set": "v5_retick", "sheet_id": "S5-055", "raw": "drawing", "pred": "drawing"}
+{"set": "v5_retick", "sheet_id": "S5-054", "raw": "transmittal", "pred": "transmittal"}
+{"set": "v5_retick", "sheet_id": "S5-059", "raw": "submittal", "pred": "submittal"}
+{"set": "v5_retick", "sheet_id": "S5-062", "raw": "VO/CO", "pred": "VO/CO"}
+{"set": "v5_retick", "sheet_id": "S5-058", "raw": "schedule", "pred": "schedule"}
+{"set": "v5_retick", "sheet_id": "S5-063", "raw": "VO/CO", "pred": "VO/CO"}
+{"set": "v8_retick", "sheet_id": "V8-002", "raw": "BOQ", "pred": "BOQ"}
+{"set": "v5_retick", "sheet_id": "S5-061", "raw": "schedule", "pred": "schedule"}
+{"set": "v8_retick", "sheet_id": "V8-006", "raw": "meeting minutes", "pred": "meeting minutes"}
+{"set": "v8_retick", "sheet_id": "V8-004", "raw": "specification", "pred": "specification"}
+{"set": "v8_retick", "sheet_id": "V8-009", "raw": "drawing", "pred": "drawing"}
+{"set": "v8_retick", "sheet_id": "V8-003", "raw": "other", "pred": "other"}
+{"set": "v8_retick", "sheet_id": "V8-005", "raw": "drawing", "pred": "drawing"}
+{"set": "v8_retick", "sheet_id": "V8-008", "raw": "schedule", "pred": "schedule"}
+{"set": "v8_retick", "sheet_id": "V8-016", "raw": "contract", "pred": "contract"}
+{"set": "v8_retick", "sheet_id": "V8-013", "raw": "method statement", "pred": "method statement"}
+{"set": "v8_retick", "sheet_id": "V8-014", "raw": "method statement", "pred": "method statement"}
+{"set": "v8_retick", "sheet_id": "V8-011", "raw": "transmittal", "pred": "transmittal"}
+{"set": "v8_retick", "sheet_id": "V8-007", "raw": "other", "pred": "other"}
+{"set": "v8_retick", "sheet_id": "V8-018", "raw": "drawing", "pred": "drawing"}
+{"set": "v8_retick", "sheet_id": "V8-010", "raw": "specification", "pred": "specification"}
+{"set": "v8_retick", "sheet_id": "V8-017", "raw": "schedule", "pred": "schedule"}
+{"set": "v8_retick", "sheet_id": "V8-015", "raw": "drawing", "pred": "drawing"}
+{"set": "v8_retick", "sheet_id": "V8-012", "raw": "submittal", "pred": "submittal"}
+{"set": "v8_retick", "sheet_id": "V8-019", "raw": "report", "pred": "report"}
+{"set": "v8_retick", "sheet_id": "V8-021", "raw": "subsurface exploration", "pred": "unsure"}
+{"set": "v8_retick", "sheet_id": "V8-020", "raw": "site instruction", "pred": "site instruction"}
+{"set": "v8_retick", "sheet_id": "V8-023", "raw": "contract", "pred": "contract"}
+{"set": "v8_retick", "sheet_id": "V8-024", "raw": "specification", "pred": "specification"}
+{"set": "v8_retick", "sheet_id": "V8-022", "raw": "drawing", "pred": "drawing"}
+{"set": "v8_retick", "sheet_id": "V8-029", "raw": "drawing", "pred": "drawing"}
+{"set": "v8_retick", "sheet_id": "V8-031", "raw": "site instruction", "pred": "site instruction"}
+{"set": "v8_retick", "sheet_id": "V8-035", "raw": "site instruction", "pred": "site instruction"}
+{"set": "v8_retick", "sheet_id": "V8-027", "raw": "schedule", "pred": "schedule"}
+{"set": "v8_retick", "sheet_id": "V8-033", "raw": "VO/CO", "pred": "VO/CO"}
+{"set": "v8_retick", "sheet_id": "V8-026", "raw": "other", "pred": "other"}
+{"set": "v8_retick", "sheet_id": "V8-032", "raw": "schedule", "pred": "schedule"}
+{"set": "v8_retick", "sheet_id": "V8-034", "raw": "RFI", "pred": "RFI"}
+{"set": "v8_retick", "sheet_id": "V8-036", "raw": "schedule", "pred": "schedule"}
+{"set": "v8_retick", "sheet_id": "V8-025", "raw": "site instruction", "pred": "site instruction"}
+{"set": "v8_retick", "sheet_id": "V8-030", "raw": "other", "pred": "other"}
+{"set": "v8_retick", "sheet_id": "V8-028", "raw": "other", "pred": "other"}
+{"set": "v8_retick", "sheet_id": "V8-037", "raw": "contract", "pred": "contract"}
+{"set": "v8_retick", "sheet_id": "V8-039", "raw": "submittal", "pred": "submittal"}
+{"set": "v8_retick", "sheet_id": "V8-038", "raw": "VO/CO", "pred": "VO/CO"}
+{"set": "v8_retick", "sheet_id": "V8-043", "raw": "schedule", "pred": "schedule"}
+{"set": "v8_retick", "sheet_id": "V8-041", "raw": "change request", "pred": "change request"}
+{"set": "v8_retick", "sheet_id": "V8-040", "raw": "schedule", "pred": "schedule"}
+{"set": "v8_retick", "sheet_id": "V8-044", "raw": "specification", "pred": "specification"}
+{"set": "v8_retick", "sheet_id": "V8-042", "raw": "drawing", "pred": "drawing"}
+{"set": "v8_retick", "sheet_id": "V8-050", "raw": "site instruction", "pred": "site instruction"}
+{"set": "v8_retick", "sheet_id": "V8-046", "raw": "method statement", "pred": "method statement"}
+{"set": "v8_retick", "sheet_id": "V8-055", "raw": "contract", "pred": "contract"}
+{"set": "v8_retick", "sheet_id": "V8-047", "raw": "specification", "pred": "specification"}
+{"set": "v8_retick", "sheet_id": "V8-053", "raw": "schedule", "pred": "schedule"}
+{"set": "v8_retick", "sheet_id": "V8-049", "raw": "method statement", "pred": "method statement"}
+{"set": "v8_retick", "sheet_id": "V8-048", "raw": "site instruction", "pred": "site instruction"}
+{"set": "v8_retick", "sheet_id": "V8-052", "raw": "drawing", "pred": "drawing"}
+{"set": "v8_retick", "sheet_id": "V8-051", "raw": "drawing", "pred": "drawing"}
+{"set": "v8_retick", "sheet_id": "V8-045", "raw": "BOQ", "pred": "BOQ"}
+{"set": "v8_retick", "sheet_id": "V8-054", "raw": "drawing", "pred": "drawing"}
+{"set": "v8_retick", "sheet_id": "V8-056", "raw": "drawing", "pred": "drawing"}
+{"set": "v8_retick", "sheet_id": "V8-058", "raw": "BOQ", "pred": "BOQ"}
+{"set": "v8_retick", "sheet_id": "V8-057", "raw": "register/log", "pred": "register/log"}
+{"set": "v8_retick", "sheet_id": "V8-066", "raw": "VO/CO", "pred": "VO/CO"}
+{"set": "v8_retick", "sheet_id": "V8-059", "raw": "site instruction", "pred": "site instruction"}
+{"set": "v8_retick", "sheet_id": "V8-063", "raw": "method statement", "pred": "method statement"}
+{"set": "v8_retick", "sheet_id": "V8-060", "raw": "report", "pred": "report"}
+{"set": "v8_retick", "sheet_id": "V8-061", "raw": "VO/CO", "pred": "VO/CO"}
+{"set": "v8_retick", "sheet_id": "V8-068", "raw": "payment application", "pred": "payment application"}
+{"set": "v8_retick", "sheet_id": "V8-065", "raw": "drawing", "pred": "drawing"}
+{"set": "v8_retick", "sheet_id": "V8-070", "raw": "drawing", "pred": "drawing"}
+{"set": "v8_retick", "sheet_id": "V8-064", "raw": "submittal", "pred": "submittal"}
+{"set": "v8_retick", "sheet_id": "V8-069", "raw": "contract", "pred": "contract"}
+{"set": "v8_retick", "sheet_id": "V8-067", "raw": "material application", "pred": "unsure"}
+{"set": "v8_retick", "sheet_id": "V8-062", "raw": "contract", "pred": "contract"}
+{"set": "v8_retick", "sheet_id": "V8-073", "raw": "BOQ", "pred": "BOQ"}
+{"set": "v8_retick", "sheet_id": "V8-084", "raw": "meeting minutes", "pred": "meeting minutes"}
+{"set": "v8_retick", "sheet_id": "V8-072", "raw": "drawing", "pred": "drawing"}
+{"set": "v8_retick", "sheet_id": "V8-074", "raw": "drawing", "pred": "drawing"}
+{"set": "v8_retick", "sheet_id": "V8-077", "raw": "schedule", "pred": "schedule"}
+{"set": "v8_retick", "sheet_id": "V8-071", "raw": "BOQ", "pred": "BOQ"}
+{"set": "v8_retick", "sheet_id": "V8-080", "raw": "change request", "pred": "change request"}
+{"set": "v8_retick", "sheet_id": "V8-078", "raw": "correspondence", "pred": "correspondence"}
+{"set": "v8_retick", "sheet_id": "V8-076", "raw": "site instruction", "pred": "site instruction"}
+{"set": "v8_retick", "sheet_id": "V8-085", "raw": "transmittal", "pred": "transmittal"}
+{"set": "v8_retick", "sheet_id": "V8-081", "raw": "drawing", "pred": "drawing"}
+{"set": "v8_retick", "sheet_id": "V8-079", "raw": "site instruction", "pred": "site instruction"}
+{"set": "v8_retick", "sheet_id": "V8-083", "raw": "submittal", "pred": "submittal"}
+{"set": "v8_retick", "sheet_id": "V8-082", "raw": "VO/CO", "pred": "VO/CO"}
+{"set": "v8_retick", "sheet_id": "V8-075", "raw": "site instruction", "pred": "site instruction"}
+{"set": "v8_retick", "sheet_id": "V8-086", "raw": "VO/CO", "pred": "VO/CO"}
+{"set": "v8_retick", "sheet_id": "V8-093", "raw": "BOQ", "pred": "BOQ"}
+{"set": "v8_retick", "sheet_id": "V8-087", "raw": "method statement", "pred": "method statement"}
+{"set": "v8_retick", "sheet_id": "V8-094", "raw": "register/log", "pred": "register/log"}
+{"set": "v8_retick", "sheet_id": "V8-088", "raw": "specification", "pred": "specification"}
+{"set": "v8_retick", "sheet_id": "V8-092", "raw": "other", "pred": "other"}
+{"set": "v8_retick", "sheet_id": "V8-090", "raw": "drawing", "pred": "drawing"}
+{"set": "v8_retick", "sheet_id": "V8-097", "raw": "change request", "pred": "change request"}
+{"set": "v8_retick", "sheet_id": "V8-089", "raw": "site instruction", "pred": "site instruction"}
+{"set": "v8_retick", "sheet_id": "V8-091", "raw": "contract", "pred": "contract"}
+{"set": "v8_retick", "sheet_id": "V8-102", "raw": "contract", "pred": "contract"}
+{"set": "v8_retick", "sheet_id": "V8-095", "raw": "submittal", "pred": "submittal"}
+{"set": "v8_retick", "sheet_id": "V8-099", "raw": "drawing", "pred": "drawing"}
+{"set": "v8_retick", "sheet_id": "V8-100", "raw": "other", "pred": "other"}
+{"set": "v8_retick", "sheet_id": "V8-098", "raw": "register/log", "pred": "register/log"}
+{"set": "v8_retick", "sheet_id": "V8-101", "raw": "drawing", "pred": "drawing"}
+{"set": "v8_retick", "sheet_id": "V8-103", "raw": "method statement", "pred": "method statement"}
+{"set": "v8_retick", "sheet_id": "V8-109", "raw": "method statement", "pred": "method statement"}
+{"set": "v8_retick", "sheet_id": "V8-115", "raw": "method statement", "pred": "method statement"}
+{"set": "v8_retick", "sheet_id": "V8-111", "raw": "specification", "pred": "specification"}
+{"set": "v8_retick", "sheet_id": "V8-114", "raw": "BOQ", "pred": "BOQ"}
+{"set": "v8_retick", "sheet_id": "V8-106", "raw": "report", "pred": "report"}
+{"set": "v8_retick", "sheet_id": "V8-105", "raw": "register/log", "pred": "register/log"}
+{"set": "v8_retick", "sheet_id": "V8-117", "raw": "specification", "pred": "specification"}
+{"set": "v8_retick", "sheet_id": "V8-116", "raw": "site instruction", "pred": "site instruction"}
+{"set": "v8_retick", "sheet_id": "V8-104", "raw": "schedule", "pred": "schedule"}
+{"set": "v8_retick", "sheet_id": "V8-112", "raw": "site instruction", "pred": "site instruction"}
+{"set": "v8_retick", "sheet_id": "V8-113", "raw": "site instruction", "pred": "site instruction"}
+{"set": "v8_retick", "sheet_id": "V8-108", "raw": "transmittal", "pred": "transmittal"}
+{"set": "v8_retick", "sheet_id": "V8-119", "raw": "schedule", "pred": "schedule"}
+{"set": "v8_retick", "sheet_id": "V8-107", "raw": "BOQ", "pred": "BOQ"}
+{"set": "v8_retick", "sheet_id": "V8-120", "raw": "site instruction", "pred": "site instruction"}
+{"set": "v8_retick", "sheet_id": "V8-118", "raw": "schedule", "pred": "schedule"}
+{"set": "v8_retick", "sheet_id": "V8-132", "raw": "contract", "pred": "contract"}
+{"set": "v8_retick", "sheet_id": "V8-123", "raw": "other", "pred": "other"}
+{"set": "v8_retick", "sheet_id": "V8-127", "raw": "correspondence", "pred": "correspondence"}
+{"set": "v8_retick", "sheet_id": "V8-131", "raw": "inspection request", "pred": "inspection request"}
+{"set": "v8_retick", "sheet_id": "V8-125", "raw": "drawing", "pred": "drawing"}
+{"set": "v8_retick", "sheet_id": "V8-130", "raw": "contract", "pred": "contract"}
+{"set": "v8_retick", "sheet_id": "V8-121", "raw": "submittal", "pred": "submittal"}
+{"set": "v8_retick", "sheet_id": "V8-133", "raw": "method statement", "pred": "method statement"}
+{"set": "v8_retick", "sheet_id": "V8-128", "raw": "schedule", "pred": "schedule"}
+{"set": "v8_retick", "sheet_id": "V8-124", "raw": "submittal", "pred": "submittal"}
+{"set": "v8_retick", "sheet_id": "V8-126", "raw": "report", "pred": "report"}
+{"set": "v8_retick", "sheet_id": "V8-122", "raw": "schedule", "pred": "schedule"}
+{"set": "v8_retick", "sheet_id": "V8-134", "raw": "site instruction", "pred": "site instruction"}
+{"set": "v8_retick", "sheet_id": "V8-129", "raw": "contract", "pred": "contract"}
+{"set": "v8_retick", "sheet_id": "V8-136", "raw": "drawing", "pred": "drawing"}
+{"set": "v8_retick", "sheet_id": "V8-138", "raw": "BOQ", "pred": "BOQ"}
+{"set": "v8_retick", "sheet_id": "V8-135", "raw": "RFI", "pred": "RFI"}
+{"set": "v8_retick", "sheet_id": "V8-137", "raw": "contract", "pred": "contract"}
+{"set": "v8_retick", "sheet_id": "V8-142", "raw": "schedule", "pred": "schedule"}
+{"set": "v8_retick", "sheet_id": "V8-139", "raw": "specification", "pred": "specification"}
+{"set": "v8_retick", "sheet_id": "V8-140", "raw": "payment certificate", "pred": "payment certificate"}
+{"set": "v8_retick", "sheet_id": "V8-141", "raw": "schedule", "pred": "schedule"}
+{"set": "v8_retick", "sheet_id": "V8-148", "raw": "submittal", "pred": "submittal"}
+{"set": "v8_retick", "sheet_id": "V8-143", "raw": "specification", "pred": "specification"}
+{"set": "v8_retick", "sheet_id": "V8-146", "raw": "method statement", "pred": "method statement"}
+{"set": "v8_retick", "sheet_id": "V8-144", "raw": "drawing", "pred": "drawing"}
+{"set": "v8_retick", "sheet_id": "V8-149", "raw": "other", "pred": "other"}
+{"set": "v8_retick", "sheet_id": "V8-147", "raw": "register/log", "pred": "register/log"}
+{"set": "v8_retick", "sheet_id": "V8-145", "raw": "report", "pred": "report"}
+{"set": "v8_retick", "sheet_id": "V8-150", "raw": "submittal", "pred": "submittal"}
+{"set": "v8_retick", "sheet_id": "V8-151", "raw": "drawing", "pred": "drawing"}
+{"set": "v8_retick", "sheet_id": "V8-161", "raw": "transmittal", "pred": "transmittal"}
+{"set": "v8_retick", "sheet_id": "V8-163", "raw": "correspondence", "pred": "correspondence"}
+{"set": "v8_retick", "sheet_id": "V8-160", "raw": "method statement", "pred": "method statement"}
+{"set": "v8_retick", "sheet_id": "V8-158", "raw": "submittal", "pred": "submittal"}
+{"set": "v8_retick", "sheet_id": "V8-153", "raw": "schedule", "pred": "schedule"}
+{"set": "v8_retick", "sheet_id": "V8-162", "raw": "other", "pred": "other"}
+{"set": "v8_retick", "sheet_id": "V8-155", "raw": "method statement", "pred": "method statement"}
+{"set": "v8_retick", "sheet_id": "V8-154", "raw": "other", "pred": "other"}
+{"set": "v8_retick", "sheet_id": "V8-152", "raw": "payment certificate", "pred": "payment certificate"}
+{"set": "v8_retick", "sheet_id": "V8-159", "raw": "report", "pred": "report"}
+{"set": "v8_retick", "sheet_id": "V8-156", "raw": "transmittal", "pred": "transmittal"}
+{"set": "v8_retick", "sheet_id": "V8-165", "raw": "method statement", "pred": "method statement"}
+{"set": "v8_retick", "sheet_id": "V8-167", "raw": "BOQ", "pred": "BOQ"}
+{"set": "v8_retick", "sheet_id": "V8-166", "raw": "specification", "pred": "specification"}
+{"set": "v8_retick", "sheet_id": "V8-164", "raw": "report", "pred": "report"}
+{"set": "v8_retick", "sheet_id": "V8-171", "raw": "NCR", "pred": "NCR"}
+{"set": "v8_retick", "sheet_id": "V8-173", "raw": "transmittal", "pred": "transmittal"}
+{"set": "v8_retick", "sheet_id": "V8-174", "raw": "RFI", "pred": "RFI"}
+{"set": "v8_retick", "sheet_id": "V8-179", "raw": "VO/CO", "pred": "VO/CO"}
+{"set": "v8_retick", "sheet_id": "V8-168", "raw": "site instruction", "pred": "site instruction"}
+{"set": "v8_retick", "sheet_id": "V8-180", "raw": "VO/CO", "pred": "VO/CO"}
+{"set": "v8_retick", "sheet_id": "V8-177", "raw": "VO/CO", "pred": "VO/CO"}
+{"set": "v8_retick", "sheet_id": "V8-178", "raw": "RFI", "pred": "RFI"}
+{"set": "v8_retick", "sheet_id": "V8-176", "raw": "transmittal", "pred": "transmittal"}
+{"set": "v8_retick", "sheet_id": "V8-170", "raw": "site instruction", "pred": "site instruction"}
+{"set": "v8_retick", "sheet_id": "V8-175", "raw": "NCR", "pred": "NCR"}
+{"set": "v8_retick", "sheet_id": "V8-169", "raw": "VO/CO", "pred": "VO/CO"}
+{"set": "v8_retick", "sheet_id": "V8-172", "raw": "claim", "pred": "claim"}
+{"set": "v8_retick", "sheet_id": "V8-182", "raw": "transmittal", "pred": "transmittal"}
+{"set": "v8_retick", "sheet_id": "V8-183", "raw": "site instruction", "pred": "site instruction"}
+{"set": "v8_retick", "sheet_id": "V8-181", "raw": "meeting minutes", "pred": "meeting minutes"}
+{"set": "v8_retick", "sheet_id": "V8-185", "raw": "VO/CO", "pred": "VO/CO"}
+{"set": "cr_addendum", "sheet_id": "V9CR-S007", "raw": "change request", "pred": "change request"}
+{"set": "cr_addendum", "sheet_id": "V9CR-S005", "raw": "change request", "pred": "change request"}
+{"set": "v8_retick", "sheet_id": "V8-184", "raw": "site instruction", "pred": "site instruction"}
+{"set": "v8_retick", "sheet_id": "V8-187", "raw": "meeting minutes", "pred": "meeting minutes"}
+{"set": "cr_addendum", "sheet_id": "V9CR-S002", "raw": "change request", "pred": "change request"}
+{"set": "cr_addendum", "sheet_id": "V9CR-S003", "raw": "change request", "pred": "change request"}
+{"set": "cr_addendum", "sheet_id": "V9CR-S006", "raw": "change request", "pred": "change request"}
+{"set": "v8_retick", "sheet_id": "V8-186", "raw": "claim", "pred": "claim"}
+{"set": "v8_retick", "sheet_id": "V8-188", "raw": "meeting minutes", "pred": "meeting minutes"}
+{"set": "cr_addendum", "sheet_id": "V9CR-S004", "raw": "change request", "pred": "change request"}
+{"set": "cr_addendum", "sheet_id": "V9CR-S001", "raw": "change request", "pred": "change request"}
+{"set": "cr_addendum", "sheet_id": "V9CR-S008", "raw": "change request", "pred": "change request"}
+{"set": "cr_addendum", "sheet_id": "V9CR-S010", "raw": "change request", "pred": "change request"}
+{"set": "cr_addendum", "sheet_id": "V9CR-S011", "raw": "change request", "pred": "change request"}
+{"set": "cr_addendum", "sheet_id": "V9CR-S009", "raw": "change request", "pred": "change request"}
+{"set": "cr_addendum", "sheet_id": "V9CR-S014", "raw": "change request", "pred": "change request"}
+{"set": "thin_d_addendum", "sheet_id": "V9D-D010", "raw": "NCR", "pred": "NCR"}
+{"set": "thin_d_addendum", "sheet_id": "V9D-D003", "raw": "payment application", "pred": "payment application"}
+{"set": "thin_d_addendum", "sheet_id": "V9D-D007", "raw": "NCR", "pred": "NCR"}
+{"set": "cr_addendum", "sheet_id": "V9CR-S012", "raw": "change request", "pred": "change request"}
+{"set": "thin_c_addendum", "sheet_id": "V9TH-S077", "raw": "meeting minutes", "pred": "meeting minutes"}
+{"set": "thin_d_addendum", "sheet_id": "V9D-D011", "raw": "NCR", "pred": "NCR"}
+{"set": "thin_d_addendum", "sheet_id": "V9D-D008", "raw": "NCR", "pred": "NCR"}
+{"set": "thin_d_addendum", "sheet_id": "V9D-D006", "raw": "NCR", "pred": "NCR"}
+{"set": "thin_c_addendum", "sheet_id": "V9TH-S078", "raw": "meeting minutes", "pred": "meeting minutes"}
+{"set": "cr_addendum", "sheet_id": "V9CR-S013", "raw": "change request", "pred": "change request"}
+{"set": "thin_d_addendum", "sheet_id": "V9D-D005", "raw": "payment application", "pred": "payment application"}
+{"set": "thin_d_addendum", "sheet_id": "V9D-D009", "raw": "NCR", "pred": "NCR"}
+{"set": "thin_d_addendum", "sheet_id": "V9D-D012", "raw": "meeting minutes", "pred": "meeting minutes"}
+{"set": "thin_d_addendum", "sheet_id": "V9D-D013", "raw": "meeting minutes", "pred": "meeting minutes"}
+{"set": "thin_d_addendum", "sheet_id": "V9D-D015", "raw": "NCR", "pred": "NCR"}
+{"set": "thin_d_addendum", "sheet_id": "V9D-D016", "raw": "NCR", "pred": "NCR"}
+{"set": "thin_d_addendum", "sheet_id": "V9D-D017", "raw": "NCR", "pred": "NCR"}

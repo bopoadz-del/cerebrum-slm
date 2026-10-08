@@ -1,0 +1,51 @@
+main 3f72300806cf43eb7efcfd1bd9093d0eaccd4dcb verified (357 blobs)
+DATA {"train": {"merged_rows": 1712, "rebuilt_rows": 1712, "merged_system_prompt_equals_prompt_for": 1712, "user_text_unchanged": 1712, "label_unchanged": 1712}, "val": {"merged_rows": 900, "rebuilt_rows": 900, "merged_system_prompt_equals_prompt_for": 900, "user_text_unchanged": 900, "label_unchanged": 900}, "labels": 22, "system_sha256": "b1ac9472219a4bea8b0447c2418854a85d60bcb7f154eff2252c7ef8718e3879"}
+RECIPE {"base_model": "Qwen/Qwen3.5-4B", "rank": 16, "alpha": 16, "epochs": 3, "learning_rate": 0.000473, "batch_size": 16, "seed": 0, "max_sequence_length": 6656, "checkpoint_name": "router-v6-qwen3.5-4b-lora-r16"}
+WEIGHTS {"drawing": 0.1987, "other": 0.2649, "contract": 0.5931, "report": 0.6461, "correspondence": 0.9934, "BOQ": 1.0596, "specification": 1.2041, "meeting minutes": 1.3702, "schedule": 1.5894, "VO/CO": 1.6219, "inspection request": 1.6557, "site instruction": 1.6557, "change request": 1.7661, "register/log": 1.8482, "payment application": 2.1479, "RFI": 2.1479, "submittal": 2.5636, "method statement": 2.9434, "claim": 4.1828, "NCR": 4.4151, "transmittal": 5.1063, "payment certificate": 5.1063}
+env loaded names=[1 name; values never logged]
+fit start rows=1712 steps_per_epoch=107 max_epochs=3
+create_lora_training_client {"base_model": "Qwen/Qwen3.5-4B", "rank": 16, "seed": 0, "train_mlp": true, "train_attn": true, "train_unembed": false, "user_metadata": {"checkpoint": "router-v6-qwen3.5-4b-lora-r16"}}
+training run model_id=93552b55-3c20-5862-8bbf-2320fb04b236:train:0
+[transformers] PyTorch was not found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+step 1/<= 321 elapsed_s=26 {'loss:sum': 230.26858043670654}
+step 10/<= 321 elapsed_s=73 {'loss:sum': 46.858011305332184}
+step 20/<= 321 elapsed_s=114 {'loss:sum': 25.159894049167633}
+step 30/<= 321 elapsed_s=160 {'loss:sum': 14.223829746246338}
+step 40/<= 321 elapsed_s=207 {'loss:sum': 4.534524450078607}
+step 50/<= 321 elapsed_s=259 {'loss:sum': 72.0024294257164}
+step 60/<= 321 elapsed_s=311 {'loss:sum': 19.500609520357102}
+step 70/<= 321 elapsed_s=364 {'loss:sum': 11.954990942962468}
+step 80/<= 321 elapsed_s=417 {'loss:sum': 21.65684774518013}
+step 90/<= 321 elapsed_s=456 {'loss:sum': 24.188833467662334}
+step 100/<= 321 elapsed_s=505 {'loss:sum': 26.979262053966522}
+saved router-v6-qwen3.5-4b-lora-r16-epoch1 path=tinker://93552b55-3c20-5862-8bbf-2320fb04b236:train:0/sampler_weights/router-v6-qwen3.5-4b-lora-r16-epoch1 step=107
+EVAL epoch1 val_macro_recall_present_classes=0.662234 accuracy(report only)=0.790000
+step 110/<= 321 elapsed_s=637 {'loss:sum': 28.387429292546585}
+step 120/<= 321 elapsed_s=680 {'loss:sum': 19.32551273331046}
+step 130/<= 321 elapsed_s=721 {'loss:sum': 28.147386586293578}
+step 140/<= 321 elapsed_s=761 {'loss:sum': 8.341586550697684}
+step 150/<= 321 elapsed_s=803 {'loss:sum': 10.719675052911043}
+step 160/<= 321 elapsed_s=839 {'loss:sum': 46.319695465266705}
+step 170/<= 321 elapsed_s=874 {'loss:sum': 23.63874803483486}
+step 180/<= 321 elapsed_s=919 {'loss:sum': 38.950281276833266}
+step 190/<= 321 elapsed_s=959 {'loss:sum': 34.224083844106644}
+step 200/<= 321 elapsed_s=1002 {'loss:sum': 50.581258311867714}
+step 210/<= 321 elapsed_s=1039 {'loss:sum': 15.377264927374199}
+saved router-v6-qwen3.5-4b-lora-r16-epoch2 path=tinker://93552b55-3c20-5862-8bbf-2320fb04b236:train:0/sampler_weights/router-v6-qwen3.5-4b-lora-r16-epoch2 step=214
+EVAL epoch2 val_macro_recall_present_classes=0.728659 accuracy(report only)=0.873333
+step 220/<= 321 elapsed_s=1183 {'loss:sum': 16.65282970573753}
+step 230/<= 321 elapsed_s=1216 {'loss:sum': 6.244880482554436}
+step 240/<= 321 elapsed_s=1241 {'loss:sum': 23.41581664979458}
+step 250/<= 321 elapsed_s=1269 {'loss:sum': 2.4900277942651883}
+step 260/<= 321 elapsed_s=1294 {'loss:sum': 14.051893908530474}
+step 270/<= 321 elapsed_s=1320 {'loss:sum': 13.450136962346733}
+step 280/<= 321 elapsed_s=1347 {'loss:sum': 4.4007487166672945}
+step 290/<= 321 elapsed_s=1371 {'loss:sum': 8.253206609049812}
+step 300/<= 321 elapsed_s=1403 {'loss:sum': 11.777179017663002}
+step 310/<= 321 elapsed_s=1435 {'loss:sum': 25.56395607534796}
+step 320/<= 321 elapsed_s=1459 {'loss:sum': 16.652695178054273}
+saved router-v6-qwen3.5-4b-lora-r16-epoch3 path=tinker://93552b55-3c20-5862-8bbf-2320fb04b236:train:0/sampler_weights/router-v6-qwen3.5-4b-lora-r16-epoch3 step=321
+EVAL epoch3 val_macro_recall_present_classes=0.740897 accuracy(report only)=0.854444
+FIT {"steps": 321, "epoch_samplers": ["tinker://93552b55-3c20-5862-8bbf-2320fb04b236:train:0/sampler_weights/router-v6-qwen3.5-4b-lora-r16-epoch1", "tinker://93552b55-3c20-5862-8bbf-2320fb04b236:train:0/sampler_weights/router-v6-qwen3.5-4b-lora-r16-epoch2", "tinker://93552b55-3c20-5862-8bbf-2320fb04b236:train:0/sampler_weights/router-v6-qwen3.5-4b-lora-r16-epoch3"], "selected_epoch": 3, "selected_sampler": "tinker://93552b55-3c20-5862-8bbf-2320fb04b236:train:0/sampler_weights/router-v6-qwen3.5-4b-lora-r16-epoch3", "selection_metric": "val_macro_recall_present_classes", "history": [{"epoch": 1, "sampler": "tinker://93552b55-3c20-5862-8bbf-2320fb04b236:train:0/sampler_weights/router-v6-qwen3.5-4b-lora-r16-epoch1", "val_macro_recall_present_classes": 0.6622342631861109}, {"epoch": 2, "sampler": "tinker://93552b55-3c20-5862-8bbf-2320fb04b236:train:0/sampler_weights/router-v6-qwen3.5-4b-lora-r16-epoch2", "val_macro_recall_present_classes": 0.7286593440327913}, {"epoch": 3, "sampler": "tinker://93552b55-3c20-5862-8bbf-2320fb04b236:train:0/sampler_weights/router-v6-qwen3.5-4b-lora-r16-epoch3", "val_macro_recall_present_classes": 0.740897231727071}]}
+CHOICE {"run": "v6", "run_id": "93552b55-3c20-5862-8bbf-2320fb04b236:train:0", "rule": "router.balance.select_epoch on val_macro_recall_present_classes (tie keeps the earlier epoch), before any sealed score; never accuracy", "val_macro_recall_present_classes": {"1": 0.6622342631861109, "2": 0.7286593440327913, "3": 0.740897231727071}, "accuracy_report_only": {"1": 0.79, "2": 0.8733333333333333, "3": 0.8544444444444445}, "epochs_run": 3, "early_stopped": false, "chosen_epoch": 3, "chosen_checkpoint": "tinker://93552b55-3c20-5862-8bbf-2320fb04b236:train:0/sampler_weights/router-v6-qwen3.5-4b-lora-r16-epoch3", "sealed_read": false, "sealed_scored": false, "written": "2026-10-07T23:28:26+0400"}
+DONE

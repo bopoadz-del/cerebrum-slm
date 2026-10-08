@@ -1,0 +1,25 @@
+main 39945a967dc6c720bf36987e0e3b6f3e53e8bdde verified (383 blobs); seals verified for ['cr_addendum', 'thin_c_addendum', 'thin_d_addendum', 'v5_retick', 'v8_retick']
+env names loaded: 1; checkpoint=tinker://93552b55-3c20-5862-8bbf-2320fb04b236:train:0/sampler_weights/router-v6-qwen3.5-4b-lora-r16-epoch3; phase=score
+rows total 278; already sampled 0; to sample 278
+v5_retick: n=64 macro=0.6782967032967033 acc=0.6094 gate_v2=True router_passed=False
+v8_retick: n=185 macro=0.7633375396533291 acc=0.7459 gate_v2=True router_passed=False
+cr_addendum: n=14 macro=1.0 acc=1.0000 gate_v2=False router_passed=False
+thin_c_addendum: n=2 macro=1.0 acc=1.0000 gate_v2=False router_passed=False
+thin_d_addendum: n=13 macro=0.5 acc=0.6923 gate_v2=True router_passed=False
+combined: n=278 macro=0.7665044469351433 acc=0.7266 gate_v2=True router_passed=False
+DONE score
+main 39945a967dc6c720bf36987e0e3b6f3e53e8bdde verified (383 blobs); seals verified for ['cr_addendum', 'thin_c_addendum', 'thin_d_addendum', 'v5_retick', 'v8_retick']
+env names loaded: 1; checkpoint=tinker://93552b55-3c20-5862-8bbf-2320fb04b236:train:0/sampler_weights/router-v6-qwen3.5-4b-lora-r16-epoch3; phase=blind
+rows total 278; already sampled 0; to sample 278
+2026-10-08T16:06:49+0400 blind phase interrupted at 248/278 rows (shell interrupted); resuming only the 30 missing rows
+main 39945a967dc6c720bf36987e0e3b6f3e53e8bdde verified (383 blobs); seals verified for ['cr_addendum', 'thin_c_addendum', 'thin_d_addendum', 'v5_retick', 'v8_retick']
+RESUME blind: marker present, no final output; sampling only rows missing from blind_partial.jsonl
+env names loaded: 1; checkpoint=tinker://93552b55-3c20-5862-8bbf-2320fb04b236:train:0/sampler_weights/router-v6-qwen3.5-4b-lora-r16-epoch3; phase=blind
+rows total 278; already sampled 248; to sample 30
+v5_retick name-blind: flips=4 (passable 0, not passable 4) gate={'passed': True, 'failing_passable_classes': [], 'min_per_label': 12}
+v8_retick name-blind: flips=2 (passable 2, not passable 0) gate={'passed': False, 'failing_passable_classes': ['correspondence', 'drawing'], 'min_per_label': 12}
+cr_addendum name-blind: flips=0 (passable 0, not passable 0) gate={'passed': True, 'failing_passable_classes': [], 'min_per_label': 12}
+thin_c_addendum name-blind: flips=0 (passable 0, not passable 0) gate={'passed': True, 'failing_passable_classes': [], 'min_per_label': 12}
+thin_d_addendum name-blind: flips=0 (passable 0, not passable 0) gate={'passed': True, 'failing_passable_classes': [], 'min_per_label': 12}
+combined name-blind: flips=6 (passable 6, not passable 0) gate={'passed': False, 'failing_passable_classes': ['correspondence', 'drawing', 'other', 'report', 'submittal'], 'min_per_label': 12}
+DONE blind

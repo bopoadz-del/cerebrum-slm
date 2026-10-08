@@ -1,0 +1,10 @@
+{
+  "repo_commit": "3f72300806cf43eb7efcfd1bd9093d0eaccd4dcb",
+  "train_rows": 1712,
+  "val_rows": 900,
+  "train_max": 6511,
+  "train_over_limit": 0,
+  "val_prompt_max": 6490,
+  "val_over_limit": 0,
+  "limit": 6656
+}

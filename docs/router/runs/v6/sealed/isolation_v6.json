@@ -1,0 +1,94 @@
+{
+  "repo_commit_data": "3f72300 (train/val blobs identical at 39945a9)",
+  "train_val_sha256": {
+    "data/router/train.jsonl": "b121734d1b881c1abba05969df431379ee8296e62e0f85372d391836f3642bfa",
+    "data/router/val.jsonl": "de63daa89a60dd72327dd4b275286ee60c2e929ac07973c6693d45ab3e246660"
+  },
+  "sets": {
+    "v5_retick": {
+      "sealed_labels": "data/eval/router_unseen/v9_retick/v5/sealed_labels.jsonl",
+      "rows": 64,
+      "rows_registered": 64,
+      "sealed_sha256": "811ee9a7f4ad5a2830ff1ddf4211f3918e6409b4b2cdb9f71c25198f8a125f37",
+      "rejected": {
+        "data/router/train.jsonl": [
+          1712,
+          0
+        ],
+        "data/router/val.jsonl": [
+          900,
+          0
+        ]
+      },
+      "isolated": true
+    },
+    "v8_retick": {
+      "sealed_labels": "data/eval/router_unseen/v9_retick/v8/sealed_labels.jsonl",
+      "rows": 185,
+      "rows_registered": 185,
+      "sealed_sha256": "ea7f175fe86f694329e5b4fc983aa02803b119d88ee4cdacfa6bca7bcf576d02",
+      "rejected": {
+        "data/router/train.jsonl": [
+          1712,
+          0
+        ],
+        "data/router/val.jsonl": [
+          900,
+          0
+        ]
+      },
+      "isolated": true
+    },
+    "cr_addendum": {
+      "sealed_labels": "data/eval/router_unseen/v9_cr_addendum/sealed_labels.jsonl",
+      "rows": 14,
+      "rows_registered": 14,
+      "sealed_sha256": "864296293619d1512df4cb5ddc8ef57eaef297a2eb9be15e02fb11e479587485",
+      "rejected": {
+        "data/router/train.jsonl": [
+          1712,
+          0
+        ],
+        "data/router/val.jsonl": [
+          900,
+          0
+        ]
+      },
+      "isolated": true
+    },
+    "thin_c_addendum": {
+      "sealed_labels": "data/eval/router_unseen/v9_thin_c_addendum/sealed_labels.jsonl",
+      "rows": 2,
+      "rows_registered": 2,
+      "sealed_sha256": "611091130d09fe8f7be72e14250da1ea732eab0f381de680580f2cb73239c8d6",
+      "rejected": {
+        "data/router/train.jsonl": [
+          1712,
+          0
+        ],
+        "data/router/val.jsonl": [
+          900,
+          0
+        ]
+      },
+      "isolated": true
+    },
+    "thin_d_addendum": {
+      "sealed_labels": "data/eval/router_unseen/v9_thin_d_addendum/sealed_labels.jsonl",
+      "rows": 13,
+      "rows_registered": 13,
+      "sealed_sha256": "0430f49ef3f258b0fcaa858114a4adb89441e5c20c68db1e1177b8e29b617b65",
+      "rejected": {
+        "data/router/train.jsonl": [
+          1712,
+          0
+        ],
+        "data/router/val.jsonl": [
+          900,
+          0
+        ]
+      },
+      "isolated": true
+    }
+  }
+}
