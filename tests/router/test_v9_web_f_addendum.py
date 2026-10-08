@@ -121,20 +121,39 @@ def test_no_document_of_this_addendum_is_sealed_elsewhere(repo_root: Path) -> No
     assert all(v == [v[0], 0] for v in iso["router_isolation_rejected"].values())
 
 
+def _prefix_counts(repo_root: Path, v9: dict, mine: str) -> tuple[Counter, Counter]:
+    """Rows in sets registered before this addendum, and rows through this addendum.
+
+    A later addendum must not rewrite an earlier gap table. The live combined total
+    is the sum of every registered set, checked by the latest addendum test.
+    """
+    before: Counter = Counter()
+    through: Counter = Counter()
+    seen = False
+    for item in v9["sets"]:
+        rows = _rows(repo_root / item["sealed_labels"])
+        if item["sealed_labels"] == mine:
+            through.update(r["label"] for r in rows)
+            seen = True
+            break
+        before.update(r["label"] for r in rows)
+        through.update(r["label"] for r in rows)
+    assert seen
+    return before, through
+
+
 def test_gap_table_matches_the_registered_sets(repo_root: Path) -> None:
     v9 = _v9(repo_root)
     labels = load_labels(repo_root / v9["labels_file"])
     gap = json.loads((repo_root / ADDENDUM_DIR / "gap_table.json").read_text(encoding="utf-8"))
     assert gap["threshold"] == MIN_SEALED_PER_LABEL
-    before = Counter()
-    for item in v9["sets"]:
-        if item["sealed_labels"] != f"{ADDENDUM_DIR}/sealed_labels.jsonl":
-            before.update(r["label"] for r in _rows(repo_root / item["sealed_labels"]))
+    mine = f"{ADDENDUM_DIR}/sealed_labels.jsonl"
+    before, through = _prefix_counts(repo_root, v9, mine)
     assert gap["combined_before"] == sum(before.values())
-    assert gap["combined_after"] == v9["combined"]["rows"]
+    assert gap["combined_after"] == sum(through.values())
     assert [row["label"] for row in gap["per_label"]] == labels
     for row in gap["per_label"]:
         assert row["before"] == before.get(row["label"], 0)
-        assert row["after"] == v9["combined"]["per_label_n"][row["label"]] == row["before"] + row["added"]
+        assert row["after"] == through[row["label"]] == row["before"] + row["added"]
         assert row["passable_before"] is (row["before"] >= MIN_SEALED_PER_LABEL)
         assert row["passable_after"] is (row["after"] >= MIN_SEALED_PER_LABEL)

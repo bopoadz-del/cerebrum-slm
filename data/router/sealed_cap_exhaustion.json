@@ -3,7 +3,7 @@
   "limit": 3,
   "project_key": "router.seal_sealed.project_key",
   "count": "distinct documents (file_sha256) over every set registered in configs/router/sealed_eval.json v9_sealed, including this addendum",
-  "derived_by": "router.seal_addendum.exhausted_pairs (recomputed from data by tests/router/test_v9_web_f_addendum.py)",
+  "derived_by": "router.seal_addendum.exhausted_pairs (recomputed from data by the v9 addendum tests)",
   "pairs": [
     {
       "project": "lwb-registry-867.s3.ca-central-1.amazonaws.com/Documents",

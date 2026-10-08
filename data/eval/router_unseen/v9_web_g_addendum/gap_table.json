@@ -1,0 +1,205 @@
+{
+  "threshold": 12,
+  "combined_before": 312,
+  "combined_after": 319,
+  "per_label": [
+    {
+      "label": "RFI",
+      "before": 12,
+      "added": 0,
+      "after": 12,
+      "passable_before": true,
+      "passable_after": true,
+      "short_of_threshold": 0
+    },
+    {
+      "label": "submittal",
+      "before": 18,
+      "added": 0,
+      "after": 18,
+      "passable_before": true,
+      "passable_after": true,
+      "short_of_threshold": 0
+    },
+    {
+      "label": "transmittal",
+      "before": 13,
+      "added": 0,
+      "after": 13,
+      "passable_before": true,
+      "passable_after": true,
+      "short_of_threshold": 0
+    },
+    {
+      "label": "VO/CO",
+      "before": 16,
+      "added": 0,
+      "after": 16,
+      "passable_before": true,
+      "passable_after": true,
+      "short_of_threshold": 0
+    },
+    {
+      "label": "change request",
+      "before": 14,
+      "added": 0,
+      "after": 14,
+      "passable_before": true,
+      "passable_after": true,
+      "short_of_threshold": 0
+    },
+    {
+      "label": "claim",
+      "before": 9,
+      "added": 1,
+      "after": 10,
+      "passable_before": false,
+      "passable_after": false,
+      "short_of_threshold": 2
+    },
+    {
+      "label": "payment application",
+      "before": 6,
+      "added": 4,
+      "after": 10,
+      "passable_before": false,
+      "passable_after": false,
+      "short_of_threshold": 2
+    },
+    {
+      "label": "payment certificate",
+      "before": 15,
+      "added": 0,
+      "after": 15,
+      "passable_before": true,
+      "passable_after": true,
+      "short_of_threshold": 0
+    },
+    {
+      "label": "drawing",
+      "before": 18,
+      "added": 0,
+      "after": 18,
+      "passable_before": true,
+      "passable_after": true,
+      "short_of_threshold": 0
+    },
+    {
+      "label": "specification",
+      "before": 18,
+      "added": 0,
+      "after": 18,
+      "passable_before": true,
+      "passable_after": true,
+      "short_of_threshold": 0
+    },
+    {
+      "label": "schedule",
+      "before": 19,
+      "added": 0,
+      "after": 19,
+      "passable_before": true,
+      "passable_after": true,
+      "short_of_threshold": 0
+    },
+    {
+      "label": "report",
+      "before": 23,
+      "added": 0,
+      "after": 23,
+      "passable_before": true,
+      "passable_after": true,
+      "short_of_threshold": 0
+    },
+    {
+      "label": "correspondence",
+      "before": 19,
+      "added": 0,
+      "after": 19,
+      "passable_before": true,
+      "passable_after": true,
+      "short_of_threshold": 0
+    },
+    {
+      "label": "BOQ",
+      "before": 12,
+      "added": 0,
+      "after": 12,
+      "passable_before": true,
+      "passable_after": true,
+      "short_of_threshold": 0
+    },
+    {
+      "label": "contract",
+      "before": 12,
+      "added": 0,
+      "after": 12,
+      "passable_before": true,
+      "passable_after": true,
+      "short_of_threshold": 0
+    },
+    {
+      "label": "method statement",
+      "before": 14,
+      "added": 0,
+      "after": 14,
+      "passable_before": true,
+      "passable_after": true,
+      "short_of_threshold": 0
+    },
+    {
+      "label": "meeting minutes",
+      "before": 14,
+      "added": 0,
+      "after": 14,
+      "passable_before": true,
+      "passable_after": true,
+      "short_of_threshold": 0
+    },
+    {
+      "label": "NCR",
+      "before": 12,
+      "added": 0,
+      "after": 12,
+      "passable_before": true,
+      "passable_after": true,
+      "short_of_threshold": 0
+    },
+    {
+      "label": "inspection request",
+      "before": 3,
+      "added": 0,
+      "after": 3,
+      "passable_before": false,
+      "passable_after": false,
+      "short_of_threshold": 9
+    },
+    {
+      "label": "site instruction",
+      "before": 9,
+      "added": 2,
+      "after": 11,
+      "passable_before": false,
+      "passable_after": false,
+      "short_of_threshold": 1
+    },
+    {
+      "label": "register/log",
+      "before": 15,
+      "added": 0,
+      "after": 15,
+      "passable_before": true,
+      "passable_after": true,
+      "short_of_threshold": 0
+    },
+    {
+      "label": "other",
+      "before": 21,
+      "added": 0,
+      "after": 21,
+      "passable_before": true,
+      "passable_after": true,
+      "short_of_threshold": 0
+    }
+  ]
+}
