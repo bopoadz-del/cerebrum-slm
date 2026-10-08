@@ -1,0 +1,252 @@
+{
+  "run": "v6",
+  "run_id": "93552b55-3c20-5862-8bbf-2320fb04b236:train:0",
+  "checkpoint_sampler_uri_epoch3": "tinker://93552b55-3c20-5862-8bbf-2320fb04b236:train:0/sampler_weights/router-v6-qwen3.5-4b-lora-r16-epoch3",
+  "epoch_sampler_uris": [
+    "tinker://93552b55-3c20-5862-8bbf-2320fb04b236:train:0/sampler_weights/router-v6-qwen3.5-4b-lora-r16-epoch1",
+    "tinker://93552b55-3c20-5862-8bbf-2320fb04b236:train:0/sampler_weights/router-v6-qwen3.5-4b-lora-r16-epoch2",
+    "tinker://93552b55-3c20-5862-8bbf-2320fb04b236:train:0/sampler_weights/router-v6-qwen3.5-4b-lora-r16-epoch3"
+  ],
+  "training_repo_commit": "3f72300806cf43eb7efcfd1bd9093d0eaccd4dcb",
+  "config": "configs/router/train_v6.json",
+  "base_model": "Qwen/Qwen3.5-4B",
+  "recipe": {
+    "base_model": "Qwen/Qwen3.5-4B",
+    "rank": 16,
+    "alpha": 16,
+    "epochs": 3,
+    "learning_rate": 0.000473,
+    "batch_size": 16,
+    "seed": 0,
+    "max_sequence_length": 6656,
+    "checkpoint_name": "router-v6-qwen3.5-4b-lora-r16",
+    "enable_thinking": false,
+    "loss_fn": "cross_entropy"
+  },
+  "class_weighting": {
+    "method": "inverse_frequency_loss_weight",
+    "cap": 5.0
+  },
+  "selection_metric": "val_macro_recall_present_classes",
+  "selection_rule": "router.balance.select_epoch on val_macro_recall_present_classes (tie keeps the earlier epoch), before any sealed score; never accuracy",
+  "per_epoch": {
+    "1": {
+      "val_macro_recall_present_classes": 0.6622342631861109,
+      "accuracy_report_only": 0.79
+    },
+    "2": {
+      "val_macro_recall_present_classes": 0.7286593440327913,
+      "accuracy_report_only": 0.8733333333333333
+    },
+    "3": {
+      "val_macro_recall_present_classes": 0.740897231727071,
+      "accuracy_report_only": 0.8544444444444445
+    }
+  },
+  "chosen_epoch": 3,
+  "chosen_before_any_sealed_read": true,
+  "train_rows": 1712,
+  "val_rows": 900,
+  "train_label_counts": {
+    "drawing": 400,
+    "other": 300,
+    "contract": 134,
+    "report": 123,
+    "correspondence": 80,
+    "BOQ": 75,
+    "specification": 66,
+    "meeting minutes": 58,
+    "schedule": 50,
+    "VO/CO": 49,
+    "inspection request": 48,
+    "site instruction": 48,
+    "change request": 45,
+    "register/log": 43,
+    "payment application": 37,
+    "RFI": 37,
+    "submittal": 31,
+    "method statement": 27,
+    "claim": 19,
+    "NCR": 18,
+    "transmittal": 12,
+    "payment certificate": 12
+  },
+  "val_label_counts": {
+    "RFI": 6,
+    "submittal": 4,
+    "transmittal": 1,
+    "VO/CO": 7,
+    "change request": 8,
+    "claim": 3,
+    "payment application": 6,
+    "payment certificate": 2,
+    "drawing": 658,
+    "specification": 7,
+    "schedule": 8,
+    "report": 43,
+    "correspondence": 10,
+    "BOQ": 9,
+    "contract": 13,
+    "method statement": 5,
+    "meeting minutes": 10,
+    "NCR": 3,
+    "inspection request": 7,
+    "site instruction": 8,
+    "register/log": 6,
+    "other": 76
+  },
+  "system_prompt_sha256": "b1ac9472219a4bea8b0447c2418854a85d60bcb7f154eff2252c7ef8718e3879",
+  "created": "2026-10-07T23:02:30+0400",
+  "training_finished": "2026-10-07T23:28:26+0400",
+  "driver_sha256": {
+    "driver/train_v6.py": "74963011a848c9a0d18bf43a750a10ec01dfa3b47b81f35315281e36d82caeda",
+    "driver/common.py": "ffb4ba89bc6b32498fca78bdd0a10dba0c897e916f599791eb152054ce5e699c"
+  },
+  "sealed_scoring": {
+    "status": "scored once (this adapter, epoch 3 only); no re-score",
+    "score_run_ids": [
+      {
+        "id": "v6e3-sealed-score-20261008T160511+0400",
+        "phase": "score",
+        "marker": "sealed/RUN_STARTED_score.json",
+        "rows_sampled": 278,
+        "resumed": false
+      },
+      {
+        "id": "v6e3-nameblind-20261008T160605+0400",
+        "phase": "name-blind (blanked side only; unblanked side = stored score)",
+        "marker": "sealed/RUN_STARTED_blind.json",
+        "rows_sampled": 278,
+        "resumed": true,
+        "resume_note": "shell interrupted at 248/278 rows; the re-run sampled only the 30 missing rows (score.log, blind_partial.jsonl)"
+      }
+    ],
+    "scored_repo_commit": "39945a967dc6c720bf36987e0e3b6f3e53e8bdde",
+    "sets_registered_on_main": [
+      {
+        "name": "v5_retick",
+        "rows": 64,
+        "sealed_labels": "data/eval/router_unseen/v9_retick/v5/sealed_labels.jsonl"
+      },
+      {
+        "name": "v8_retick",
+        "rows": 185,
+        "sealed_labels": "data/eval/router_unseen/v9_retick/v8/sealed_labels.jsonl"
+      },
+      {
+        "name": "cr_addendum",
+        "rows": 14,
+        "sealed_labels": "data/eval/router_unseen/v9_cr_addendum/sealed_labels.jsonl"
+      },
+      {
+        "name": "thin_c_addendum",
+        "rows": 2,
+        "sealed_labels": "data/eval/router_unseen/v9_thin_c_addendum/sealed_labels.jsonl"
+      },
+      {
+        "name": "thin_d_addendum",
+        "rows": 13,
+        "sealed_labels": "data/eval/router_unseen/v9_thin_d_addendum/sealed_labels.jsonl"
+      }
+    ],
+    "combined_rows": 278,
+    "note_277": "Owner count 277 is the combined total at 552dd17 (PR #55, thin_c had 1 row). PR #60 (020adbf, merged as 39945a9) sealed S077 into thin_c (2 rows): combined 278 on current main.",
+    "results": {
+      "v5_retick": {
+        "n": 64,
+        "macro_recall": 0.6782967032967033,
+        "accuracy": 0.609375,
+        "gate_v2_passed": true,
+        "router_passed": false
+      },
+      "v8_retick": {
+        "n": 185,
+        "macro_recall": 0.7633375396533291,
+        "accuracy": 0.745945945945946,
+        "gate_v2_passed": true,
+        "router_passed": false
+      },
+      "cr_addendum": {
+        "n": 14,
+        "macro_recall": 1.0,
+        "accuracy": 1.0,
+        "gate_v2_passed": false,
+        "router_passed": false
+      },
+      "thin_c_addendum": {
+        "n": 2,
+        "macro_recall": 1.0,
+        "accuracy": 1.0,
+        "gate_v2_passed": false,
+        "router_passed": false
+      },
+      "thin_d_addendum": {
+        "n": 13,
+        "macro_recall": 0.5,
+        "accuracy": 0.6923076923076923,
+        "gate_v2_passed": true,
+        "router_passed": false
+      },
+      "combined": {
+        "n": 278,
+        "macro_recall": 0.7665044469351433,
+        "accuracy": 0.7266187050359713,
+        "gate_v2_passed": true,
+        "router_passed": false
+      }
+    },
+    "name_blind": {
+      "v5_retick": {
+        "flips_total": 4,
+        "flips_passable": 0,
+        "gate_passed": true,
+        "failing_passable_classes": []
+      },
+      "v8_retick": {
+        "flips_total": 2,
+        "flips_passable": 2,
+        "gate_passed": false,
+        "failing_passable_classes": [
+          "correspondence",
+          "drawing"
+        ]
+      },
+      "cr_addendum": {
+        "flips_total": 0,
+        "flips_passable": 0,
+        "gate_passed": true,
+        "failing_passable_classes": []
+      },
+      "thin_c_addendum": {
+        "flips_total": 0,
+        "flips_passable": 0,
+        "gate_passed": true,
+        "failing_passable_classes": []
+      },
+      "thin_d_addendum": {
+        "flips_total": 0,
+        "flips_passable": 0,
+        "gate_passed": true,
+        "failing_passable_classes": []
+      },
+      "combined": {
+        "flips_total": 6,
+        "flips_passable": 6,
+        "gate_passed": false,
+        "failing_passable_classes": [
+          "correspondence",
+          "drawing",
+          "other",
+          "report",
+          "submittal"
+        ]
+      }
+    },
+    "vo_co_recall": {
+      "v5_retick": 1.0,
+      "v8_retick": 0.9090909090909091,
+      "combined": 0.9375
+    }
+  },
+  "secrets": "none recorded; the Tinker key was loaded from the box env file and never written or printed"
+}
