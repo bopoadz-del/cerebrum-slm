@@ -1,0 +1,23 @@
+repo tree 4f5fa14a622c0baea5906f51caed262d14b0d323 verified; seals verified for ['v5_retick', 'v8_retick', 'cr_addendum', 'thin_c_addendum', 'thin_d_addendum', 'web_f_addendum']; rows 312; checkpoint tinker://467096c8-5c73-595c-b5a8-e92039dba560:train:0/sampler_weights/router-v7b-qwen3.5-4b-lora-r16-epoch1; name_blind.py sha256 a235de3cbe52
+repo tree 4f5fa14a622c0baea5906f51caed262d14b0d323 verified; seals verified for ['v5_retick', 'v8_retick', 'cr_addendum', 'thin_c_addendum', 'thin_d_addendum', 'web_f_addendum']; rows 312; checkpoint tinker://467096c8-5c73-595c-b5a8-e92039dba560:train:0/sampler_weights/router-v7b-qwen3.5-4b-lora-r16-epoch1; name_blind.py sha256 a235de3cbe52
+env names loaded: 1; phase=score
+rows total 312; already sampled 0; to sample 312
+v5_retick: n=64 macro=0.6238095238095238 acc=0.5625 gate_v2=True router_passed=False
+v8_retick: n=185 macro=0.7576178207757155 acc=0.7297 gate_v2=True router_passed=False
+cr_addendum: n=14 macro=1.0 acc=1.0000 gate_v2=False router_passed=False
+thin_c_addendum: n=2 macro=1.0 acc=1.0000 gate_v2=False router_passed=False
+thin_d_addendum: n=13 macro=0.5 acc=0.6923 gate_v2=True router_passed=False
+web_f_addendum: n=34 macro=0.9005681818181818 acc=0.7941 gate_v2=True router_passed=False
+combined: n=312 macro=0.7517376438715111 acc=0.7147 gate_v2=True router_passed=False
+DONE score
+repo tree 4f5fa14a622c0baea5906f51caed262d14b0d323 verified; seals verified for ['v5_retick', 'v8_retick', 'cr_addendum', 'thin_c_addendum', 'thin_d_addendum', 'web_f_addendum']; rows 312; checkpoint tinker://467096c8-5c73-595c-b5a8-e92039dba560:train:0/sampler_weights/router-v7b-qwen3.5-4b-lora-r16-epoch1; name_blind.py sha256 a235de3cbe52
+env names loaded: 1; phase=blind
+rows total 312; already sampled 0; to sample 312
+v5_retick name-blind: flips=3 (passable 0, not passable 3) gate={'passed': True, 'failing_passable_classes': [], 'min_per_label': 12}
+v8_retick name-blind: flips=3 (passable 2, not passable 1) gate={'passed': False, 'failing_passable_classes': ['correspondence', 'submittal'], 'min_per_label': 12}
+cr_addendum name-blind: flips=0 (passable 0, not passable 0) gate={'passed': True, 'failing_passable_classes': [], 'min_per_label': 12}
+thin_c_addendum name-blind: flips=0 (passable 0, not passable 0) gate={'passed': True, 'failing_passable_classes': [], 'min_per_label': 12}
+thin_d_addendum name-blind: flips=0 (passable 0, not passable 0) gate={'passed': True, 'failing_passable_classes': [], 'min_per_label': 12}
+web_f_addendum name-blind: flips=0 (passable 0, not passable 0) gate={'passed': True, 'failing_passable_classes': [], 'min_per_label': 12}
+combined name-blind: flips=6 (passable 5, not passable 1) gate={'passed': False, 'failing_passable_classes': ['correspondence', 'other', 'submittal'], 'min_per_label': 12}
+DONE blind
