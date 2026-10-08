@@ -1,0 +1,39 @@
+{
+  "set": "data/eval/router_unseen/v9_thin_c_addendum/sealed_labels.jsonl",
+  "rows": 1,
+  "checked_on_main": "301c841d625ed430f79c06d0aa3feea3aa94196c",
+  "router_isolation_rejected": {
+    "data/router/train.jsonl": [
+      0,
+      0
+    ],
+    "data/router/val.jsonl": [
+      0,
+      0
+    ],
+    "data/router/teacher_labels.jsonl": [
+      0,
+      0
+    ],
+    "data/router/additions_thin_v9.jsonl": [
+      0,
+      0
+    ],
+    "data/router/additions_thin_v9b.jsonl": [
+      0,
+      0
+    ],
+    "data/router/additions_change_request_v9.jsonl": [
+      0,
+      0
+    ],
+    "data/router/additions_owner_sources_pr2.jsonl": [
+      0,
+      0
+    ],
+    "data/router/additions_owner_laptop.jsonl": [
+      0,
+      0
+    ]
+  }
+}

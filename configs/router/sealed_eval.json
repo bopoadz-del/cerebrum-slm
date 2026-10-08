@@ -49,6 +49,12 @@
         "sealed_labels": "data/eval/router_unseen/v9_cr_addendum/sealed_labels.jsonl",
         "rows": 14,
         "addendum": true
+      },
+      {
+        "name": "thin_c_addendum",
+        "sealed_labels": "data/eval/router_unseen/v9_thin_c_addendum/sealed_labels.jsonl",
+        "rows": 1,
+        "addendum": true
       }
     ],
     "combined": {
