@@ -1,4 +1,4 @@
-"""Cloud fetch leg for router collection seeds (runs in GitHub Actions).
+﻿"""Cloud fetch leg for router collection seeds (runs in GitHub Actions).
 
 Generic only: a seed is a URL plus an optional link pattern for listing pages.
 No per-site code. Politeness is global: 1 request/second per host, retry on
@@ -88,20 +88,6 @@ def _title(html: bytes) -> str:
     return m.group(1).decode("utf-8", "replace").strip()[:200]
 
 
-def _pdf_text_chars(data: bytes) -> int:
-    try:
-        import re as _re
-
-        # minimal text-layer probe without external deps: count chars between BT/ET blocks
-        pages = data.count(b"/Type /Page") or 1
-        if b"Font" not in data[:200000]:
-            return 0
-        chunks = _re.findall(rb"\((?:[^()\\]|\\.)*\)\s*Tj", data)
-        return sum(len(c) for c in chunks)
-    except Exception:
-        return 0
-
-
 class Fetcher:
     def __init__(self, out: Path, rate: float = 1.0, retries: int = 3) -> None:
         self.out = out
@@ -137,8 +123,9 @@ class Fetcher:
                     res.status = r.status
                     if data[:4] == b"%PDF":
                         res.sha256 = hashlib.sha256(data).hexdigest()
-                        res.chars = _pdf_text_chars(data)
-                        res.ok = res.chars >= 200
+                        # Text-layer quality is verified locally (fitz); the cloud leg
+                        # only proves the fetch. A 200 + PDF magic is ok here.
+                        res.ok = True
                         name = f"{res.sha256[:24]}.pdf"
                         (self.out / "fetched" / name).write_bytes(data)
                     else:
