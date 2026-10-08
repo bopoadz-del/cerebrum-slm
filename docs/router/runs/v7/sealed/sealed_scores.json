@@ -1,0 +1,2983 @@
+{
+  "variant": "v7",
+  "repo_tree": "73e5d4f68c905fb743572e3824c076ab53932dbd",
+  "checkpoint": "tinker://06e01fff-72b3-585a-ac27-ea306c30443e:train:0/sampler_weights/router-v7-qwen3.5-4b-lora-r16-epoch3",
+  "labels": "configs/router/labels.json (v9, 22)",
+  "system": "router.teacher_label.prompt_for(labels)",
+  "parser": "router.train_router._as_label -> parse_router_output (v9 exact aliases)",
+  "sampling": {
+    "max_tokens": 32,
+    "temperature": 0,
+    "top_p": 1,
+    "seed": 0,
+    "enable_thinking": false
+  },
+  "gate": "evaluate_sealed_gate_v8 (gate v2 + MIN_SEALED_PER_LABEL=12), unchanged",
+  "majority_class_fail": true,
+  "combined_note": "combined = the six registered v9 sets concatenated in configs/router/sealed_eval.json order (312 rows); every row sampled once in this run",
+  "precision_note": "precision = TP / rows predicted as that label (report only; not part of the gate)",
+  "sets": {
+    "v5_retick": {
+      "n": 64,
+      "accuracy": 0.703125,
+      "macro_recall": 0.7481684981684982,
+      "gate_v2_passed": true,
+      "gate_v2": {
+        "passed": true,
+        "reason": "sealed gate",
+        "macro_recall": 0.7481684981684982,
+        "beats_every_constant": true,
+        "every_constant_fails_majority_gate": true
+      },
+      "router_passed": false,
+      "per_label": [
+        {
+          "label": "RFI",
+          "n": 5,
+          "recall": 1.0,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "submittal",
+          "n": 5,
+          "recall": 1.0,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "transmittal",
+          "n": 5,
+          "recall": 1.0,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "VO/CO",
+          "n": 5,
+          "recall": 1.0,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "change request",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "claim",
+          "n": 2,
+          "recall": 1.0,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "payment application",
+          "n": 2,
+          "recall": 1.0,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "payment certificate",
+          "n": 3,
+          "recall": 0.3333333333333333,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "drawing",
+          "n": 5,
+          "recall": 1.0,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "specification",
+          "n": 6,
+          "recall": 0.5,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "schedule",
+          "n": 5,
+          "recall": 1.0,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "report",
+          "n": 8,
+          "recall": 0.75,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "correspondence",
+          "n": 6,
+          "recall": 0.0,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "BOQ",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "contract",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "method statement",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "meeting minutes",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "NCR",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "inspection request",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "site instruction",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "register/log",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "other",
+          "n": 7,
+          "recall": 0.14285714285714285,
+          "passable": false,
+          "status": "not passable"
+        }
+      ],
+      "per_label_precision": {
+        "RFI": {
+          "n": 5,
+          "predicted": 5,
+          "tp": 5,
+          "recall": 1.0,
+          "precision": 1.0
+        },
+        "submittal": {
+          "n": 5,
+          "predicted": 8,
+          "tp": 5,
+          "recall": 1.0,
+          "precision": 0.625
+        },
+        "transmittal": {
+          "n": 5,
+          "predicted": 5,
+          "tp": 5,
+          "recall": 1.0,
+          "precision": 1.0
+        },
+        "VO/CO": {
+          "n": 5,
+          "predicted": 5,
+          "tp": 5,
+          "recall": 1.0,
+          "precision": 1.0
+        },
+        "change request": {
+          "n": 0,
+          "predicted": 1,
+          "tp": 0,
+          "recall": null,
+          "precision": 0.0
+        },
+        "claim": {
+          "n": 2,
+          "predicted": 4,
+          "tp": 2,
+          "recall": 1.0,
+          "precision": 0.5
+        },
+        "payment application": {
+          "n": 2,
+          "predicted": 4,
+          "tp": 2,
+          "recall": 1.0,
+          "precision": 0.5
+        },
+        "payment certificate": {
+          "n": 3,
+          "predicted": 1,
+          "tp": 1,
+          "recall": 0.3333333333333333,
+          "precision": 1.0
+        },
+        "drawing": {
+          "n": 5,
+          "predicted": 5,
+          "tp": 5,
+          "recall": 1.0,
+          "precision": 1.0
+        },
+        "specification": {
+          "n": 6,
+          "predicted": 3,
+          "tp": 3,
+          "recall": 0.5,
+          "precision": 1.0
+        },
+        "schedule": {
+          "n": 5,
+          "predicted": 6,
+          "tp": 5,
+          "recall": 1.0,
+          "precision": 0.8333333333333334
+        },
+        "report": {
+          "n": 8,
+          "predicted": 6,
+          "tp": 6,
+          "recall": 0.75,
+          "precision": 1.0
+        },
+        "correspondence": {
+          "n": 6,
+          "predicted": 0,
+          "tp": 0,
+          "recall": 0.0,
+          "precision": null
+        },
+        "BOQ": {
+          "n": 0,
+          "predicted": 1,
+          "tp": 0,
+          "recall": null,
+          "precision": 0.0
+        },
+        "contract": {
+          "n": 0,
+          "predicted": 5,
+          "tp": 0,
+          "recall": null,
+          "precision": 0.0
+        },
+        "method statement": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "meeting minutes": {
+          "n": 0,
+          "predicted": 1,
+          "tp": 0,
+          "recall": null,
+          "precision": 0.0
+        },
+        "NCR": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "inspection request": {
+          "n": 0,
+          "predicted": 1,
+          "tp": 0,
+          "recall": null,
+          "precision": 0.0
+        },
+        "site instruction": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "register/log": {
+          "n": 0,
+          "predicted": 1,
+          "tp": 0,
+          "recall": null,
+          "precision": 0.0
+        },
+        "other": {
+          "n": 7,
+          "predicted": 2,
+          "tp": 1,
+          "recall": 0.14285714285714285,
+          "precision": 0.5
+        }
+      },
+      "pred_counts": {
+        "submittal": 8,
+        "contract": 5,
+        "transmittal": 5,
+        "claim": 4,
+        "specification": 3,
+        "payment application": 4,
+        "VO/CO": 5,
+        "report": 6,
+        "payment certificate": 1,
+        "schedule": 6,
+        "RFI": 5,
+        "drawing": 5,
+        "other": 2,
+        "inspection request": 1,
+        "register/log": 1,
+        "meeting minutes": 1,
+        "BOQ": 1,
+        "change request": 1
+      },
+      "unsure": 0,
+      "confusion_off_diagonal": [
+        [
+          "correspondence",
+          "contract",
+          3
+        ],
+        [
+          "payment certificate",
+          "payment application",
+          2
+        ],
+        [
+          "specification",
+          "submittal",
+          2
+        ],
+        [
+          "other",
+          "claim",
+          2
+        ],
+        [
+          "report",
+          "contract",
+          1
+        ],
+        [
+          "correspondence",
+          "submittal",
+          1
+        ],
+        [
+          "other",
+          "inspection request",
+          1
+        ],
+        [
+          "other",
+          "contract",
+          1
+        ],
+        [
+          "other",
+          "register/log",
+          1
+        ],
+        [
+          "report",
+          "meeting minutes",
+          1
+        ],
+        [
+          "specification",
+          "schedule",
+          1
+        ],
+        [
+          "correspondence",
+          "other",
+          1
+        ],
+        [
+          "other",
+          "BOQ",
+          1
+        ],
+        [
+          "correspondence",
+          "change request",
+          1
+        ]
+      ],
+      "constant_macro": {
+        "RFI": 0.07692307692307693,
+        "submittal": 0.07692307692307693,
+        "transmittal": 0.07692307692307693,
+        "VO/CO": 0.07692307692307693,
+        "change request": 0.0,
+        "claim": 0.07692307692307693,
+        "payment application": 0.07692307692307693,
+        "payment certificate": 0.07692307692307693,
+        "drawing": 0.07692307692307693,
+        "specification": 0.07692307692307693,
+        "schedule": 0.07692307692307693,
+        "report": 0.07692307692307693,
+        "correspondence": 0.07692307692307693,
+        "BOQ": 0.0,
+        "contract": 0.0,
+        "method statement": 0.0,
+        "meeting minutes": 0.0,
+        "NCR": 0.0,
+        "inspection request": 0.0,
+        "site instruction": 0.0,
+        "register/log": 0.0,
+        "other": 0.07692307692307693
+      }
+    },
+    "v8_retick": {
+      "n": 185,
+      "accuracy": 0.7621621621621621,
+      "macro_recall": 0.772997616418669,
+      "gate_v2_passed": true,
+      "gate_v2": {
+        "passed": true,
+        "reason": "sealed gate",
+        "macro_recall": 0.772997616418669,
+        "beats_every_constant": true,
+        "every_constant_fails_majority_gate": true
+      },
+      "router_passed": false,
+      "per_label": [
+        {
+          "label": "RFI",
+          "n": 4,
+          "recall": 1.0,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "submittal",
+          "n": 13,
+          "recall": 0.8461538461538461,
+          "passable": true
+        },
+        {
+          "label": "transmittal",
+          "n": 8,
+          "recall": 0.875,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "VO/CO",
+          "n": 11,
+          "recall": 0.8181818181818182,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "change request",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "claim",
+          "n": 2,
+          "recall": 1.0,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "payment application",
+          "n": 1,
+          "recall": 1.0,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "payment certificate",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "drawing",
+          "n": 13,
+          "recall": 1.0,
+          "passable": true
+        },
+        {
+          "label": "specification",
+          "n": 12,
+          "recall": 0.9166666666666666,
+          "passable": true
+        },
+        {
+          "label": "schedule",
+          "n": 14,
+          "recall": 1.0,
+          "passable": true
+        },
+        {
+          "label": "report",
+          "n": 13,
+          "recall": 1.0,
+          "passable": true
+        },
+        {
+          "label": "correspondence",
+          "n": 12,
+          "recall": 0.25,
+          "passable": true
+        },
+        {
+          "label": "BOQ",
+          "n": 12,
+          "recall": 0.75,
+          "passable": true
+        },
+        {
+          "label": "contract",
+          "n": 12,
+          "recall": 1.0,
+          "passable": true
+        },
+        {
+          "label": "method statement",
+          "n": 14,
+          "recall": 0.9285714285714286,
+          "passable": true
+        },
+        {
+          "label": "meeting minutes",
+          "n": 5,
+          "recall": 1.0,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "NCR",
+          "n": 2,
+          "recall": 0.0,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "inspection request",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "site instruction",
+          "n": 8,
+          "recall": 0.75,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "register/log",
+          "n": 15,
+          "recall": 0.26666666666666666,
+          "passable": true
+        },
+        {
+          "label": "other",
+          "n": 14,
+          "recall": 0.2857142857142857,
+          "passable": true
+        }
+      ],
+      "per_label_precision": {
+        "RFI": {
+          "n": 4,
+          "predicted": 4,
+          "tp": 4,
+          "recall": 1.0,
+          "precision": 1.0
+        },
+        "submittal": {
+          "n": 13,
+          "predicted": 13,
+          "tp": 11,
+          "recall": 0.8461538461538461,
+          "precision": 0.8461538461538461
+        },
+        "transmittal": {
+          "n": 8,
+          "predicted": 7,
+          "tp": 7,
+          "recall": 0.875,
+          "precision": 1.0
+        },
+        "VO/CO": {
+          "n": 11,
+          "predicted": 10,
+          "tp": 9,
+          "recall": 0.8181818181818182,
+          "precision": 0.9
+        },
+        "change request": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "claim": {
+          "n": 2,
+          "predicted": 2,
+          "tp": 2,
+          "recall": 1.0,
+          "precision": 1.0
+        },
+        "payment application": {
+          "n": 1,
+          "predicted": 7,
+          "tp": 1,
+          "recall": 1.0,
+          "precision": 0.14285714285714285
+        },
+        "payment certificate": {
+          "n": 0,
+          "predicted": 2,
+          "tp": 0,
+          "recall": null,
+          "precision": 0.0
+        },
+        "drawing": {
+          "n": 13,
+          "predicted": 24,
+          "tp": 13,
+          "recall": 1.0,
+          "precision": 0.5416666666666666
+        },
+        "specification": {
+          "n": 12,
+          "predicted": 11,
+          "tp": 11,
+          "recall": 0.9166666666666666,
+          "precision": 1.0
+        },
+        "schedule": {
+          "n": 14,
+          "predicted": 20,
+          "tp": 14,
+          "recall": 1.0,
+          "precision": 0.7
+        },
+        "report": {
+          "n": 13,
+          "predicted": 17,
+          "tp": 13,
+          "recall": 1.0,
+          "precision": 0.7647058823529411
+        },
+        "correspondence": {
+          "n": 12,
+          "predicted": 3,
+          "tp": 3,
+          "recall": 0.25,
+          "precision": 1.0
+        },
+        "BOQ": {
+          "n": 12,
+          "predicted": 10,
+          "tp": 9,
+          "recall": 0.75,
+          "precision": 0.9
+        },
+        "contract": {
+          "n": 12,
+          "predicted": 15,
+          "tp": 12,
+          "recall": 1.0,
+          "precision": 0.8
+        },
+        "method statement": {
+          "n": 14,
+          "predicted": 13,
+          "tp": 13,
+          "recall": 0.9285714285714286,
+          "precision": 1.0
+        },
+        "meeting minutes": {
+          "n": 5,
+          "predicted": 5,
+          "tp": 5,
+          "recall": 1.0,
+          "precision": 1.0
+        },
+        "NCR": {
+          "n": 2,
+          "predicted": 0,
+          "tp": 0,
+          "recall": 0.0,
+          "precision": null
+        },
+        "inspection request": {
+          "n": 0,
+          "predicted": 2,
+          "tp": 0,
+          "recall": null,
+          "precision": 0.0
+        },
+        "site instruction": {
+          "n": 8,
+          "predicted": 7,
+          "tp": 6,
+          "recall": 0.75,
+          "precision": 0.8571428571428571
+        },
+        "register/log": {
+          "n": 15,
+          "predicted": 4,
+          "tp": 4,
+          "recall": 0.26666666666666666,
+          "precision": 1.0
+        },
+        "other": {
+          "n": 14,
+          "predicted": 9,
+          "tp": 4,
+          "recall": 0.2857142857142857,
+          "precision": 0.4444444444444444
+        }
+      },
+      "pred_counts": {
+        "submittal": 13,
+        "BOQ": 10,
+        "report": 17,
+        "specification": 11,
+        "drawing": 24,
+        "meeting minutes": 5,
+        "other": 9,
+        "schedule": 20,
+        "transmittal": 7,
+        "method statement": 13,
+        "contract": 15,
+        "site instruction": 7,
+        "payment application": 7,
+        "VO/CO": 10,
+        "RFI": 4,
+        "register/log": 4,
+        "inspection request": 2,
+        "payment certificate": 2,
+        "correspondence": 3,
+        "claim": 2
+      },
+      "unsure": 0,
+      "confusion_off_diagonal": [
+        [
+          "register/log",
+          "drawing",
+          9
+        ],
+        [
+          "correspondence",
+          "other",
+          4
+        ],
+        [
+          "other",
+          "payment application",
+          3
+        ],
+        [
+          "correspondence",
+          "payment application",
+          3
+        ],
+        [
+          "other",
+          "schedule",
+          3
+        ],
+        [
+          "correspondence",
+          "report",
+          2
+        ],
+        [
+          "BOQ",
+          "schedule",
+          2
+        ],
+        [
+          "other",
+          "payment certificate",
+          2
+        ],
+        [
+          "BOQ",
+          "contract",
+          1
+        ],
+        [
+          "specification",
+          "contract",
+          1
+        ],
+        [
+          "submittal",
+          "drawing",
+          1
+        ],
+        [
+          "site instruction",
+          "drawing",
+          1
+        ],
+        [
+          "submittal",
+          "inspection request",
+          1
+        ],
+        [
+          "register/log",
+          "report",
+          1
+        ],
+        [
+          "register/log",
+          "VO/CO",
+          1
+        ],
+        [
+          "transmittal",
+          "submittal",
+          1
+        ],
+        [
+          "other",
+          "BOQ",
+          1
+        ],
+        [
+          "method statement",
+          "submittal",
+          1
+        ],
+        [
+          "other",
+          "contract",
+          1
+        ],
+        [
+          "VO/CO",
+          "site instruction",
+          1
+        ],
+        [
+          "NCR",
+          "other",
+          1
+        ],
+        [
+          "NCR",
+          "inspection request",
+          1
+        ],
+        [
+          "VO/CO",
+          "schedule",
+          1
+        ],
+        [
+          "site instruction",
+          "report",
+          1
+        ]
+      ],
+      "constant_macro": {
+        "RFI": 0.05263157894736842,
+        "submittal": 0.05263157894736842,
+        "transmittal": 0.05263157894736842,
+        "VO/CO": 0.05263157894736842,
+        "change request": 0.0,
+        "claim": 0.05263157894736842,
+        "payment application": 0.05263157894736842,
+        "payment certificate": 0.0,
+        "drawing": 0.05263157894736842,
+        "specification": 0.05263157894736842,
+        "schedule": 0.05263157894736842,
+        "report": 0.05263157894736842,
+        "correspondence": 0.05263157894736842,
+        "BOQ": 0.05263157894736842,
+        "contract": 0.05263157894736842,
+        "method statement": 0.05263157894736842,
+        "meeting minutes": 0.05263157894736842,
+        "NCR": 0.05263157894736842,
+        "inspection request": 0.0,
+        "site instruction": 0.05263157894736842,
+        "register/log": 0.05263157894736842,
+        "other": 0.05263157894736842
+      }
+    },
+    "cr_addendum": {
+      "n": 14,
+      "accuracy": 1.0,
+      "macro_recall": 1.0,
+      "gate_v2_passed": false,
+      "gate_v2": {
+        "passed": false,
+        "reason": "sealed gate failed",
+        "macro_recall": 1.0,
+        "beats_every_constant": false,
+        "every_constant_fails_majority_gate": true
+      },
+      "router_passed": false,
+      "per_label": [
+        {
+          "label": "RFI",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "submittal",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "transmittal",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "VO/CO",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "change request",
+          "n": 14,
+          "recall": 1.0,
+          "passable": true
+        },
+        {
+          "label": "claim",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "payment application",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "payment certificate",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "drawing",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "specification",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "schedule",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "report",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "correspondence",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "BOQ",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "contract",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "method statement",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "meeting minutes",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "NCR",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "inspection request",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "site instruction",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "register/log",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "other",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        }
+      ],
+      "per_label_precision": {
+        "RFI": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "submittal": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "transmittal": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "VO/CO": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "change request": {
+          "n": 14,
+          "predicted": 14,
+          "tp": 14,
+          "recall": 1.0,
+          "precision": 1.0
+        },
+        "claim": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "payment application": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "payment certificate": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "drawing": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "specification": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "schedule": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "report": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "correspondence": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "BOQ": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "contract": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "method statement": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "meeting minutes": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "NCR": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "inspection request": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "site instruction": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "register/log": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "other": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        }
+      },
+      "pred_counts": {
+        "change request": 14
+      },
+      "unsure": 0,
+      "confusion_off_diagonal": [],
+      "constant_macro": {
+        "RFI": 0.0,
+        "submittal": 0.0,
+        "transmittal": 0.0,
+        "VO/CO": 0.0,
+        "change request": 1.0,
+        "claim": 0.0,
+        "payment application": 0.0,
+        "payment certificate": 0.0,
+        "drawing": 0.0,
+        "specification": 0.0,
+        "schedule": 0.0,
+        "report": 0.0,
+        "correspondence": 0.0,
+        "BOQ": 0.0,
+        "contract": 0.0,
+        "method statement": 0.0,
+        "meeting minutes": 0.0,
+        "NCR": 0.0,
+        "inspection request": 0.0,
+        "site instruction": 0.0,
+        "register/log": 0.0,
+        "other": 0.0
+      }
+    },
+    "thin_c_addendum": {
+      "n": 2,
+      "accuracy": 0.5,
+      "macro_recall": 0.5,
+      "gate_v2_passed": false,
+      "gate_v2": {
+        "passed": false,
+        "reason": "sealed gate failed",
+        "macro_recall": 0.5,
+        "beats_every_constant": false,
+        "every_constant_fails_majority_gate": true
+      },
+      "router_passed": false,
+      "per_label": [
+        {
+          "label": "RFI",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "submittal",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "transmittal",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "VO/CO",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "change request",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "claim",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "payment application",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "payment certificate",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "drawing",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "specification",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "schedule",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "report",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "correspondence",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "BOQ",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "contract",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "method statement",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "meeting minutes",
+          "n": 2,
+          "recall": 0.5,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "NCR",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "inspection request",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "site instruction",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "register/log",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "other",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        }
+      ],
+      "per_label_precision": {
+        "RFI": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "submittal": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "transmittal": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "VO/CO": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "change request": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "claim": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "payment application": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "payment certificate": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "drawing": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "specification": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "schedule": {
+          "n": 0,
+          "predicted": 1,
+          "tp": 0,
+          "recall": null,
+          "precision": 0.0
+        },
+        "report": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "correspondence": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "BOQ": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "contract": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "method statement": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "meeting minutes": {
+          "n": 2,
+          "predicted": 1,
+          "tp": 1,
+          "recall": 0.5,
+          "precision": 1.0
+        },
+        "NCR": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "inspection request": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "site instruction": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "register/log": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "other": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        }
+      },
+      "pred_counts": {
+        "schedule": 1,
+        "meeting minutes": 1
+      },
+      "unsure": 0,
+      "confusion_off_diagonal": [
+        [
+          "meeting minutes",
+          "schedule",
+          1
+        ]
+      ],
+      "constant_macro": {
+        "RFI": 0.0,
+        "submittal": 0.0,
+        "transmittal": 0.0,
+        "VO/CO": 0.0,
+        "change request": 0.0,
+        "claim": 0.0,
+        "payment application": 0.0,
+        "payment certificate": 0.0,
+        "drawing": 0.0,
+        "specification": 0.0,
+        "schedule": 0.0,
+        "report": 0.0,
+        "correspondence": 0.0,
+        "BOQ": 0.0,
+        "contract": 0.0,
+        "method statement": 0.0,
+        "meeting minutes": 1.0,
+        "NCR": 0.0,
+        "inspection request": 0.0,
+        "site instruction": 0.0,
+        "register/log": 0.0,
+        "other": 0.0
+      }
+    },
+    "thin_d_addendum": {
+      "n": 13,
+      "accuracy": 0.7692307692307693,
+      "macro_recall": 0.638888888888889,
+      "gate_v2_passed": true,
+      "gate_v2": {
+        "passed": true,
+        "reason": "sealed gate",
+        "macro_recall": 0.638888888888889,
+        "beats_every_constant": true,
+        "every_constant_fails_majority_gate": true
+      },
+      "router_passed": false,
+      "per_label": [
+        {
+          "label": "RFI",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "submittal",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "transmittal",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "VO/CO",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "change request",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "claim",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "payment application",
+          "n": 1,
+          "recall": 1.0,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "payment certificate",
+          "n": 1,
+          "recall": 0.0,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "drawing",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "specification",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "schedule",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "report",
+          "n": 2,
+          "recall": 1.0,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "correspondence",
+          "n": 1,
+          "recall": 0.0,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "BOQ",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "contract",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "method statement",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "meeting minutes",
+          "n": 2,
+          "recall": 1.0,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "NCR",
+          "n": 6,
+          "recall": 0.8333333333333334,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "inspection request",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "site instruction",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "register/log",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "other",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        }
+      ],
+      "per_label_precision": {
+        "RFI": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "submittal": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "transmittal": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "VO/CO": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "change request": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "claim": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "payment application": {
+          "n": 1,
+          "predicted": 2,
+          "tp": 1,
+          "recall": 1.0,
+          "precision": 0.5
+        },
+        "payment certificate": {
+          "n": 1,
+          "predicted": 0,
+          "tp": 0,
+          "recall": 0.0,
+          "precision": null
+        },
+        "drawing": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "specification": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "schedule": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "report": {
+          "n": 2,
+          "predicted": 4,
+          "tp": 2,
+          "recall": 1.0,
+          "precision": 0.5
+        },
+        "correspondence": {
+          "n": 1,
+          "predicted": 0,
+          "tp": 0,
+          "recall": 0.0,
+          "precision": null
+        },
+        "BOQ": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "contract": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "method statement": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "meeting minutes": {
+          "n": 2,
+          "predicted": 2,
+          "tp": 2,
+          "recall": 1.0,
+          "precision": 1.0
+        },
+        "NCR": {
+          "n": 6,
+          "predicted": 5,
+          "tp": 5,
+          "recall": 0.8333333333333334,
+          "precision": 1.0
+        },
+        "inspection request": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "site instruction": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "register/log": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "other": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        }
+      },
+      "pred_counts": {
+        "payment application": 2,
+        "NCR": 5,
+        "report": 4,
+        "meeting minutes": 2
+      },
+      "unsure": 0,
+      "confusion_off_diagonal": [
+        [
+          "payment certificate",
+          "payment application",
+          1
+        ],
+        [
+          "NCR",
+          "report",
+          1
+        ],
+        [
+          "correspondence",
+          "report",
+          1
+        ]
+      ],
+      "constant_macro": {
+        "RFI": 0.0,
+        "submittal": 0.0,
+        "transmittal": 0.0,
+        "VO/CO": 0.0,
+        "change request": 0.0,
+        "claim": 0.0,
+        "payment application": 0.16666666666666666,
+        "payment certificate": 0.16666666666666666,
+        "drawing": 0.0,
+        "specification": 0.0,
+        "schedule": 0.0,
+        "report": 0.16666666666666666,
+        "correspondence": 0.16666666666666666,
+        "BOQ": 0.0,
+        "contract": 0.0,
+        "method statement": 0.0,
+        "meeting minutes": 0.16666666666666666,
+        "NCR": 0.16666666666666666,
+        "inspection request": 0.0,
+        "site instruction": 0.0,
+        "register/log": 0.0,
+        "other": 0.0
+      }
+    },
+    "web_f_addendum": {
+      "n": 34,
+      "accuracy": 0.7058823529411765,
+      "macro_recall": 0.8130681818181819,
+      "gate_v2_passed": true,
+      "gate_v2": {
+        "passed": true,
+        "reason": "sealed gate",
+        "macro_recall": 0.8130681818181819,
+        "beats_every_constant": true,
+        "every_constant_fails_majority_gate": true
+      },
+      "router_passed": false,
+      "per_label": [
+        {
+          "label": "RFI",
+          "n": 3,
+          "recall": 1.0,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "submittal",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "transmittal",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "VO/CO",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "change request",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "claim",
+          "n": 5,
+          "recall": 1.0,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "payment application",
+          "n": 2,
+          "recall": 1.0,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "payment certificate",
+          "n": 11,
+          "recall": 0.45454545454545453,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "drawing",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "specification",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "schedule",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "report",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "correspondence",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "BOQ",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "contract",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "method statement",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "meeting minutes",
+          "n": 5,
+          "recall": 0.8,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "NCR",
+          "n": 4,
+          "recall": 0.25,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "inspection request",
+          "n": 3,
+          "recall": 1.0,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "site instruction",
+          "n": 1,
+          "recall": 1.0,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "register/log",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "other",
+          "n": 0,
+          "recall": null,
+          "passable": false,
+          "status": "not passable"
+        }
+      ],
+      "per_label_precision": {
+        "RFI": {
+          "n": 3,
+          "predicted": 3,
+          "tp": 3,
+          "recall": 1.0,
+          "precision": 1.0
+        },
+        "submittal": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "transmittal": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "VO/CO": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "change request": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "claim": {
+          "n": 5,
+          "predicted": 5,
+          "tp": 5,
+          "recall": 1.0,
+          "precision": 1.0
+        },
+        "payment application": {
+          "n": 2,
+          "predicted": 8,
+          "tp": 2,
+          "recall": 1.0,
+          "precision": 0.25
+        },
+        "payment certificate": {
+          "n": 11,
+          "predicted": 5,
+          "tp": 5,
+          "recall": 0.45454545454545453,
+          "precision": 1.0
+        },
+        "drawing": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "specification": {
+          "n": 0,
+          "predicted": 1,
+          "tp": 0,
+          "recall": null,
+          "precision": 0.0
+        },
+        "schedule": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "report": {
+          "n": 0,
+          "predicted": 2,
+          "tp": 0,
+          "recall": null,
+          "precision": 0.0
+        },
+        "correspondence": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "BOQ": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "contract": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "method statement": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "meeting minutes": {
+          "n": 5,
+          "predicted": 4,
+          "tp": 4,
+          "recall": 0.8,
+          "precision": 1.0
+        },
+        "NCR": {
+          "n": 4,
+          "predicted": 1,
+          "tp": 1,
+          "recall": 0.25,
+          "precision": 1.0
+        },
+        "inspection request": {
+          "n": 3,
+          "predicted": 3,
+          "tp": 3,
+          "recall": 1.0,
+          "precision": 1.0
+        },
+        "site instruction": {
+          "n": 1,
+          "predicted": 1,
+          "tp": 1,
+          "recall": 1.0,
+          "precision": 1.0
+        },
+        "register/log": {
+          "n": 0,
+          "predicted": 0,
+          "tp": 0,
+          "recall": null,
+          "precision": null
+        },
+        "other": {
+          "n": 0,
+          "predicted": 1,
+          "tp": 0,
+          "recall": null,
+          "precision": 0.0
+        }
+      },
+      "pred_counts": {
+        "inspection request": 3,
+        "specification": 1,
+        "report": 2,
+        "NCR": 1,
+        "other": 1,
+        "claim": 5,
+        "payment application": 8,
+        "payment certificate": 5,
+        "site instruction": 1,
+        "RFI": 3,
+        "meeting minutes": 4
+      },
+      "unsure": 0,
+      "confusion_off_diagonal": [
+        [
+          "payment certificate",
+          "payment application",
+          6
+        ],
+        [
+          "NCR",
+          "specification",
+          1
+        ],
+        [
+          "NCR",
+          "report",
+          1
+        ],
+        [
+          "NCR",
+          "other",
+          1
+        ],
+        [
+          "meeting minutes",
+          "report",
+          1
+        ]
+      ],
+      "constant_macro": {
+        "RFI": 0.125,
+        "submittal": 0.0,
+        "transmittal": 0.0,
+        "VO/CO": 0.0,
+        "change request": 0.0,
+        "claim": 0.125,
+        "payment application": 0.125,
+        "payment certificate": 0.125,
+        "drawing": 0.0,
+        "specification": 0.0,
+        "schedule": 0.0,
+        "report": 0.0,
+        "correspondence": 0.0,
+        "BOQ": 0.0,
+        "contract": 0.0,
+        "method statement": 0.0,
+        "meeting minutes": 0.125,
+        "NCR": 0.125,
+        "inspection request": 0.125,
+        "site instruction": 0.125,
+        "register/log": 0.0,
+        "other": 0.0
+      }
+    },
+    "combined": {
+      "n": 312,
+      "accuracy": 0.7532051282051282,
+      "macro_recall": 0.7842698078682061,
+      "gate_v2_passed": true,
+      "gate_v2": {
+        "passed": true,
+        "reason": "sealed gate",
+        "macro_recall": 0.7842698078682061,
+        "beats_every_constant": true,
+        "every_constant_fails_majority_gate": true
+      },
+      "router_passed": false,
+      "per_label": [
+        {
+          "label": "RFI",
+          "n": 12,
+          "recall": 1.0,
+          "passable": true
+        },
+        {
+          "label": "submittal",
+          "n": 18,
+          "recall": 0.8888888888888888,
+          "passable": true
+        },
+        {
+          "label": "transmittal",
+          "n": 13,
+          "recall": 0.9230769230769231,
+          "passable": true
+        },
+        {
+          "label": "VO/CO",
+          "n": 16,
+          "recall": 0.875,
+          "passable": true
+        },
+        {
+          "label": "change request",
+          "n": 14,
+          "recall": 1.0,
+          "passable": true
+        },
+        {
+          "label": "claim",
+          "n": 9,
+          "recall": 1.0,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "payment application",
+          "n": 6,
+          "recall": 1.0,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "payment certificate",
+          "n": 15,
+          "recall": 0.4,
+          "passable": true
+        },
+        {
+          "label": "drawing",
+          "n": 18,
+          "recall": 1.0,
+          "passable": true
+        },
+        {
+          "label": "specification",
+          "n": 18,
+          "recall": 0.7777777777777778,
+          "passable": true
+        },
+        {
+          "label": "schedule",
+          "n": 19,
+          "recall": 1.0,
+          "passable": true
+        },
+        {
+          "label": "report",
+          "n": 23,
+          "recall": 0.9130434782608695,
+          "passable": true
+        },
+        {
+          "label": "correspondence",
+          "n": 19,
+          "recall": 0.15789473684210525,
+          "passable": true
+        },
+        {
+          "label": "BOQ",
+          "n": 12,
+          "recall": 0.75,
+          "passable": true
+        },
+        {
+          "label": "contract",
+          "n": 12,
+          "recall": 1.0,
+          "passable": true
+        },
+        {
+          "label": "method statement",
+          "n": 14,
+          "recall": 0.9285714285714286,
+          "passable": true
+        },
+        {
+          "label": "meeting minutes",
+          "n": 14,
+          "recall": 0.8571428571428571,
+          "passable": true
+        },
+        {
+          "label": "NCR",
+          "n": 12,
+          "recall": 0.5,
+          "passable": true
+        },
+        {
+          "label": "inspection request",
+          "n": 3,
+          "recall": 1.0,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "site instruction",
+          "n": 9,
+          "recall": 0.7777777777777778,
+          "passable": false,
+          "status": "not passable"
+        },
+        {
+          "label": "register/log",
+          "n": 15,
+          "recall": 0.26666666666666666,
+          "passable": true
+        },
+        {
+          "label": "other",
+          "n": 21,
+          "recall": 0.23809523809523808,
+          "passable": true
+        }
+      ],
+      "per_label_precision": {
+        "RFI": {
+          "n": 12,
+          "predicted": 12,
+          "tp": 12,
+          "recall": 1.0,
+          "precision": 1.0
+        },
+        "submittal": {
+          "n": 18,
+          "predicted": 21,
+          "tp": 16,
+          "recall": 0.8888888888888888,
+          "precision": 0.7619047619047619
+        },
+        "transmittal": {
+          "n": 13,
+          "predicted": 12,
+          "tp": 12,
+          "recall": 0.9230769230769231,
+          "precision": 1.0
+        },
+        "VO/CO": {
+          "n": 16,
+          "predicted": 15,
+          "tp": 14,
+          "recall": 0.875,
+          "precision": 0.9333333333333333
+        },
+        "change request": {
+          "n": 14,
+          "predicted": 15,
+          "tp": 14,
+          "recall": 1.0,
+          "precision": 0.9333333333333333
+        },
+        "claim": {
+          "n": 9,
+          "predicted": 11,
+          "tp": 9,
+          "recall": 1.0,
+          "precision": 0.8181818181818182
+        },
+        "payment application": {
+          "n": 6,
+          "predicted": 21,
+          "tp": 6,
+          "recall": 1.0,
+          "precision": 0.2857142857142857
+        },
+        "payment certificate": {
+          "n": 15,
+          "predicted": 8,
+          "tp": 6,
+          "recall": 0.4,
+          "precision": 0.75
+        },
+        "drawing": {
+          "n": 18,
+          "predicted": 29,
+          "tp": 18,
+          "recall": 1.0,
+          "precision": 0.6206896551724138
+        },
+        "specification": {
+          "n": 18,
+          "predicted": 15,
+          "tp": 14,
+          "recall": 0.7777777777777778,
+          "precision": 0.9333333333333333
+        },
+        "schedule": {
+          "n": 19,
+          "predicted": 27,
+          "tp": 19,
+          "recall": 1.0,
+          "precision": 0.7037037037037037
+        },
+        "report": {
+          "n": 23,
+          "predicted": 29,
+          "tp": 21,
+          "recall": 0.9130434782608695,
+          "precision": 0.7241379310344828
+        },
+        "correspondence": {
+          "n": 19,
+          "predicted": 3,
+          "tp": 3,
+          "recall": 0.15789473684210525,
+          "precision": 1.0
+        },
+        "BOQ": {
+          "n": 12,
+          "predicted": 11,
+          "tp": 9,
+          "recall": 0.75,
+          "precision": 0.8181818181818182
+        },
+        "contract": {
+          "n": 12,
+          "predicted": 20,
+          "tp": 12,
+          "recall": 1.0,
+          "precision": 0.6
+        },
+        "method statement": {
+          "n": 14,
+          "predicted": 13,
+          "tp": 13,
+          "recall": 0.9285714285714286,
+          "precision": 1.0
+        },
+        "meeting minutes": {
+          "n": 14,
+          "predicted": 13,
+          "tp": 12,
+          "recall": 0.8571428571428571,
+          "precision": 0.9230769230769231
+        },
+        "NCR": {
+          "n": 12,
+          "predicted": 6,
+          "tp": 6,
+          "recall": 0.5,
+          "precision": 1.0
+        },
+        "inspection request": {
+          "n": 3,
+          "predicted": 6,
+          "tp": 3,
+          "recall": 1.0,
+          "precision": 0.5
+        },
+        "site instruction": {
+          "n": 9,
+          "predicted": 8,
+          "tp": 7,
+          "recall": 0.7777777777777778,
+          "precision": 0.875
+        },
+        "register/log": {
+          "n": 15,
+          "predicted": 5,
+          "tp": 4,
+          "recall": 0.26666666666666666,
+          "precision": 0.8
+        },
+        "other": {
+          "n": 21,
+          "predicted": 12,
+          "tp": 5,
+          "recall": 0.23809523809523808,
+          "precision": 0.4166666666666667
+        }
+      },
+      "pred_counts": {
+        "submittal": 21,
+        "contract": 20,
+        "transmittal": 12,
+        "claim": 11,
+        "specification": 15,
+        "payment application": 21,
+        "VO/CO": 15,
+        "report": 29,
+        "payment certificate": 8,
+        "schedule": 27,
+        "RFI": 12,
+        "drawing": 29,
+        "other": 12,
+        "inspection request": 6,
+        "register/log": 5,
+        "meeting minutes": 13,
+        "BOQ": 11,
+        "change request": 15,
+        "method statement": 13,
+        "site instruction": 8,
+        "correspondence": 3,
+        "NCR": 6
+      },
+      "unsure": 0,
+      "confusion_off_diagonal": [
+        [
+          "payment certificate",
+          "payment application",
+          9
+        ],
+        [
+          "register/log",
+          "drawing",
+          9
+        ],
+        [
+          "correspondence",
+          "other",
+          5
+        ],
+        [
+          "correspondence",
+          "contract",
+          3
+        ],
+        [
+          "correspondence",
+          "report",
+          3
+        ],
+        [
+          "other",
+          "payment application",
+          3
+        ],
+        [
+          "correspondence",
+          "payment application",
+          3
+        ],
+        [
+          "other",
+          "schedule",
+          3
+        ],
+        [
+          "specification",
+          "submittal",
+          2
+        ],
+        [
+          "other",
+          "claim",
+          2
+        ],
+        [
+          "other",
+          "contract",
+          2
+        ],
+        [
+          "other",
+          "BOQ",
+          2
+        ],
+        [
+          "BOQ",
+          "schedule",
+          2
+        ],
+        [
+          "other",
+          "payment certificate",
+          2
+        ],
+        [
+          "NCR",
+          "other",
+          2
+        ],
+        [
+          "NCR",
+          "report",
+          2
+        ],
+        [
+          "report",
+          "contract",
+          1
+        ],
+        [
+          "correspondence",
+          "submittal",
+          1
+        ],
+        [
+          "other",
+          "inspection request",
+          1
+        ],
+        [
+          "other",
+          "register/log",
+          1
+        ],
+        [
+          "report",
+          "meeting minutes",
+          1
+        ],
+        [
+          "specification",
+          "schedule",
+          1
+        ],
+        [
+          "correspondence",
+          "change request",
+          1
+        ],
+        [
+          "BOQ",
+          "contract",
+          1
+        ],
+        [
+          "specification",
+          "contract",
+          1
+        ],
+        [
+          "submittal",
+          "drawing",
+          1
+        ],
+        [
+          "site instruction",
+          "drawing",
+          1
+        ],
+        [
+          "submittal",
+          "inspection request",
+          1
+        ],
+        [
+          "register/log",
+          "report",
+          1
+        ],
+        [
+          "register/log",
+          "VO/CO",
+          1
+        ],
+        [
+          "transmittal",
+          "submittal",
+          1
+        ],
+        [
+          "method statement",
+          "submittal",
+          1
+        ],
+        [
+          "VO/CO",
+          "site instruction",
+          1
+        ],
+        [
+          "NCR",
+          "inspection request",
+          1
+        ],
+        [
+          "VO/CO",
+          "schedule",
+          1
+        ],
+        [
+          "site instruction",
+          "report",
+          1
+        ],
+        [
+          "meeting minutes",
+          "schedule",
+          1
+        ],
+        [
+          "NCR",
+          "specification",
+          1
+        ],
+        [
+          "meeting minutes",
+          "report",
+          1
+        ]
+      ],
+      "constant_macro": {
+        "RFI": 0.045454545454545456,
+        "submittal": 0.045454545454545456,
+        "transmittal": 0.045454545454545456,
+        "VO/CO": 0.045454545454545456,
+        "change request": 0.045454545454545456,
+        "claim": 0.045454545454545456,
+        "payment application": 0.045454545454545456,
+        "payment certificate": 0.045454545454545456,
+        "drawing": 0.045454545454545456,
+        "specification": 0.045454545454545456,
+        "schedule": 0.045454545454545456,
+        "report": 0.045454545454545456,
+        "correspondence": 0.045454545454545456,
+        "BOQ": 0.045454545454545456,
+        "contract": 0.045454545454545456,
+        "method statement": 0.045454545454545456,
+        "meeting minutes": 0.045454545454545456,
+        "NCR": 0.045454545454545456,
+        "inspection request": 0.045454545454545456,
+        "site instruction": 0.045454545454545456,
+        "register/log": 0.045454545454545456,
+        "other": 0.045454545454545456
+      }
+    }
+  }
+}
