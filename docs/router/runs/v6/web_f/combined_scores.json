@@ -1,0 +1,282 @@
+{
+  "view": "combined",
+  "checkpoint": "tinker://93552b55-3c20-5862-8bbf-2320fb04b236:train:0/sampler_weights/router-v6-qwen3.5-4b-lora-r16-epoch3",
+  "method": "aggregation of recorded per-row predictions; no new sampling. 278 rows from docs/router/runs/v6/sealed/sealed_predictions.jsonl (PR #61) + 34 rows from docs/router/runs/v6/web_f/sealed_predictions.jsonl, in configs/router/sealed_eval.json v9_sealed order",
+  "n": 312,
+  "accuracy": 0.7371794871794872,
+  "macro_recall": 0.7857037397512225,
+  "gate_v2_passed": true,
+  "gate_v2": {
+    "passed": true,
+    "reason": "sealed gate",
+    "macro_recall": 0.7857037397512225,
+    "beats_every_constant": true,
+    "every_constant_fails_majority_gate": true
+  },
+  "router_passed": false,
+  "per_label": [
+    {
+      "label": "RFI",
+      "n": 12,
+      "recall": 1.0,
+      "passable": true,
+      "tp": 12,
+      "predicted": 12,
+      "precision": 1.0
+    },
+    {
+      "label": "submittal",
+      "n": 18,
+      "recall": 0.8888888888888888,
+      "passable": true,
+      "tp": 16,
+      "predicted": 19,
+      "precision": 0.8421052631578947
+    },
+    {
+      "label": "transmittal",
+      "n": 13,
+      "recall": 1.0,
+      "passable": true,
+      "tp": 13,
+      "predicted": 13,
+      "precision": 1.0
+    },
+    {
+      "label": "VO/CO",
+      "n": 16,
+      "recall": 0.9375,
+      "passable": true,
+      "tp": 15,
+      "predicted": 16,
+      "precision": 0.9375
+    },
+    {
+      "label": "change request",
+      "n": 14,
+      "recall": 1.0,
+      "passable": true,
+      "tp": 14,
+      "predicted": 22,
+      "precision": 0.6363636363636364
+    },
+    {
+      "label": "claim",
+      "n": 9,
+      "recall": 0.8888888888888888,
+      "passable": false,
+      "status": "not passable",
+      "tp": 8,
+      "predicted": 10,
+      "precision": 0.8
+    },
+    {
+      "label": "payment application",
+      "n": 6,
+      "recall": 0.8333333333333334,
+      "passable": false,
+      "status": "not passable",
+      "tp": 5,
+      "predicted": 14,
+      "precision": 0.35714285714285715
+    },
+    {
+      "label": "payment certificate",
+      "n": 15,
+      "recall": 0.4666666666666667,
+      "passable": true,
+      "tp": 7,
+      "predicted": 10,
+      "precision": 0.7
+    },
+    {
+      "label": "drawing",
+      "n": 18,
+      "recall": 0.7777777777777778,
+      "passable": true,
+      "tp": 14,
+      "predicted": 27,
+      "precision": 0.5185185185185185
+    },
+    {
+      "label": "specification",
+      "n": 18,
+      "recall": 0.6666666666666666,
+      "passable": true,
+      "tp": 12,
+      "predicted": 12,
+      "precision": 1.0
+    },
+    {
+      "label": "schedule",
+      "n": 19,
+      "recall": 1.0,
+      "passable": true,
+      "tp": 19,
+      "predicted": 23,
+      "precision": 0.8260869565217391
+    },
+    {
+      "label": "report",
+      "n": 23,
+      "recall": 0.43478260869565216,
+      "passable": true,
+      "tp": 10,
+      "predicted": 10,
+      "precision": 1.0
+    },
+    {
+      "label": "correspondence",
+      "n": 19,
+      "recall": 0.10526315789473684,
+      "passable": true,
+      "tp": 2,
+      "predicted": 3,
+      "precision": 0.6666666666666666
+    },
+    {
+      "label": "BOQ",
+      "n": 12,
+      "recall": 0.75,
+      "passable": true,
+      "tp": 9,
+      "predicted": 10,
+      "precision": 0.9
+    },
+    {
+      "label": "contract",
+      "n": 12,
+      "recall": 0.9166666666666666,
+      "passable": true,
+      "tp": 11,
+      "predicted": 13,
+      "precision": 0.8461538461538461
+    },
+    {
+      "label": "method statement",
+      "n": 14,
+      "recall": 1.0,
+      "passable": true,
+      "tp": 14,
+      "predicted": 14,
+      "precision": 1.0
+    },
+    {
+      "label": "meeting minutes",
+      "n": 14,
+      "recall": 1.0,
+      "passable": true,
+      "tp": 14,
+      "predicted": 16,
+      "precision": 0.875
+    },
+    {
+      "label": "NCR",
+      "n": 12,
+      "recall": 1.0,
+      "passable": true,
+      "tp": 12,
+      "predicted": 15,
+      "precision": 0.8
+    },
+    {
+      "label": "inspection request",
+      "n": 3,
+      "recall": 1.0,
+      "passable": false,
+      "status": "not passable",
+      "tp": 3,
+      "predicted": 6,
+      "precision": 0.5
+    },
+    {
+      "label": "site instruction",
+      "n": 9,
+      "recall": 1.0,
+      "passable": false,
+      "status": "not passable",
+      "tp": 9,
+      "predicted": 26,
+      "precision": 0.34615384615384615
+    },
+    {
+      "label": "register/log",
+      "n": 15,
+      "recall": 0.3333333333333333,
+      "passable": true,
+      "tp": 5,
+      "predicted": 5,
+      "precision": 1.0
+    },
+    {
+      "label": "other",
+      "n": 21,
+      "recall": 0.2857142857142857,
+      "passable": true,
+      "tp": 6,
+      "predicted": 13,
+      "precision": 0.46153846153846156
+    }
+  ],
+  "pred_counts": {
+    "submittal": 19,
+    "site instruction": 26,
+    "transmittal": 13,
+    "claim": 10,
+    "unsure": 3,
+    "other": 13,
+    "payment application": 14,
+    "VO/CO": 16,
+    "change request": 22,
+    "report": 10,
+    "contract": 13,
+    "payment certificate": 10,
+    "schedule": 23,
+    "RFI": 12,
+    "inspection request": 6,
+    "specification": 12,
+    "meeting minutes": 16,
+    "drawing": 27,
+    "BOQ": 10,
+    "method statement": 14,
+    "register/log": 5,
+    "correspondence": 3,
+    "NCR": 15
+  },
+  "per_set_accuracy": {
+    "v5_retick": {
+      "n": 64,
+      "accuracy": 0.609375
+    },
+    "v8_retick": {
+      "n": 185,
+      "accuracy": 0.745945945945946
+    },
+    "cr_addendum": {
+      "n": 14,
+      "accuracy": 1.0
+    },
+    "thin_c_addendum": {
+      "n": 2,
+      "accuracy": 1.0
+    },
+    "thin_d_addendum": {
+      "n": 13,
+      "accuracy": 0.6923076923076923
+    },
+    "web_f_addendum": {
+      "n": 34,
+      "accuracy": 0.8235294117647058
+    }
+  },
+  "documents_registered_in_two_sets": [
+    {
+      "content_sha256": "13a32dd2b421",
+      "sets": [
+        "thin_d_addendum",
+        "v5_retick"
+      ]
+    }
+  ],
+  "note": "a document registered in two sets is counted once per set in the combined view, as registered (unchanged precedent); found from content sha256, not from ids"
+}

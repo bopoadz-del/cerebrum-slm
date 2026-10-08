@@ -187,3 +187,8 @@ Unchanged from the previous card (done; 0.875 / kappa 0.864). Sealed gate record
 - Additions batch (145) and thin-label top-up from the owner's laptop: provenance `owner laptop, content-labelled`. Outside DG2/Master Folder. Per-project caps about 10.
 - Public thin-label top-up: real project documents from NSIP published packs and other public archives. Domains already used for sealed v8 were excluded entirely. 12-word phrase check against sealed rows. Bot-check walls logged, never bypassed (see agent walls log).
 - Nothing from sealed v5 or sealed v8 enters training.
+
+## v9 web_f sealed addendum (2026-10-08)
+
+- 40 public-web candidates were ticked by the owner. 34 are sealed as `data/eval/router_unseen/v9_web_f_addendum/sealed_labels.jsonl` and 6 unsure rows are held there in `held.jsonl`. None of the 40 is in train, val or any additions file. `data/router/web_f_sealed_candidates_isolation.json` holds only their hashes (status sealed or held), so they are kept out of later training batches.
+- One held row (a meeting agenda) is an eval-only hard negative for meeting minutes. It never goes into training.

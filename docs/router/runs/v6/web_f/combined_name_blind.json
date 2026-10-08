@@ -1,0 +1,199 @@
+{
+  "view": "combined",
+  "method": "same flip table on the recorded unblanked and blanked predictions (no new sampling): 278 rows from docs/router/runs/v6/sealed/name_blind_predictions.jsonl + 34 from docs/router/runs/v6/web_f/name_blind_predictions.jsonl",
+  "n": 312,
+  "flips_total": 6,
+  "flips_passable": 6,
+  "flips_not_passable": 0,
+  "flips": [
+    {
+      "set": "v5_retick",
+      "sheet_id": "S5-021",
+      "gold": "correspondence",
+      "before": "payment certificate",
+      "after": "submittal"
+    },
+    {
+      "set": "v5_retick",
+      "sheet_id": "S5-028",
+      "gold": "other",
+      "before": "other",
+      "after": "register/log"
+    },
+    {
+      "set": "v5_retick",
+      "sheet_id": "S5-048",
+      "gold": "report",
+      "before": "site instruction",
+      "after": "inspection request"
+    },
+    {
+      "set": "v5_retick",
+      "sheet_id": "S5-059",
+      "gold": "submittal",
+      "before": "submittal",
+      "after": "transmittal"
+    },
+    {
+      "set": "v8_retick",
+      "sheet_id": "V8-020",
+      "gold": "correspondence",
+      "before": "site instruction",
+      "after": "correspondence"
+    },
+    {
+      "set": "v8_retick",
+      "sheet_id": "V8-112",
+      "gold": "drawing",
+      "before": "site instruction",
+      "after": "drawing"
+    }
+  ],
+  "per_class": {
+    "RFI": {
+      "n": 12,
+      "flips": 0,
+      "correct_before": 12,
+      "correct_after": 12
+    },
+    "submittal": {
+      "n": 18,
+      "flips": 1,
+      "correct_before": 16,
+      "correct_after": 15
+    },
+    "transmittal": {
+      "n": 13,
+      "flips": 0,
+      "correct_before": 13,
+      "correct_after": 13
+    },
+    "VO/CO": {
+      "n": 16,
+      "flips": 0,
+      "correct_before": 15,
+      "correct_after": 15
+    },
+    "change request": {
+      "n": 14,
+      "flips": 0,
+      "correct_before": 14,
+      "correct_after": 14
+    },
+    "claim": {
+      "n": 9,
+      "flips": 0,
+      "correct_before": 8,
+      "correct_after": 8
+    },
+    "payment application": {
+      "n": 6,
+      "flips": 0,
+      "correct_before": 5,
+      "correct_after": 5
+    },
+    "payment certificate": {
+      "n": 15,
+      "flips": 0,
+      "correct_before": 7,
+      "correct_after": 7
+    },
+    "drawing": {
+      "n": 18,
+      "flips": 1,
+      "correct_before": 14,
+      "correct_after": 15
+    },
+    "specification": {
+      "n": 18,
+      "flips": 0,
+      "correct_before": 12,
+      "correct_after": 12
+    },
+    "schedule": {
+      "n": 19,
+      "flips": 0,
+      "correct_before": 19,
+      "correct_after": 19
+    },
+    "report": {
+      "n": 23,
+      "flips": 1,
+      "correct_before": 10,
+      "correct_after": 10
+    },
+    "correspondence": {
+      "n": 19,
+      "flips": 2,
+      "correct_before": 2,
+      "correct_after": 3
+    },
+    "BOQ": {
+      "n": 12,
+      "flips": 0,
+      "correct_before": 9,
+      "correct_after": 9
+    },
+    "contract": {
+      "n": 12,
+      "flips": 0,
+      "correct_before": 11,
+      "correct_after": 11
+    },
+    "method statement": {
+      "n": 14,
+      "flips": 0,
+      "correct_before": 14,
+      "correct_after": 14
+    },
+    "meeting minutes": {
+      "n": 14,
+      "flips": 0,
+      "correct_before": 14,
+      "correct_after": 14
+    },
+    "NCR": {
+      "n": 12,
+      "flips": 0,
+      "correct_before": 12,
+      "correct_after": 12
+    },
+    "inspection request": {
+      "n": 3,
+      "flips": 0,
+      "correct_before": 3,
+      "correct_after": 3
+    },
+    "site instruction": {
+      "n": 9,
+      "flips": 0,
+      "correct_before": 9,
+      "correct_after": 9
+    },
+    "register/log": {
+      "n": 15,
+      "flips": 0,
+      "correct_before": 5,
+      "correct_after": 5
+    },
+    "other": {
+      "n": 21,
+      "flips": 1,
+      "correct_before": 6,
+      "correct_after": 5
+    }
+  },
+  "gate": {
+    "passed": false,
+    "failing_passable_classes": [
+      "correspondence",
+      "drawing",
+      "other",
+      "report",
+      "submittal"
+    ],
+    "min_per_label": 12
+  },
+  "accuracy_before": 0.7371794871794872,
+  "accuracy_after": 0.7371794871794872
+}

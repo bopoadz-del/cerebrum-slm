@@ -1,0 +1,81 @@
+{
+  "rule": "per-(source project, class) cap; a pair with count >= limit is exhausted: no later sealed batch may add a row of that class from that project",
+  "limit": 3,
+  "project_key": "router.seal_sealed.project_key",
+  "count": "distinct documents (file_sha256) over every set registered in configs/router/sealed_eval.json v9_sealed, including this addendum",
+  "derived_by": "router.seal_addendum.exhausted_pairs (recomputed from data by tests/router/test_v9_web_f_addendum.py)",
+  "pairs": [
+    {
+      "project": "lwb-registry-867.s3.ca-central-1.amazonaws.com/Documents",
+      "label": "NCR",
+      "count": 3,
+      "status": "at_cap"
+    },
+    {
+      "project": "lwb-registry-867.s3.ca-central-1.amazonaws.com/Documents",
+      "label": "inspection request",
+      "count": 3,
+      "status": "at_cap"
+    },
+    {
+      "project": "majorprojects.planningportal.nsw.gov.au/prweb",
+      "label": "correspondence",
+      "count": 3,
+      "status": "at_cap"
+    },
+    {
+      "project": "ncsx.pppl.gov/NCSX_Construction",
+      "label": "NCR",
+      "count": 3,
+      "status": "at_cap"
+    },
+    {
+      "project": "ogunquit.gov/DocumentCenter",
+      "label": "meeting minutes",
+      "count": 3,
+      "status": "at_cap"
+    },
+    {
+      "project": "pub-amaranth.escribemeetings.com/filestream.ashx?DocumentId=6508",
+      "label": "payment certificate",
+      "count": 3,
+      "status": "at_cap"
+    },
+    {
+      "project": "tenders.go.ke/storage",
+      "label": "drawing",
+      "count": 3,
+      "status": "at_cap"
+    },
+    {
+      "project": "tenders.go.ke/storage",
+      "label": "specification",
+      "count": 3,
+      "status": "at_cap"
+    },
+    {
+      "project": "www.contractsfinder.service.gov.uk/Notice",
+      "label": "contract",
+      "count": 7,
+      "status": "over_cap_legacy"
+    },
+    {
+      "project": "www.epd.gov.hk/eia",
+      "label": "schedule",
+      "count": 11,
+      "status": "over_cap_legacy"
+    },
+    {
+      "project": "www.etenders.gov.za/home",
+      "label": "BOQ",
+      "count": 5,
+      "status": "over_cap_legacy"
+    },
+    {
+      "project": "www.nrc.gov/docs",
+      "label": "NCR",
+      "count": 3,
+      "status": "at_cap"
+    }
+  ]
+}
