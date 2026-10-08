@@ -1,0 +1,26 @@
+{
+  "note": "Scoring inputs (paths on the scoring box; no document text in the repo). Content sha256 per row is in sealed_predictions.jsonl.",
+  "owner_sheet": {
+    "name": "router_sealed_labelling_sheet_v9_web_f_S080-S119_LABELLED.xlsx (tab Label; owner_tick=True on all 40 rows)",
+    "sha256": "40ce054cbcf7d7a091c3e0829e09fb576ca5c9490a8cf55961d58119c8bdc0ce"
+  },
+  "candidates": {
+    "path": "router-web-f/score/candidates_web_f.jsonl (built from the internal web_f manifests, ids V9TH-S080..S119)",
+    "sha256": "cebd835ef2cbcfac825bba5b521aeef4d10b6a5ff97860e62fbc894d41ca4b3a",
+    "manifests_sha256": {
+      "web_f_manifest_internal.jsonl": "5a140749103e0962e6149c5c5fa9bb830efa1a7cda8d6938f2a6b4908b097f2f",
+      "web_f_addendum1_manifest_internal.jsonl": "11b6ebf86f5da06d283f044d3720648811dd590bca5a45225749b58c2e9e71ff"
+    },
+    "check": "every candidate PDF sha256 == manifest sha256 == sealed file_sha256; text_sha256 == sha256(text); sheet excerpt == start of the candidate text (40/40)"
+  },
+  "meta": {
+    "path": "router-web-f/box/meta_web_f.jsonl (sheet_id, content_sha256, isolation_key=first 8 hex of the source PDF sha256, source_url)",
+    "sha256": "66c78ce6df76e1424aac71f959e36a84955515f3c3671b0d5afde5e2f3bb0f04"
+  },
+  "sealed_labels_sha256": "9a333bfab4dcaab829c7ca695ae671ac544645dbe6915b38300eed62d4405e72",
+  "v6_prior_predictions": {
+    "docs/router/runs/v6/sealed/sealed_predictions.jsonl": "c255bdc758b61277689c631c891219f9192d8f80a1ae8374c353d46fa55ff5ef",
+    "docs/router/runs/v6/sealed/name_blind_predictions.jsonl": "d2f3204116c18da22ac7a19ee0b237f574758a1a3af19e29b79cacfa414b593d"
+  },
+  "scorer_env_helper": "/workspace/router-train/driver/common.py sha256 f7db971cd0f21caaf61f4b76d8698b498abe25171c21976916d3c4ad2ecc9f69 (load_env_file only; names, never values)"
+}

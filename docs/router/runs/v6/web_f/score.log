@@ -1,0 +1,14 @@
+main 92f8f0a verified (tree 3b22b5d); work tree = main + addendum; seal 9a333bfab4dc verified; 278 prior v6 rows, 0 shared with this set
+rows 34; joined 34/34; empty 0; rows with a blankable field 23; name_blind.py sha256 a235de3cbe52; candidates sha256 cebd835ef2cb
+main 92f8f0a verified (tree 3b22b5d); work tree = main + addendum; seal 9a333bfab4dc verified; 278 prior v6 rows, 0 shared with this set
+rows 34; joined 34/34; empty 0; rows with a blankable field 23; name_blind.py sha256 a235de3cbe52; candidates sha256 cebd835ef2cb
+env names loaded: 1; checkpoint=tinker://93552b55-3c20-5862-8bbf-2320fb04b236:train:0/sampler_weights/router-v6-qwen3.5-4b-lora-r16-epoch3; phase=score
+rows total 34; already sampled 0; to sample 34
+web_f_addendum: n=34 macro=0.9181818181818182 acc=0.8235 gate_v2=True router_passed=False
+DONE score
+main 92f8f0a verified (tree 3b22b5d); work tree = main + addendum; seal 9a333bfab4dc verified; 278 prior v6 rows, 0 shared with this set
+rows 34; joined 34/34; empty 0; rows with a blankable field 23; name_blind.py sha256 a235de3cbe52; candidates sha256 cebd835ef2cb
+env names loaded: 1; checkpoint=tinker://93552b55-3c20-5862-8bbf-2320fb04b236:train:0/sampler_weights/router-v6-qwen3.5-4b-lora-r16-epoch3; phase=blind
+rows total 34; already sampled 0; to sample 34
+web_f_addendum name-blind: flips=0 (passable 0, not passable 0) gate={'passed': True, 'failing_passable_classes': [], 'min_per_label': 12}
+DONE blind
