@@ -6,7 +6,8 @@ Checks every row in the train split that carries ``meta.aug``:
    (no ``meta.aug``) in the train split, and its own ``content_hash`` is the hash
    of its system, user, and assistant text.
 2. Group split: a child of a held-out parent never lands in train, no parent is
-   in both splits, and held-out rows carry no augmentation.
+   in both splits, and held-out rows carry no augmentation. Held-out means
+   every shard listed in data/held_out/shards.json.
 3. A paraphrase keeps the parent assistant turn byte for byte, the same
    pair_type and formula_id, and adds no number, unit, currency, clause,
    edition, brand, or site that the parent user turn does not carry.
@@ -34,6 +35,7 @@ from gates.records import RAW_ZIP, canonical_json, sha256_bytes
 
 TRAIN = Path("data/train/pairs.jsonl")
 HELD_OUT = Path("data/held_out/pairs.jsonl")
+SHARDS = Path("data/held_out/shards.json")
 OVERLAP_LIMIT = 0.8
 REFUSE_PARENT_TYPES = frozenset(
     {"REFUSAL_SCOPE", "REFUSAL_VS_VACUUM", "FORCING_THE_NUMBER", "bare_rate_not_answer", "why_formula_cannot_answer"}
@@ -123,21 +125,59 @@ def _rows(path: Path) -> list[tuple[int, dict]]:
     return rows
 
 
+def _held_shards(root: Path) -> list[tuple[str, list[tuple[int, dict]]]]:
+    """Every held-out shard as (path, rows). Rows carry meta.content_hash.
+
+    Shards come from data/held_out/shards.json when it exists (see
+    gates.held_out_shards); otherwise the original held-out split alone. A
+    shard row without a content_hash gets the hash of its chat-schema text.
+    """
+    if not (root / SHARDS).is_file():
+        return [(HELD_OUT.as_posix(), _rows(root / HELD_OUT))]
+    repo = Path(__file__).resolve().parents[2]
+    for entry in (repo, repo / "src"):
+        if str(entry) not in sys.path:
+            sys.path.append(str(entry))
+    from eval.shards import ShardError, load_shards, shard_record
+
+    try:
+        shards = load_shards(root, verify=False)
+    except ShardError:
+        # gates.held_out_shards reports a broken shard list.
+        return [(HELD_OUT.as_posix(), _rows(root / HELD_OUT))]
+    found: list[tuple[str, list[tuple[int, dict]]]] = []
+    for shard in shards:
+        rows = []
+        for lineno, row in _rows(root / shard.path):
+            meta = row.get("meta") if isinstance(row.get("meta"), dict) else {}
+            if not meta.get("content_hash"):
+                try:
+                    chat = shard_record(row, shard.record_schema, line=lineno, name=shard.name)
+                except ShardError:
+                    continue
+                meta = dict(meta)
+                meta["content_hash"] = pair_content_hash(chat["system"], chat["user"], chat["assistant"])
+                row = dict(row, meta=meta)
+            rows.append((lineno, row))
+        found.append((shard.path, rows))
+    return found
+
+
 def check_augmentation(root: Path) -> list[Finding]:
     findings: list[Finding] = []
     train = _rows(root / TRAIN)
-    held = _rows(root / HELD_OUT)
-    train_rel, held_rel = TRAIN.as_posix(), HELD_OUT.as_posix()
+    train_rel = TRAIN.as_posix()
 
     def fail(path: str, lineno: int, message: str) -> None:
         findings.append(Finding("augment", path, f"line {lineno}: {message}"))
 
     parents = {row["meta"]["content_hash"]: row for _, row in train if not row["meta"].get("aug")}
     held_hashes = set()
-    for lineno, row in held:
-        held_hashes.add(row["meta"]["content_hash"])
-        if row["meta"].get("aug") or row["meta"].get("parent_id"):
-            fail(held_rel, lineno, "held-out row carries augmentation")
+    for held_rel, held in _held_shards(root):
+        for lineno, row in held:
+            held_hashes.add(row["meta"]["content_hash"])
+            if row["meta"].get("aug") or row["meta"].get("parent_id"):
+                fail(held_rel, lineno, "held-out row carries augmentation")
     for digest in set(parents) & held_hashes:
         findings.append(Finding("augment", train_rel, f"parent {digest[:12]} is in both train and held-out"))
 
