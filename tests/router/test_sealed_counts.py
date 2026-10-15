@@ -161,10 +161,53 @@ def test_excerpt_field_is_never_passed_to_json_loads(tmp_path: Path, monkeypatch
     def wrapped(s, *args, **kwargs):
         if secret in s:
             raise AssertionError("excerpt text was passed to json.loads")
+        if not (isinstance(s, str) and s[:1] == '"' and s[-1:] == '"'):
+            raise AssertionError("parser saw more than the label field")
         return real_loads(s, *args, **kwargs)
 
     monkeypatch.setattr(sc.json, "loads", wrapped)
     assert sc._gold_rows(path) == ["drawing", "report"]
+
+
+def test_garbled_non_label_fields_still_count_and_empty_file_fails(
+    tmp_path: Path, repo_root: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Counts follow the label field alone. A broken tail must not change n, and an empty file fails."""
+    import router.sealed_counts as sc
+
+    labels = load_labels(repo_root / "configs" / "router" / "labels.json")
+    first, second, buried = labels[0], labels[1], labels[2]
+    sentinel = "GARBLED_NON_LABEL_FIELD"
+    path = tmp_path / "sealed_labels.jsonl"
+    rows = [
+        '{"label": ' + json.dumps(first) + ', "excerpt": ' + sentinel + " {{{",
+        '{"label": ' + json.dumps(first) + ', "source_url": @@@, "excerpt": "label": ' + json.dumps(buried) + "}",
+        '{"label": ' + json.dumps(second) + ", not-json",
+    ]
+    path.write_text("".join(row + "\n" for row in rows), encoding="utf-8")
+    for row in rows:
+        with pytest.raises(json.JSONDecodeError):
+            json.loads(row)
+    real_loads = sc.json.loads
+    seen: list[str] = []
+
+    def wrapped(s, *args, **kwargs):
+        if sentinel in s or buried in s:
+            raise AssertionError("non-label text was passed to json.loads")
+        seen.append(s)
+        return real_loads(s, *args, **kwargs)
+
+    monkeypatch.setattr(sc.json, "loads", wrapped)
+    v9 = {"sets": [{"name": "only", "sealed_labels": path.name, "rows": len(rows)}]}
+    counts = sealed_counts(tmp_path, v9, labels)
+    assert seen == [json.dumps(first), json.dumps(first), json.dumps(second)]
+    assert counts["rows"] == len(rows)
+    assert counts["per_label_n"][first] == 2
+    assert counts["per_label_n"][second] == 1
+    assert counts["per_label_n"][buried] == 0
+    path.write_text("", encoding="utf-8")
+    with pytest.raises(SealedCountError, match="empty"):
+        sealed_counts(tmp_path, v9, labels)
 
 
 def test_empty_sealed_labels_file_fails_loudly(tmp_path: Path) -> None:

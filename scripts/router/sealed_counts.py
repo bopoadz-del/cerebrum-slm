@@ -12,16 +12,15 @@ existing score, :func:`counts_for_scores`, which recounts the manifest for the
 scored sets and refuses a score whose per-label ``n`` disagrees.
 
 Reads only gold labels. Writes nothing. Never emits document text.
-The excerpt field is stripped from each raw line before JSON parse, so sealed
-excerpt text is never loaded on this training-side count path. An empty labels
-file fails loudly.
+Counting is a label-only stream: the ``label`` field is copied out and every
+other byte is discarded before any parse, so excerpt text and other raw row
+content never reach ``json.loads``. An empty labels file fails loudly.
 """
 
 from __future__ import annotations
 
 import argparse
 import json
-import re
 from pathlib import Path
 
 from router.labels import load_labels, load_sealed_config, repo_root
@@ -51,43 +50,104 @@ def select_sets(v9: dict, names: list[str] | None = None) -> list[dict]:
     return [item for item in sets if item["name"] in wanted]
 
 
-# JSON string value for one key; used only to cut the excerpt field out of a raw line
-# before any parse, so excerpt text never reaches json.loads on the training-side count path.
-_EXCERPT_FIELD = re.compile(
-    r',?\s*"excerpt"\s*:\s*"(?:\\.|[^"\\])*"\s*',
-)
+# The key token only. Matched as a sliding window so no other field is retained.
+_LABEL_KEY = '"label"'
 
 
-def _line_without_excerpt(line: str) -> str:
-    """Return the line with any excerpt field removed, before JSON parse.
+def _read_label_stream(path: Path) -> list[str]:
+    """Copy the ``label`` string out of each row. No other field is parsed.
 
-    Sealed never studied: the training-side count path must not load excerpt text,
-    even to discard it. Stripping the field from the raw bytes/string first means
-    json.loads never sees it.
+    The reader keeps a window the size of the key and the current label token.
+    Once the label value closes, the rest of the row is dropped and never
+    parsed, including when that tail is not valid JSON.
     """
-    cleaned = _EXCERPT_FIELD.sub("", line)
-    # tidy a trailing comma before } left by removing a final excerpt field
-    cleaned = re.sub(r",\s*}", "}", cleaned)
-    return cleaned
+    labels: list[str] = []
+    window = ""
+    token: list[str] = []
+    state = "scan"
+    escape = False
+    line_marked = False
+    saw_label = False
+
+    def reject() -> None:
+        raise SealedCountError(f"sealed row without a label in {path}")
+
+    def end_line() -> None:
+        nonlocal window, token, state, escape, line_marked, saw_label
+        if state == "string" or (line_marked and not saw_label):
+            reject()
+        window = ""
+        token = []
+        state = "scan"
+        escape = False
+        line_marked = False
+        saw_label = False
+
+    with path.open(encoding="utf-8") as handle:
+        while True:
+            char = handle.read(1)
+            if char == "":
+                if state in {"colon", "value", "string"} or (line_marked and not saw_label):
+                    reject()
+                break
+            if char == "\n":
+                end_line()
+                continue
+            if char not in " \t\r":
+                line_marked = True
+            if state == "skip":
+                continue
+            if state == "scan":
+                window = (window + char)[-len(_LABEL_KEY) :]
+                if window == _LABEL_KEY:
+                    state = "colon"
+                    window = ""
+                continue
+            if state == "colon":
+                if char in " \t\r":
+                    continue
+                if char == ":":
+                    state = "value"
+                    continue
+                state = "scan"
+                window = char
+                continue
+            if state == "value":
+                if char in " \t\r":
+                    continue
+                if char != '"':
+                    reject()
+                token = ['"']
+                escape = False
+                state = "string"
+                continue
+            token.append(char)
+            if escape:
+                escape = False
+                continue
+            if char == "\\":
+                escape = True
+                continue
+            if char != '"':
+                continue
+            try:
+                value = json.loads("".join(token))
+            except json.JSONDecodeError:
+                reject()
+            if not isinstance(value, str) or not value:
+                reject()
+            labels.append(value)
+            saw_label = True
+            token = []
+            state = "skip"
+    return labels
 
 
 def _gold_rows(path: Path) -> list[str]:
-    """Labels only from a sealed_labels.jsonl. Never loads the excerpt field."""
+    """Labels only from a sealed_labels.jsonl. Never parses a non-label field."""
     if not path.is_file():
         raise SealedCountError(f"sealed labels file is missing: {path}")
-    labels: list[str] = []
-    for line in path.read_text(encoding="utf-8").splitlines():
-        if not line.strip():
-            continue
-        row = json.loads(_line_without_excerpt(line))
-        if not isinstance(row, dict):
-            raise SealedCountError(f"sealed row is not an object in {path}")
-        if "excerpt" in row:
-            raise SealedCountError(f"excerpt field reached the parser in {path}")
-        label = row.get("label")
-        if not isinstance(label, str) or not label:
-            raise SealedCountError(f"sealed row without a label in {path}")
-        labels.append(label)
+    labels = _read_label_stream(path)
     if not labels:
         raise SealedCountError(f"sealed labels file is empty (no labels): {path}")
     return labels
