@@ -63,3 +63,71 @@ def test_zero_and_fraction_exponents() -> None:
     assert magnitude_token(0) == "<AMT:~1e0>"
     assert magnitude_token(0.56) == "<AMT:~1e-1>"
     assert magnitude_token(100) == "<AMT:~1e2>"
+
+
+def test_trailing_minor_unit_column_folds_into_the_amount() -> None:
+    out, count = bucket_amounts("balance <AMT:~1e7> 99 payable")
+    assert out == "balance <AMT:~1e7> payable"
+    assert count == 1
+    cent, n = bucket_amounts("note ¢ column <AMT:~1e6> 75 settled")
+    assert cent == "note ¢ column <AMT:~1e6> settled"
+    assert n == 1
+    raw, n2 = bucket_amounts("AED 8,765,432 75 only")
+    assert raw == "AED <AMT:~1e6> only"
+    assert n2 == 2
+
+
+def test_hundredths_tail_folds_into_the_preceding_amount() -> None:
+    out, count = bucket_amounts("net <AMT:~1e5> and 99/100 fils due")
+    assert out == "net <AMT:~1e5> due"
+    assert count == 1
+    raw, n = bucket_amounts("USD 3,250.00 and 05/100 cents flat")
+    assert raw == "USD <AMT:~1e3> flat"
+    assert n == 2
+    halala, n2 = bucket_amounts("fee <AMT:~1e4> and 25/100 halalas net")
+    assert halala == "fee <AMT:~1e4> net"
+    assert n2 == 1
+
+
+def test_slash_coded_references_become_one_token() -> None:
+    out, count = bucket_amounts(
+        "see QX/48/2031/77/6 and KLM/12/8704/63 and lot AB12/CD34."
+    )
+    assert out == "see <REF> and <REF> and lot <REF>."
+    assert count == 3
+    coded, n = bucket_amounts("ticket AB/4821 closed")
+    assert coded == "ticket <REF> closed"
+    assert n == 1
+    blanks, n2 = bucket_amounts("form __/8/120/44/3 attached")
+    assert blanks == "form <REF> attached"
+    assert n2 == 1
+
+
+def test_dates_percentages_fractions_and_existing_tokens_stay() -> None:
+    text = (
+        "On 05/07/2023 and 2023/07/05 and 12-Apr-17 VAT was 15% "
+        "of page 1/2. ratio <AMT:~1e3> 9.9 and part <AMT:~1e2> 9/12. "
+        "keep <AMT:~1e6> 99 beside ███."
+    )
+    out, count = bucket_amounts(text)
+    assert "05/07/2023" in out
+    assert "2023/07/05" in out
+    assert "12-Apr-17" in out
+    assert "15%" in out
+    assert "1/2" in out
+    assert "<AMT:~1e3> 9.9" in out
+    assert "<AMT:~1e2> 9/12" in out
+    assert "███" in out
+    assert "<AMT:~1e6>" in out
+    assert "99" not in out
+    assert count == 1
+
+
+def test_bucket_amounts_second_pass_is_idempotent() -> None:
+    text = "pay <AMT:~1e6> 99 and 45/100 fils under ZX/10/2030/44/1 today"
+    once, first = bucket_amounts(text)
+    twice, second = bucket_amounts(once)
+    assert once == "pay <AMT:~1e6> under <REF> today"
+    assert first == 3
+    assert twice == once
+    assert second == 0

@@ -5,9 +5,17 @@ same amount written in words, plus spaced thousands-groups and two-decimal
 leftovers. This pass replaces those with the same magnitude token.
 ``N`` is ``floor(log10(abs(value)))``; a zero amount is ``<AMT:~1e0>``.
 
-Dates, clause numbers, percentages, years and existing amount tokens stay.
-A single small cardinal ("one", "two") stays; a written amount is two or
-more number-words, a hyphenated compound, or a scale word (hundred and up).
+A one- or two-digit minor-unit column printed immediately after an amount
+token folds into that token. An ``and NN/100`` tail, with an optional
+minor-unit word, folds into the preceding amount. Slash-coded reference
+numbers (three or more segments, or an alphanumeric code) become one
+``<REF>`` token. The repo has no earlier reference-token form; name bars
+stay bars.
+
+Dates, clause numbers, percentages, years, page fractions and existing
+``<...>`` tokens stay. A single small cardinal ("one", "two") stays; a
+written amount is two or more number-words, a hyphenated compound, or a
+scale word (hundred and up).
 """
 
 from __future__ import annotations
@@ -99,6 +107,35 @@ _STRUCT_BEFORE = re.compile(
     r"(?i)(?:sub-?\s*)?clauses?|sections?|tables?|\bno\.?\s*$"
 )
 _YEAR = re.compile(r"(?:19|20)\d{2}")
+
+# Amount token already produced by this module or the generic redactor.
+_AMT_TOKEN = r"<AMT(?::~1e-?\d+)?>"
+_MINOR_UNIT = r"(?:fils|fills|cents?|halalas?)"
+_MONTH_WORD = (
+    r"(?:january|february|march|april|june|july|august|september|october|"
+    r"november|december|jan|feb|mar|apr|may|jun|jul|aug|sept|sep|oct|nov|dec)"
+)
+_MONTHS = frozenset(re.findall(r"[a-z]+", _MONTH_WORD))
+_HUNDREDTHS = re.compile(
+    rf"(?i)(?P<amt>{_AMT_TOKEN})"
+    rf"(?:[ \t\u00a0]*,[ \t\u00a0]*|[ \t\u00a0]+)"
+    rf"and[ \t\u00a0]+"
+    rf"(?:"
+    rf"\d{{1,2}}[ \t\u00a0]*/[ \t\u00a0]*100(?!\d)"
+    rf"(?:[ \t\u00a0]+{_MINOR_UNIT}\b)?"
+    rf"|{_MINOR_UNIT}\b[ \t\u00a0]+\d{{1,2}}[ \t\u00a0]*/[ \t\u00a0]*100(?!\d)"
+    rf")"
+)
+# 1-2 digits immediately after an amount. Not a longer number, a decimal,
+# a percentage, a slash fraction, or the start of a calendar date.
+_MINOR_AFTER = re.compile(
+    rf"(?P<gap>[ \t\u00a0]+)(?P<digits>\d{{1,2}})"
+    rf"(?![\w.])(?![ \t\u00a0]*%)(?![ \t\u00a0]*/)"
+    rf"(?![ \t\u00a0]*[-/]?[ \t\u00a0]*{_MONTH_WORD}\b)",
+    re.IGNORECASE,
+)
+_SLASH_RUN = re.compile(r"(?<![\w/<>])([A-Za-z0-9_]+(?:/[A-Za-z0-9_]+)+)(?![\w/])")
+_REF = "<REF>"
 
 
 def magnitude_token(value: float) -> str:
@@ -236,8 +273,69 @@ def _digit_spans(text: str) -> list[tuple[int, int, str]]:
     return spans
 
 
+def _minor_spans(text: str) -> list[tuple[int, int, str]]:
+    spans: list[tuple[int, int, str]] = []
+    for amt in re.finditer(_AMT_TOKEN, text):
+        tail = _MINOR_AFTER.match(text, amt.end())
+        if tail is None:
+            continue
+        spans.append((tail.start(), tail.end(), ""))
+    return spans
+
+
+def _hundredths_spans(text: str) -> list[tuple[int, int, str]]:
+    return [
+        (match.start(), match.end(), match.group("amt"))
+        for match in _HUNDREDTHS.finditer(text)
+    ]
+
+
+def _is_calendar_date(parts: list[str]) -> bool:
+    """Slash or month dates stay: dd/mm/yyyy, dd/mm/yy, yyyy/mm/dd, dd/Mon/yy."""
+    if any(part.lower() in _MONTHS for part in parts):
+        return True
+    if len(parts) != 3 or not all(part.isdigit() for part in parts):
+        return False
+    lengths = [len(part) for part in parts]
+    day_month_year = lengths[0] <= 2 and lengths[1] <= 2 and lengths[2] in (2, 4)
+    year_month_day = lengths[0] == 4 and lengths[1] <= 2 and lengths[2] <= 2
+    if day_month_year:
+        day, month = int(parts[0]), int(parts[1])
+    elif year_month_day:
+        day, month = int(parts[2]), int(parts[1])
+    else:
+        return False
+    return 1 <= day <= 31 and 1 <= month <= 12
+
+
+def _is_ref(parts: list[str]) -> bool:
+    """Three or more slash segments, or a shorter alphanumeric code. Not a date."""
+    if _is_calendar_date(parts):
+        return False
+    if not any(ch.isdigit() for part in parts for ch in part):
+        return False
+    if len(parts) >= 3:
+        return True
+    has_letter = any(ch.isalpha() for part in parts for ch in part)
+    return has_letter
+
+
+def _ref_spans(text: str) -> list[tuple[int, int, str]]:
+    spans: list[tuple[int, int, str]] = []
+    for match in _SLASH_RUN.finditer(text):
+        if _in_angle(text, match.start(), match.end()):
+            continue
+        parts = match.group(1).split("/")
+        if _is_ref(parts):
+            spans.append((match.start(), match.end(), _REF))
+    return spans
+
+
 def bucket_amounts(text: str) -> tuple[str, int]:
     """Return text with exact amounts replaced, and how many replacements were made."""
     text, word_count = _apply(text, _word_spans(text))
     text, digit_count = _apply(text, _digit_spans(text))
-    return text, word_count + digit_count
+    text, minor_count = _apply(text, _minor_spans(text))
+    text, tail_count = _apply(text, _hundredths_spans(text))
+    text, ref_count = _apply(text, _ref_spans(text))
+    return text, word_count + digit_count + minor_count + tail_count + ref_count
