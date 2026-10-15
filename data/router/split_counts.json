@@ -727,20 +727,19 @@
   "files_order_says": 14,
   "files_with_zero_rows": 0,
   "rows": 23,
-  "rows_in_train": 11,
+  "rows_in_train": 12,
   "rows_in_val": 0,
-  "rows_to_dev_box_side": 12,
+  "rows_to_dev_box_side": 11,
   "dev_rows_already_in_box_dev_manifest": 4,
   "dev_tags": {
-   "second_pass_disagree": 1,
    "other_train_cap_300": 4,
    "project_cap_10pct": 7
   },
   "by_label": {
    "payment application": {
     "rows": 4,
-    "train": 1,
-    "dev": 3
+    "train": 2,
+    "dev": 2
    },
    "claim": {
     "rows": 2,
@@ -792,14 +791,14 @@
    },
    "slm_src_db1749b11546": {
     "rows_produced": 1,
-    "rows_train": 0,
-    "rows_dev": 1,
+    "rows_train": 1,
+    "rows_dev": 0,
     "labels": [
      "payment application"
     ],
     "project_group_hash6": "db32c1",
-    "redaction_count": 68,
-    "second_pass_disagree": 1
+    "redaction_count": 70,
+    "second_pass_disagree": 0
    },
    "slm_src_ac6e38cd7b6f": {
     "rows_produced": 1,
@@ -930,8 +929,8 @@
   },
   "cap_rule": "10% per-class project cap on train rows after addition (project rows for the label <= floor(0.10 * label train rows)); overflow to the box-side non-sealed dev split, tagged, not trained",
   "other_cap_rule": "existing split_v2 other_cap_train 300 kept: new other rows go to dev, not train",
-  "second_pass": "rule-based structure check per row; a disagreeing row is not trained and is reported (not resolved)",
-  "redaction": "names of projects, companies, persons, contract/reference numbers and site addresses replaced by bars before any row is written; per-source counts only; entity lists stay off-repo",
+  "second_pass": "rule-based structure check per row (scripts/router/structure_check.py); a disagreeing row is not trained and is reported (not resolved). ORDERS_1940Z item 1: a payment certificate needs a filled certifier block (certifier name/signature, date, certified amount); a blank certifier block is a payment application. Before the rule change 22 agree / 1 disagree; after 23 agree / 0 disagree.",
+  "redaction": "names of projects, companies, persons, contract/reference numbers and site addresses replaced by bars before any row is written; per-source counts only; entity lists stay off-repo; name tails joined to a bar by an ampersand are redacted with the name (general rule, ORDERS_1940Z pass)",
   "project_identity": "project_id is the existing id (pr2_p01) or slmg_<first 12 hex of a salted sha256 of the project identity>; project_group_hash is that sha256; no identity in clear",
   "sealed_touched": false,
   "isolation": "0 sha, 0 project, 0 shared 12-gram, 0 first-300 overlap with every sealed set, held-out shard and pending sealed candidate",
@@ -964,7 +963,7 @@
    }
   },
   "new_split": {
-   "train": 1730,
+   "train": 1731,
    "val": 901,
    "train_counts": {
     "contract": 135,
@@ -980,7 +979,7 @@
     "RFI": 36,
     "specification": 66,
     "method statement": 27,
-    "payment application": 38,
+    "payment application": 39,
     "schedule": 55,
     "change request": 47,
     "claim": 27,
@@ -995,18 +994,21 @@
    "note": "v7 and v7b pair refs and class weights are a deterministic regeneration from train.jsonl (scripts/router/v7_pairs.py); data/router/relabel_v9.json train counts and data/router/v7/isolation.json follow train.jsonl",
    "v7_pairs": {
     "before": 980,
-    "after": 985,
+    "after": 986,
     "refs_removed": 132,
-    "refs_added": 137
+    "refs_added": 138
    },
    "v7b_pairs": {
     "before": 1163,
-    "after": 1169
+    "after": 1170
    },
    "v7_examples": {
     "before": 2699,
-    "after": 2715
+    "after": 2717
    }
+  },
+  "owner_rulings": {
+   "ORDERS_1940Z_item1": "slm_src_db1749b11546 trained as payment application (blank certifier block = not yet certified)"
   }
  }
 }

@@ -1,5 +1,5 @@
 {
-  "train_rows": 1730,
+  "train_rows": 1731,
   "content_gate_failed_by_label": {
     "BOQ": 4,
     "RFI": 9,
@@ -183,7 +183,7 @@
     "other": []
   },
   "contrastive": {
-    "rows": 801,
+    "rows": 802,
     "by_label": {
       "RFI": 27,
       "submittal": 30,
@@ -191,7 +191,7 @@
       "VO/CO": 48,
       "change request": 47,
       "claim": 27,
-      "payment application": 37,
+      "payment application": 38,
       "payment certificate": 12,
       "drawing": 48,
       "specification": 48,
@@ -278,7 +278,7 @@
       "payment application | claim": 10,
       "payment application | contract": 9,
       "payment application | correspondence": 9,
-      "payment application | report": 9,
+      "payment application | report": 10,
       "payment certificate | BOQ": 3,
       "payment certificate | VO/CO": 3,
       "payment certificate | register/log": 3,
@@ -333,7 +333,7 @@
       "payment application": {
         "application": 13,
         "certificate": 1,
-        "indeterminate": 23
+        "indeterminate": 24
       },
       "payment certificate": {
         "application": 1,
