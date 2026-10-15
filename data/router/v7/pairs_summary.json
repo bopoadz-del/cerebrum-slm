@@ -331,9 +331,9 @@
   "combined_form": {
     "field_state_by_teacher_label": {
       "payment application": {
-        "application": 13,
+        "application": 14,
         "certificate": 1,
-        "indeterminate": 24
+        "indeterminate": 23
       },
       "payment certificate": {
         "application": 1,
@@ -341,7 +341,7 @@
       }
     },
     "qualifying": {
-      "application": 13,
+      "application": 14,
       "certificate": 0
     },
     "families_with_both_sides": [],

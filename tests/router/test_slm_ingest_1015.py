@@ -96,6 +96,15 @@ def test_rows_carry_no_contact_details_or_identifiers(repo_root: Path) -> None:
             r"\b[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}\b",
             re.IGNORECASE,
         ),
+        # exact clock times (timestamps must be date-only)
+        re.compile(r"\b\d{1,2}:\d{2}(?::\d{2})?\s*(?:[APap][Mm])?\b"),
+        # exact grouped currency-like amounts (must be bucket tokens)
+        re.compile(r"(?<![\d])\d{1,3}(?:,\d{3})+(?:\.\d{2})?(?![\d])"),
+        # legal-entity suffix attached to a surviving capitalised name run
+        re.compile(
+            r"(?i)(?<![A-Za-z0-9])(?:[A-Z][A-Za-z'&.-]{1,}(?:\s+(?:&|and|[A-Z][A-Za-z'&.-]{1,})){0,5})"
+            r"\s*,?\s*(?:L\.?L\.?C\.?|Ltd\.?|Limited|Inc\.?|PLC|P\.?J\.?S\.?C\.?|FZE|FZ[- ]?LLC|Co\.|Company)\b"
+        ),
     )
     for row in _rows(repo_root, ADDS):
         for pattern in residue:
@@ -114,6 +123,11 @@ def test_neutral_ids_hashed_projects_v9_labels_and_floor(repo_root: Path) -> Non
     for row in rows:
         assert row["label"] in labels and float(row["confidence"]) >= floor
         assert row["provenance_scope"] == "internal only"
+        assert row["provenance_status"] == "owner-drive"
+        assert row["provenance"] == (
+            row["source_id"] + " p" + ",".join(str(p) for p in row["pages"])
+        )
+        assert isinstance(row["pages"], list) and row["pages"]
         assert row["second_pass"] == "agree"
         assert re.fullmatch(r"slm_src_[0-9a-f]{12}", row["source_id"])
         assert row["source_id"] == "slm_src_" + row["file_sha256"][:12]

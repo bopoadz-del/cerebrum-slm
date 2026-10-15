@@ -786,6 +786,17 @@
      "payment application"
     ],
     "project_group_hash6": "ec48c2",
+    "redaction_count": 145,
+    "second_pass_disagree": 0
+   },
+   "slm_src_1c69e427e2e2": {
+    "rows_produced": 1,
+    "rows_train": 1,
+    "rows_dev": 0,
+    "labels": [
+     "claim"
+    ],
+    "project_group_hash6": "ec48c2",
     "redaction_count": 74,
     "second_pass_disagree": 0
    },
@@ -797,51 +808,7 @@
      "payment application"
     ],
     "project_group_hash6": "db32c1",
-    "redaction_count": 70,
-    "second_pass_disagree": 0
-   },
-   "slm_src_ac6e38cd7b6f": {
-    "rows_produced": 1,
-    "rows_train": 0,
-    "rows_dev": 1,
-    "labels": [
-     "other"
-    ],
-    "project_group_hash6": "dfae30",
-    "redaction_count": 10,
-    "second_pass_disagree": 0
-   },
-   "slm_src_1b61fba31fd7": {
-    "rows_produced": 1,
-    "rows_train": 0,
-    "rows_dev": 1,
-    "labels": [
-     "other"
-    ],
-    "project_group_hash6": "dfae30",
-    "redaction_count": 22,
-    "second_pass_disagree": 0
-   },
-   "slm_src_1c69e427e2e2": {
-    "rows_produced": 1,
-    "rows_train": 1,
-    "rows_dev": 0,
-    "labels": [
-     "claim"
-    ],
-    "project_group_hash6": "ec48c2",
-    "redaction_count": 64,
-    "second_pass_disagree": 0
-   },
-   "slm_src_e1b00163450b": {
-    "rows_produced": 1,
-    "rows_train": 1,
-    "rows_dev": 0,
-    "labels": [
-     "register/log"
-    ],
-    "project_group_hash6": "285937",
-    "redaction_count": 8,
+    "redaction_count": 159,
     "second_pass_disagree": 0
    },
    "slm_src_c588b2cb8ade": {
@@ -853,8 +820,41 @@
      "schedule"
     ],
     "project_group_hash6": "28299c",
-    "redaction_count": 212,
+    "redaction_count": 289,
     "second_pass_disagree": 0
+   },
+   "slm_src_e1b00163450b": {
+    "rows_produced": 1,
+    "rows_train": 1,
+    "rows_dev": 0,
+    "labels": [
+     "register/log"
+    ],
+    "project_group_hash6": "285937",
+    "redaction_count": 9,
+    "second_pass_disagree": 0
+   },
+   "slm_src_ac6e38cd7b6f": {
+    "rows_produced": 1,
+    "rows_train": 0,
+    "rows_dev": 1,
+    "labels": [
+     "other"
+    ],
+    "project_group_hash6": "dfae30",
+    "redaction_count": 11,
+    "second_pass_disagree": 1
+   },
+   "slm_src_1b61fba31fd7": {
+    "rows_produced": 1,
+    "rows_train": 0,
+    "rows_dev": 1,
+    "labels": [
+     "other"
+    ],
+    "project_group_hash6": "dfae30",
+    "redaction_count": 22,
+    "second_pass_disagree": 1
    },
    "slm_src_e248324420ca": {
     "rows_produced": 3,
@@ -866,8 +866,8 @@
      "payment certificate"
     ],
     "project_group_hash6": "d3a908",
-    "redaction_count": 124,
-    "second_pass_disagree": 0
+    "redaction_count": 154,
+    "second_pass_disagree": 1
    },
    "slm_src_18b8f648c02a": {
     "rows_produced": 2,
@@ -878,7 +878,7 @@
      "payment certificate"
     ],
     "project_group_hash6": "d3a908",
-    "redaction_count": 123,
+    "redaction_count": 146,
     "second_pass_disagree": 0
    },
    "slm_src_e943b1e7181e": {
@@ -889,18 +889,7 @@
      "payment certificate"
     ],
     "project_group_hash6": "d3a908",
-    "redaction_count": 41,
-    "second_pass_disagree": 0
-   },
-   "slm_src_88522b915a3f": {
-    "rows_produced": 1,
-    "rows_train": 0,
-    "rows_dev": 1,
-    "labels": [
-     "payment application"
-    ],
-    "project_group_hash6": "d3a908",
-    "redaction_count": 87,
+    "redaction_count": 65,
     "second_pass_disagree": 0
    },
    "slm_src_ffd8f547482c": {
@@ -912,8 +901,8 @@
      "payment certificate"
     ],
     "project_group_hash6": "d3a908",
-    "redaction_count": 79,
-    "second_pass_disagree": 0
+    "redaction_count": 103,
+    "second_pass_disagree": 1
    },
    "slm_src_0114f08fad68": {
     "rows_produced": 1,
@@ -923,7 +912,18 @@
      "payment application"
     ],
     "project_group_hash6": "d3a908",
-    "redaction_count": 71,
+    "redaction_count": 100,
+    "second_pass_disagree": 0
+   },
+   "slm_src_88522b915a3f": {
+    "rows_produced": 1,
+    "rows_train": 0,
+    "rows_dev": 1,
+    "labels": [
+     "payment application"
+    ],
+    "project_group_hash6": "d3a908",
+    "redaction_count": 347,
     "second_pass_disagree": 0
    }
   },
@@ -1009,6 +1009,7 @@
   },
   "owner_rulings": {
    "ORDERS_1940Z_item1": "slm_src_db1749b11546 trained as payment application (blank certifier block = not yet certified)"
-  }
+  },
+  "rework": "ORDERS_2025Z: generic redactor tightened (legal-entity, venue, timestamp->date-only, amounts/refs tokenised); provenance owner-drive slm_src+page; fitted checker rules removed; PR text counts corrected"
  }
 }

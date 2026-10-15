@@ -12,14 +12,16 @@ but whose certifier block is blank (empty, underscores, or straight into the nex
 certified yet and is a payment application.
 
 Known limit: the date is read at document level, because dates inside a signature row are often redacted or
-cut off in a page excerpt.
+cut off in a page excerpt. Amount tokens produced by the generic redactor (`<AMT>` / `<AMT:~1eN>`) count as
+amounts. Batch-fitted label rules (e.g. lesson-number or insurance-whomsoever shortcuts) are not used; only
+general structural patterns plus the certifier-block rule.
 """
 
 from __future__ import annotations
 
 import re
 
-AMT = r"\d{1,3}(?:,\d{3})+(?:\.\d{2})?"
+AMT = r"\d{1,3}(?:,\d{3})+(?:\.\d{2})?|<AMT(?::~1e-?\d+)?>"
 _MONTHS = (
     "January|February|March|April|May|June|July|August|September|October|November|December"
 )
@@ -127,10 +129,6 @@ def rules(text: str) -> list[str]:
         r"\bactivity\b|\bstart\b|\bfinish\b|programme|duration", t, 3
     ):
         out.append("schedule")
-    if _has(r"insurance|policy", t, 2) and _has(r"certificate|we confirm|whomsoever", t):
-        out.append("other")
-    if _has(r"\blesson\s*\d+", t, 2):
-        out.append("other")
     return out
 
 
