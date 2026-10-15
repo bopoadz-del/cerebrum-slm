@@ -1,8 +1,8 @@
 {
-  "v7_examples": 2699,
-  "base_train_rows": 1719,
-  "pair_rows": 980,
-  "unique_texts": 1672,
+  "v7_examples": 2715,
+  "base_train_rows": 1730,
+  "pair_rows": 985,
+  "unique_texts": 1683,
   "pair_texts_are_base_train_texts": true,
   "shingle_note": "shared 12-word shingles are reported as the largest share of a sealed text's shingles found in one training text. They come from the base train rows, which v6 trained on unchanged; pairs reuse those texts, so v7 adds no new text and no new overlap (shingle12_rows_v7 == shingle12_rows_base_train).",
   "method": "file_sha256/doc_id vs sealed file sha; sha256(text); 12-word shingles; first 300 chars; project id. Sealed text = router.content.content_text(candidate) from the box candidate files (sha-checked).",

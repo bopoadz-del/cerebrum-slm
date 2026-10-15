@@ -720,5 +720,293 @@
     "other": 76
    }
   }
+ },
+ "slm_ingest_1015": {
+  "order": "ORDERS_1838Z_SLM (owner Drive upload 2026-10-15)",
+  "files": 13,
+  "files_order_says": 14,
+  "files_with_zero_rows": 0,
+  "rows": 23,
+  "rows_in_train": 11,
+  "rows_in_val": 0,
+  "rows_to_dev_box_side": 12,
+  "dev_rows_already_in_box_dev_manifest": 4,
+  "dev_tags": {
+   "second_pass_disagree": 1,
+   "other_train_cap_300": 4,
+   "project_cap_10pct": 7
+  },
+  "by_label": {
+   "payment application": {
+    "rows": 4,
+    "train": 1,
+    "dev": 3
+   },
+   "claim": {
+    "rows": 2,
+    "train": 2,
+    "dev": 0
+   },
+   "schedule": {
+    "rows": 6,
+    "train": 5,
+    "dev": 1
+   },
+   "register/log": {
+    "rows": 1,
+    "train": 1,
+    "dev": 0
+   },
+   "other": {
+    "rows": 4,
+    "train": 0,
+    "dev": 4
+   },
+   "payment certificate": {
+    "rows": 4,
+    "train": 0,
+    "dev": 4
+   },
+   "correspondence": {
+    "rows": 1,
+    "train": 1,
+    "dev": 0
+   },
+   "contract": {
+    "rows": 1,
+    "train": 1,
+    "dev": 0
+   }
+  },
+  "by_source": {
+   "slm_src_b9ab6fab5f3d": {
+    "rows_produced": 1,
+    "rows_train": 1,
+    "rows_dev": 0,
+    "labels": [
+     "payment application"
+    ],
+    "project_group_hash6": "ec48c2",
+    "redaction_count": 74,
+    "second_pass_disagree": 0
+   },
+   "slm_src_db1749b11546": {
+    "rows_produced": 1,
+    "rows_train": 0,
+    "rows_dev": 1,
+    "labels": [
+     "payment application"
+    ],
+    "project_group_hash6": "db32c1",
+    "redaction_count": 68,
+    "second_pass_disagree": 1
+   },
+   "slm_src_ac6e38cd7b6f": {
+    "rows_produced": 1,
+    "rows_train": 0,
+    "rows_dev": 1,
+    "labels": [
+     "other"
+    ],
+    "project_group_hash6": "dfae30",
+    "redaction_count": 10,
+    "second_pass_disagree": 0
+   },
+   "slm_src_1b61fba31fd7": {
+    "rows_produced": 1,
+    "rows_train": 0,
+    "rows_dev": 1,
+    "labels": [
+     "other"
+    ],
+    "project_group_hash6": "dfae30",
+    "redaction_count": 22,
+    "second_pass_disagree": 0
+   },
+   "slm_src_1c69e427e2e2": {
+    "rows_produced": 1,
+    "rows_train": 1,
+    "rows_dev": 0,
+    "labels": [
+     "claim"
+    ],
+    "project_group_hash6": "ec48c2",
+    "redaction_count": 64,
+    "second_pass_disagree": 0
+   },
+   "slm_src_e1b00163450b": {
+    "rows_produced": 1,
+    "rows_train": 1,
+    "rows_dev": 0,
+    "labels": [
+     "register/log"
+    ],
+    "project_group_hash6": "285937",
+    "redaction_count": 8,
+    "second_pass_disagree": 0
+   },
+   "slm_src_c588b2cb8ade": {
+    "rows_produced": 7,
+    "rows_train": 6,
+    "rows_dev": 1,
+    "labels": [
+     "claim",
+     "schedule"
+    ],
+    "project_group_hash6": "28299c",
+    "redaction_count": 212,
+    "second_pass_disagree": 0
+   },
+   "slm_src_e248324420ca": {
+    "rows_produced": 3,
+    "rows_train": 1,
+    "rows_dev": 2,
+    "labels": [
+     "contract",
+     "other",
+     "payment certificate"
+    ],
+    "project_group_hash6": "d3a908",
+    "redaction_count": 124,
+    "second_pass_disagree": 0
+   },
+   "slm_src_18b8f648c02a": {
+    "rows_produced": 2,
+    "rows_train": 1,
+    "rows_dev": 1,
+    "labels": [
+     "correspondence",
+     "payment certificate"
+    ],
+    "project_group_hash6": "d3a908",
+    "redaction_count": 123,
+    "second_pass_disagree": 0
+   },
+   "slm_src_e943b1e7181e": {
+    "rows_produced": 1,
+    "rows_train": 0,
+    "rows_dev": 1,
+    "labels": [
+     "payment certificate"
+    ],
+    "project_group_hash6": "d3a908",
+    "redaction_count": 41,
+    "second_pass_disagree": 0
+   },
+   "slm_src_88522b915a3f": {
+    "rows_produced": 1,
+    "rows_train": 0,
+    "rows_dev": 1,
+    "labels": [
+     "payment application"
+    ],
+    "project_group_hash6": "d3a908",
+    "redaction_count": 87,
+    "second_pass_disagree": 0
+   },
+   "slm_src_ffd8f547482c": {
+    "rows_produced": 2,
+    "rows_train": 0,
+    "rows_dev": 2,
+    "labels": [
+     "other",
+     "payment certificate"
+    ],
+    "project_group_hash6": "d3a908",
+    "redaction_count": 79,
+    "second_pass_disagree": 0
+   },
+   "slm_src_0114f08fad68": {
+    "rows_produced": 1,
+    "rows_train": 0,
+    "rows_dev": 1,
+    "labels": [
+     "payment application"
+    ],
+    "project_group_hash6": "d3a908",
+    "redaction_count": 71,
+    "second_pass_disagree": 0
+   }
+  },
+  "cap_rule": "10% per-class project cap on train rows after addition (project rows for the label <= floor(0.10 * label train rows)); overflow to the box-side non-sealed dev split, tagged, not trained",
+  "other_cap_rule": "existing split_v2 other_cap_train 300 kept: new other rows go to dev, not train",
+  "second_pass": "rule-based structure check per row; a disagreeing row is not trained and is reported (not resolved)",
+  "redaction": "names of projects, companies, persons, contract/reference numbers and site addresses replaced by bars before any row is written; per-source counts only; entity lists stay off-repo",
+  "project_identity": "project_id is the existing id (pr2_p01) or slmg_<first 12 hex of a salted sha256 of the project identity>; project_group_hash is that sha256; no identity in clear",
+  "sealed_touched": false,
+  "isolation": "0 sha, 0 project, 0 shared 12-gram, 0 first-300 overlap with every sealed set, held-out shard and pending sealed candidate",
+  "previous_split": {
+   "train": 1719,
+   "val": 901,
+   "train_counts": {
+    "contract": 134,
+    "report": 123,
+    "drawing": 400,
+    "other": 300,
+    "transmittal": 12,
+    "inspection request": 48,
+    "correspondence": 80,
+    "register/log": 43,
+    "site instruction": 48,
+    "payment certificate": 12,
+    "RFI": 36,
+    "specification": 66,
+    "method statement": 27,
+    "payment application": 37,
+    "schedule": 50,
+    "change request": 47,
+    "claim": 25,
+    "meeting minutes": 58,
+    "NCR": 18,
+    "VO/CO": 48,
+    "BOQ": 76,
+    "submittal": 31
+   }
+  },
+  "new_split": {
+   "train": 1730,
+   "val": 901,
+   "train_counts": {
+    "contract": 135,
+    "report": 123,
+    "drawing": 400,
+    "other": 300,
+    "transmittal": 12,
+    "inspection request": 48,
+    "correspondence": 81,
+    "register/log": 44,
+    "site instruction": 48,
+    "payment certificate": 12,
+    "RFI": 36,
+    "specification": 66,
+    "method statement": 27,
+    "payment application": 38,
+    "schedule": 55,
+    "change request": 47,
+    "claim": 27,
+    "meeting minutes": 58,
+    "NCR": 18,
+    "VO/CO": 48,
+    "BOQ": 76,
+    "submittal": 31
+   }
+  },
+  "derived_regenerated": {
+   "note": "v7 and v7b pair refs and class weights are a deterministic regeneration from train.jsonl (scripts/router/v7_pairs.py); data/router/relabel_v9.json train counts and data/router/v7/isolation.json follow train.jsonl",
+   "v7_pairs": {
+    "before": 980,
+    "after": 985,
+    "refs_removed": 132,
+    "refs_added": 137
+   },
+   "v7b_pairs": {
+    "before": 1163,
+    "after": 1169
+   },
+   "v7_examples": {
+    "before": 2699,
+    "after": 2715
+   }
+  }
  }
 }
