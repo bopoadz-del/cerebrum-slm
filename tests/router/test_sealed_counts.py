@@ -1,16 +1,20 @@
-"""Sealed per-label n is counted once, from the sealed manifest, for the sets actually scored.
+"""Sealed per-label n is counted once, from the seal-time label manifest, for the sets actually scored.
 
 Regression: a report quoted per-label n from a stored count table that covered every
 registered set, next to a score made on a subset of those sets. The table is gone; the
 count comes from router.sealed_counts, and a score whose n disagrees with the manifest
-for its own sets is refused. No counts or label names are written into these tests.
+for its own sets is refused. The counter reads label manifests only (neutral row id and
+label; header row count and sealed-file sha256). It does not open a sealed labels file.
+No counts or label names are written into these tests.
 """
 
+import hashlib
 import json
 from pathlib import Path
 
 import pytest
 from router.labels import load_labels, load_sealed_config
+from router.seal_sealed import manifest_paths, seal_sheet, write_label_manifest
 from router.sealed_counts import (
     SealedCountError,
     counts_for_scores,
@@ -50,8 +54,10 @@ def tiny(tmp_path: Path, repo_root: Path):
     labels = load_labels(repo_root / "configs" / "router" / "labels.json")[:3]
     first = [labels[0], labels[1], labels[0]]
     second = [labels[1], labels[2], labels[2], labels[2]]
-    _write_jsonl(tmp_path / "a" / "sealed_labels.jsonl", [{"label": x} for x in first])
-    _write_jsonl(tmp_path / "b" / "sealed_labels.jsonl", [{"label": x} for x in second])
+    _write_jsonl(tmp_path / "a" / "sealed_labels.jsonl", [{"label": x, "excerpt": "sealed-excerpt"} for x in first])
+    _write_jsonl(tmp_path / "b" / "sealed_labels.jsonl", [{"label": x, "excerpt": "sealed-excerpt"} for x in second])
+    write_label_manifest(tmp_path / "a" / "sealed_labels.jsonl")
+    write_label_manifest(tmp_path / "b" / "sealed_labels.jsonl")
     v9 = {
         "sets": [
             {"name": "set_a", "sealed_labels": "a/sealed_labels.jsonl", "rows": len(first)},
@@ -80,6 +86,17 @@ def test_counts_follow_the_scored_sets_not_every_registered_set(tiny) -> None:
     gate = evaluate_sealed_gate_v8(first, list(first), labels, majority_class_fail=True)
     assert subset["per_label_n"] == {row["label"]: row["n"] for row in gate["per_label"]}
     assert subset["below_min"] == [{"label": k, "n": v} for k, v in subset["per_label_n"].items() if v < MIN_SEALED_PER_LABEL]
+
+
+def test_empty_score_per_label_list_is_refused(tiny) -> None:
+    root, v9, labels, first, _second = tiny
+    score = _score({"set_a": first}, labels)
+    score["sets"]["set_a"]["per_label"] = []
+    with pytest.raises(SealedCountError, match="empty"):
+        counts_for_scores(root, v9, labels, score)
+    score["sets"]["set_a"].pop("per_label")
+    with pytest.raises(SealedCountError, match="empty"):
+        counts_for_scores(root, v9, labels, score)
 
 
 def test_score_on_a_subset_reconciles_and_a_full_manifest_table_is_refused(tiny) -> None:
@@ -145,79 +162,170 @@ def test_cli_prints_counts_only(tiny, capsys) -> None:
     assert main(["--root", str(root), "--sets", "nope"]) == 2
 
 
-def test_excerpt_field_is_never_passed_to_json_loads(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    """Sealed never studied: counting rows must not load excerpt text at all."""
-    import router.sealed_counts as sc
-
-    path = tmp_path / "sealed_labels.jsonl"
-    secret = "SECRET_EXCERPT_MUST_NOT_REACH_JSON_LOADS"
-    path.write_text(
-        json.dumps({"label": "drawing", "excerpt": secret, "file_sha256": "a" * 64}) + "\n"
-        + json.dumps({"label": "report", "excerpt": secret}) + "\n",
-        encoding="utf-8",
-    )
-    real_loads = sc.json.loads
-
-    def wrapped(s, *args, **kwargs):
-        if secret in s:
-            raise AssertionError("excerpt text was passed to json.loads")
-        if not (isinstance(s, str) and s[:1] == '"' and s[-1:] == '"'):
-            raise AssertionError("parser saw more than the label field")
-        return real_loads(s, *args, **kwargs)
-
-    monkeypatch.setattr(sc.json, "loads", wrapped)
-    assert sc._gold_rows(path) == ["drawing", "report"]
-
-
-def test_garbled_non_label_fields_still_count_and_empty_file_fails(
-    tmp_path: Path, repo_root: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    """Counts follow the label field alone. A broken tail must not change n, and an empty file fails."""
-    import router.sealed_counts as sc
+def test_counter_opens_only_label_manifests_not_excerpt_files(tmp_path: Path, repo_root: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Counting must not open a sealed labels file that carries an excerpt field."""
+    import builtins
 
     labels = load_labels(repo_root / "configs" / "router" / "labels.json")
-    first, second, buried = labels[0], labels[1], labels[2]
-    sentinel = "GARBLED_NON_LABEL_FIELD"
-    path = tmp_path / "sealed_labels.jsonl"
-    rows = [
-        '{"label": ' + json.dumps(first) + ', "excerpt": ' + sentinel + " {{{",
-        '{"label": ' + json.dumps(first) + ', "source_url": @@@, "excerpt": "label": ' + json.dumps(buried) + "}",
-        '{"label": ' + json.dumps(second) + ", not-json",
-    ]
-    path.write_text("".join(row + "\n" for row in rows), encoding="utf-8")
-    for row in rows:
-        with pytest.raises(json.JSONDecodeError):
-            json.loads(row)
-    real_loads = sc.json.loads
-    seen: list[str] = []
+    sealed = tmp_path / "set" / "sealed_labels.jsonl"
+    sentinel = "EXCERPT_SENTINEL_MUST_NOT_BE_OPENED"
+    _write_jsonl(sealed, [{"label": labels[0], "excerpt": sentinel, "sheet_id": "S-1"}])
+    write_label_manifest(sealed)
+    records_path, header_path = manifest_paths(sealed)
+    allowed = {records_path.resolve(), header_path.resolve()}
+    real_open = builtins.open
+    for path in allowed:
+        blob = real_open(path, "rb").read()
+        assert b"excerpt" not in blob
+        assert sentinel.encode() not in blob
+    opened: list[Path] = []
 
-    def wrapped(s, *args, **kwargs):
-        if sentinel in s or buried in s:
-            raise AssertionError("non-label text was passed to json.loads")
-        seen.append(s)
-        return real_loads(s, *args, **kwargs)
+    def path_open(self, *args, **kwargs):
+        opened.append(Path(self))
+        return real_path_open(self, *args, **kwargs)
 
-    monkeypatch.setattr(sc.json, "loads", wrapped)
-    v9 = {"sets": [{"name": "only", "sealed_labels": path.name, "rows": len(rows)}]}
+    real_path_open = Path.open
+
+    def builtin_open(file, *args, **kwargs):
+        opened.append(Path(file))
+        return real_open(file, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "open", path_open)
+    monkeypatch.setattr(builtins, "open", builtin_open)
+    v9 = {"sets": [{"name": "only", "sealed_labels": "set/sealed_labels.jsonl", "rows": 1}]}
     counts = sealed_counts(tmp_path, v9, labels)
-    assert seen == [json.dumps(first), json.dumps(first), json.dumps(second)]
-    assert counts["rows"] == len(rows)
-    assert counts["per_label_n"][first] == 2
-    assert counts["per_label_n"][second] == 1
-    assert counts["per_label_n"][buried] == 0
-    path.write_text("", encoding="utf-8")
+    assert counts["rows"] == 1
+    assert counts["per_label_n"][labels[0]] == 1
+    assert opened
+    seen = {path.resolve() for path in opened}
+    assert seen <= allowed
+    assert sealed.resolve() not in seen
+    for path in seen:
+        blob = real_open(path, "rb").read()
+        assert b"excerpt" not in blob
+        assert sentinel.encode() not in blob
+
+
+def test_missing_manifest_fails_loudly(tmp_path: Path, repo_root: Path) -> None:
+    labels = load_labels(repo_root / "configs" / "router" / "labels.json")
+    sealed = tmp_path / "set" / "sealed_labels.jsonl"
+    _write_jsonl(sealed, [{"label": labels[0], "excerpt": "present"}])
+    v9 = {"sets": [{"name": "only", "sealed_labels": "set/sealed_labels.jsonl", "rows": 1}]}
+    with pytest.raises(SealedCountError, match="missing"):
+        sealed_counts(tmp_path, v9, labels)
+    write_label_manifest(sealed)
+    records_path, header_path = manifest_paths(sealed)
+    header_path.unlink()
+    with pytest.raises(SealedCountError, match="missing"):
+        sealed_counts(tmp_path, v9, labels)
+    write_label_manifest(sealed)
+    records_path.unlink()
+    with pytest.raises(SealedCountError, match="missing"):
+        sealed_counts(tmp_path, v9, labels)
+
+
+def test_empty_manifest_fails_loudly(tmp_path: Path, repo_root: Path) -> None:
+    labels = load_labels(repo_root / "configs" / "router" / "labels.json")
+    sealed = tmp_path / "set" / "sealed_labels.jsonl"
+    _write_jsonl(sealed, [{"label": labels[0], "excerpt": "present"}])
+    write_label_manifest(sealed)
+    records_path, header_path = manifest_paths(sealed)
+    v9 = {"sets": [{"name": "only", "sealed_labels": "set/sealed_labels.jsonl", "rows": 1}]}
+    records_path.write_text("", encoding="utf-8")
+    with pytest.raises(SealedCountError, match="empty"):
+        sealed_counts(tmp_path, v9, labels)
+    write_label_manifest(sealed)
+    records_path.write_text("\n\n", encoding="utf-8")
+    with pytest.raises(SealedCountError, match="empty"):
+        sealed_counts(tmp_path, v9, labels)
+    write_label_manifest(sealed)
+    header_path.write_text("", encoding="utf-8")
     with pytest.raises(SealedCountError, match="empty"):
         sealed_counts(tmp_path, v9, labels)
 
 
-def test_empty_sealed_labels_file_fails_loudly(tmp_path: Path) -> None:
-    """An empty per-label list must not be skipped silently."""
-    from router.sealed_counts import _gold_rows
+def test_manifest_row_count_mismatch_fails_loudly(tmp_path: Path, repo_root: Path) -> None:
+    labels = load_labels(repo_root / "configs" / "router" / "labels.json")
+    rows = [labels[0], labels[1], labels[0]]
+    sealed = tmp_path / "set" / "sealed_labels.jsonl"
+    _write_jsonl(sealed, [{"label": label, "excerpt": "present"} for label in rows])
+    write_label_manifest(sealed)
+    v9 = {"sets": [{"name": "only", "sealed_labels": "set/sealed_labels.jsonl", "rows": len(rows) + 1}]}
+    with pytest.raises(SealedCountError, match="disagrees"):
+        sealed_counts(tmp_path, v9, labels)
+    v9["sets"][0]["rows"] = len(rows)
+    _records_path, header_path = manifest_paths(sealed)
+    header = json.loads(header_path.read_text(encoding="utf-8"))
+    header["rows"] = len(rows) - 1
+    header_path.write_text(json.dumps(header), encoding="utf-8")
+    with pytest.raises(SealedCountError, match="disagrees"):
+        sealed_counts(tmp_path, v9, labels)
 
-    path = tmp_path / "sealed_labels.jsonl"
-    path.write_text("", encoding="utf-8")
-    with pytest.raises(SealedCountError, match="empty"):
-        _gold_rows(path)
-    path.write_text("\n\n", encoding="utf-8")
-    with pytest.raises(SealedCountError, match="empty"):
-        _gold_rows(path)
+
+def test_seal_sheet_writes_label_manifest_without_touching_sealed_bytes(tmp_path: Path, repo_root: Path) -> None:
+    labels = load_labels(repo_root / "configs" / "router" / "labels.json")
+    owner = labels[1]
+    columns = ["sheet_id", "excerpt", "source_path", "file_sha256", "excluded_from_eval", *labels, "unsure"]
+    values = {column: "" for column in columns}
+    values.update(
+        {
+            "sheet_id": "S1",
+            "excerpt": "EXCERPT_SENTINEL_NOT_IN_MANIFEST",
+            "source_path": "Master Folder/pack/note.pdf",
+            "file_sha256": "a" * 64,
+            owner: "x",
+        }
+    )
+    sheet = tmp_path / "sheet.csv"
+    sheet.write_text(",".join(columns) + "\n" + ",".join(values[column] for column in columns) + "\n", encoding="utf-8")
+    out = tmp_path / "sealed"
+    seal_sheet(sheet, out, labels)
+    sealed_path = out / "sealed_labels.jsonl"
+    raw = sealed_path.read_bytes()
+    assert b"EXCERPT_SENTINEL_NOT_IN_MANIFEST" in raw
+    records_path, header_path = manifest_paths(sealed_path)
+    assert sealed_path.read_bytes() == raw
+    assert b"excerpt" not in records_path.read_bytes()
+    assert b"EXCERPT_SENTINEL_NOT_IN_MANIFEST" not in records_path.read_bytes()
+    assert b"sheet_id" not in records_path.read_bytes()
+    assert b"excerpt" not in header_path.read_bytes()
+    header = json.loads(header_path.read_text(encoding="utf-8"))
+    assert set(header) == {"rows", "sealed_labels_sha256"}
+    assert header["rows"] == 1
+    assert header["sealed_labels_sha256"] == hashlib.sha256(raw).hexdigest()
+    assert json.loads(records_path.read_text(encoding="utf-8")) == {"id": 1, "label": owner}
+    for path in (records_path, header_path):
+        sidecar = path.with_name(path.name + ".sha256").read_text(encoding="utf-8")
+        assert sidecar.split()[0] == hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def test_committed_label_manifests_match_sealed_sets(repo_root: Path) -> None:
+    """Every sealed labels file has a label-only manifest. Sealed bytes stay the recorded hash."""
+    config = load_sealed_config(repo_root / "configs" / "router" / "sealed_eval.json")
+    base = repo_root / config["sealed_dir"]
+    sealed_files = sorted(base.rglob("sealed_labels.jsonl"))
+    assert sealed_files
+    recorded = {item["sealed_labels"]: item["rows"] for item in config["v9_sealed"]["sets"]}
+    for sealed in sealed_files:
+        raw = sealed.read_bytes()
+        digest = hashlib.sha256(raw).hexdigest()
+        sidecar = (sealed.parent / "sealed_labels.jsonl.sha256").read_text(encoding="utf-8")
+        assert sidecar.split()[0] == digest
+        records_path, header_path = manifest_paths(sealed)
+        assert records_path.is_file() and header_path.is_file()
+        header = json.loads(header_path.read_text(encoding="utf-8"))
+        records = [json.loads(line) for line in records_path.read_text(encoding="utf-8").splitlines() if line.strip()]
+        assert set(header) == {"rows", "sealed_labels_sha256"}
+        assert header["sealed_labels_sha256"] == digest
+        assert header["rows"] == len(records)
+        assert [record["id"] for record in records] == list(range(1, len(records) + 1))
+        assert all(set(record) == {"id", "label"} for record in records)
+        sealed_rows = [json.loads(line) for line in raw.decode("utf-8").splitlines() if line.strip()]
+        assert [record["label"] for record in records] == [row["label"] for row in sealed_rows]
+        rel = sealed.relative_to(repo_root).as_posix()
+        if rel in recorded:
+            assert header["rows"] == recorded[rel]
+        for path in (records_path, header_path):
+            seal = path.with_name(path.name + ".sha256").read_text(encoding="utf-8")
+            assert seal.split()[0] == hashlib.sha256(path.read_bytes()).hexdigest()
+            assert b"excerpt" not in path.read_bytes()

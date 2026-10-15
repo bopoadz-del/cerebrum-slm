@@ -1,20 +1,21 @@
-"""Sealed per-label counts, computed once from the sealed manifest.
+"""Sealed per-label counts, computed once from the seal-time label manifest.
 
-The sealed manifest is ``configs/router/sealed_eval.json`` -> ``v9_sealed.sets``:
-an ordered list of ``sealed_labels.jsonl`` files. Per-label ``n`` is counted
-here, from those files, for exactly the sets that were scored. No count table
-is stored in config, so a report can never quote counts of a different set
-selection than the one its score was computed on.
+The sealed manifest is ``configs/router/sealed_eval.json`` -> ``v9_sealed.sets``.
+Per-label ``n`` is counted here for exactly the sets that were scored. No count
+table is stored in config, so a report can never quote counts of a different
+set selection than the one its score was computed on.
 
 Every consumer (the ``router_passed`` n >= ``MIN_SEALED_PER_LABEL`` rule,
 reports, analysis notes) takes counts from :func:`sealed_counts` or, for an
 existing score, :func:`counts_for_scores`, which recounts the manifest for the
-scored sets and refuses a score whose per-label ``n`` disagrees.
+scored sets and refuses a score whose per-label ``n`` disagrees. An empty
+per-label list on a score view is refused.
 
-Reads only gold labels. Writes nothing. Never emits document text.
-Counting is a label-only stream: the ``label`` field is copied out and every
-other byte is discarded before any parse, so excerpt text and other raw row
-content never reach ``json.loads``. An empty labels file fails loudly.
+Reads only the seal-time label manifests (neutral row id and label, plus a
+header sidecar with the row count and the sha256 of the sealed labels file).
+Never opens a sealed labels file. Writes nothing. Never emits document text.
+A missing manifest, an empty manifest, or a manifest whose row count disagrees
+with the sealed set's recorded row count fails loudly.
 """
 
 from __future__ import annotations
@@ -24,9 +25,13 @@ import json
 from pathlib import Path
 
 from router.labels import load_labels, load_sealed_config, repo_root
+from router.seal_sealed import manifest_paths
 from router.sealed_gate import MIN_SEALED_PER_LABEL, per_label_n
 
 COMBINED = "combined"
+_RECORD_KEYS = frozenset({"id", "label"})
+_HEADER_KEYS = frozenset({"rows", "sealed_labels_sha256"})
+_HEX = frozenset("0123456789abcdef")
 
 
 class SealedCountError(ValueError):
@@ -50,123 +55,72 @@ def select_sets(v9: dict, names: list[str] | None = None) -> list[dict]:
     return [item for item in sets if item["name"] in wanted]
 
 
-# The key token only. Matched as a sliding window so no other field is retained.
-_LABEL_KEY = '"label"'
+def _positive_int(value: object) -> bool:
+    return isinstance(value, int) and not isinstance(value, bool) and value >= 1
 
 
-def _read_label_stream(path: Path) -> list[str]:
-    """Copy the ``label`` string out of each row. No other field is parsed.
+def _read_manifest(sealed_labels: Path) -> list[str]:
+    """Labels from the seal-time manifest beside ``sealed_labels``.
 
-    The reader keeps a window the size of the key and the current label token.
-    Once the label value closes, the rest of the row is dropped and never
-    parsed, including when that tail is not valid JSON.
+    ``sealed_labels`` is used only to locate the manifest. It is not opened.
     """
+    records_path, header_path = manifest_paths(sealed_labels)
+    if not records_path.is_file() or not header_path.is_file():
+        missing = records_path if not records_path.is_file() else header_path
+        raise SealedCountError(f"label manifest is missing: {missing}")
+    header_text = header_path.read_text(encoding="utf-8")
+    records_text = records_path.read_text(encoding="utf-8")
+    if not header_text.strip() or not records_text.strip():
+        raise SealedCountError(f"label manifest is empty: {records_path}")
+    try:
+        header = json.loads(header_text)
+    except json.JSONDecodeError:
+        raise SealedCountError(f"label manifest header is not JSON: {header_path}") from None
+    if not isinstance(header, dict) or set(header) != _HEADER_KEYS:
+        raise SealedCountError(f"label manifest header is not row count and sealed-file sha256: {header_path}")
+    rows = header["rows"]
+    digest = header["sealed_labels_sha256"]
+    if not isinstance(digest, str) or len(digest) != 64 or any(char not in _HEX for char in digest):
+        raise SealedCountError(f"label manifest header is not row count and sealed-file sha256: {header_path}")
     labels: list[str] = []
-    window = ""
-    token: list[str] = []
-    state = "scan"
-    escape = False
-    line_marked = False
-    saw_label = False
-
-    def reject() -> None:
-        raise SealedCountError(f"sealed row without a label in {path}")
-
-    def end_line() -> None:
-        nonlocal window, token, state, escape, line_marked, saw_label
-        if state == "string" or (line_marked and not saw_label):
-            reject()
-        window = ""
-        token = []
-        state = "scan"
-        escape = False
-        line_marked = False
-        saw_label = False
-
-    with path.open(encoding="utf-8") as handle:
-        while True:
-            char = handle.read(1)
-            if char == "":
-                if state in {"colon", "value", "string"} or (line_marked and not saw_label):
-                    reject()
-                break
-            if char == "\n":
-                end_line()
-                continue
-            if char not in " \t\r":
-                line_marked = True
-            if state == "skip":
-                continue
-            if state == "scan":
-                window = (window + char)[-len(_LABEL_KEY) :]
-                if window == _LABEL_KEY:
-                    state = "colon"
-                    window = ""
-                continue
-            if state == "colon":
-                if char in " \t\r":
-                    continue
-                if char == ":":
-                    state = "value"
-                    continue
-                state = "scan"
-                window = char
-                continue
-            if state == "value":
-                if char in " \t\r":
-                    continue
-                if char != '"':
-                    reject()
-                token = ['"']
-                escape = False
-                state = "string"
-                continue
-            token.append(char)
-            if escape:
-                escape = False
-                continue
-            if char == "\\":
-                escape = True
-                continue
-            if char != '"':
-                continue
-            try:
-                value = json.loads("".join(token))
-            except json.JSONDecodeError:
-                reject()
-            if not isinstance(value, str) or not value:
-                reject()
-            labels.append(value)
-            saw_label = True
-            token = []
-            state = "skip"
-    return labels
-
-
-def _gold_rows(path: Path) -> list[str]:
-    """Labels only from a sealed_labels.jsonl. Never parses a non-label field."""
-    if not path.is_file():
-        raise SealedCountError(f"sealed labels file is missing: {path}")
-    labels = _read_label_stream(path)
+    for line in records_text.splitlines():
+        if not line.strip():
+            continue
+        try:
+            record = json.loads(line)
+        except json.JSONDecodeError:
+            raise SealedCountError(f"label manifest record is not JSON: {records_path}") from None
+        if not isinstance(record, dict) or set(record) != _RECORD_KEYS:
+            raise SealedCountError(f"label manifest record is not id and label only: {records_path}")
+        if not _positive_int(record["id"]):
+            raise SealedCountError(f"label manifest record is not id and label only: {records_path}")
+        label = record["label"]
+        if not isinstance(label, str) or not label or label != label.strip():
+            raise SealedCountError(f"label manifest record has no label: {records_path}")
+        labels.append(label)
     if not labels:
-        raise SealedCountError(f"sealed labels file is empty (no labels): {path}")
+        raise SealedCountError(f"label manifest is empty: {records_path}")
+    if not _positive_int(rows) or rows != len(labels):
+        raise SealedCountError(f"label manifest row count {rows} disagrees with {len(labels)} records: {records_path}")
     return labels
 
 
 def sealed_gold(root: Path, v9: dict, names: list[str] | None = None) -> dict[str, list[str]]:
-    """``{set name: [gold label, ...]}`` read from the manifest files, manifest order."""
+    """``{set name: [gold label, ...]}`` from the label manifests, manifest order."""
     out: dict[str, list[str]] = {}
     for item in select_sets(v9, names):
-        gold = _gold_rows(root / item["sealed_labels"])
+        gold = _read_manifest(root / item["sealed_labels"])
         declared = item.get("rows")
-        if isinstance(declared, int) and declared != len(gold):
-            raise SealedCountError(f"set {item['name']}: file has {len(gold)} rows, manifest says {declared}")
+        if isinstance(declared, int) and not isinstance(declared, bool) and declared != len(gold):
+            raise SealedCountError(
+                f"set {item['name']}: manifest row count {len(gold)} disagrees with recorded row count {declared}"
+            )
         out[item["name"]] = gold
     return out
 
 
 def sealed_counts(root: Path, v9: dict, labels: list[str], names: list[str] | None = None) -> dict:
-    """Per-label sealed ``n`` for the selected sets, counted from the manifest files."""
+    """Per-label sealed ``n`` for the selected sets, counted from the label manifests."""
     by_set = sealed_gold(root, v9, names)
     gold = [label for rows in by_set.values() for label in rows]
     outside = sorted(set(gold) - set(labels))
@@ -194,8 +148,9 @@ def counts_for_scores(root: Path, v9: dict, labels: list[str], scores: dict) -> 
     """Manifest counts for the sets a score covered; refuses a score that disagrees.
 
     The combined view of a score must count the same rows per label as the
-    manifest files of its scored sets. A mismatch (counts taken from another
+    label manifests of its scored sets. A mismatch (counts taken from another
     set selection, a stale table, or predictions) raises ``SealedCountError``.
+    A score view with an empty per-label list is refused.
     """
     names = scored_set_names(scores)
     counts = sealed_counts(root, v9, labels, names)
@@ -203,18 +158,28 @@ def counts_for_scores(root: Path, v9: dict, labels: list[str], scores: dict) -> 
     if COMBINED in scores["sets"]:
         views[COMBINED] = scores["sets"][COMBINED]
     for view, result in views.items():
+        if not isinstance(result, dict):
+            raise SealedCountError(f"score view {view}: result is not an object")
         expected = counts["per_label_n"] if view == COMBINED else per_label_n(sealed_gold(root, v9, [view])[view], labels)
-        got = {row["label"]: row["n"] for row in result.get("per_label", [])}
-        if got and got != expected:
+        per_label = result.get("per_label")
+        if not isinstance(per_label, list) or not per_label:
+            raise SealedCountError(f"score view {view}: per-label list is empty")
+        got: dict[str, int] = {}
+        for row in per_label:
+            if not isinstance(row, dict) or "label" not in row or "n" not in row:
+                raise SealedCountError(f"score view {view}: per-label row is missing a count")
+            got[row["label"]] = row["n"]
+        if got != expected:
             diff = sorted(label for label in expected if got.get(label) != expected[label])
             raise SealedCountError(f"score view {view}: per-label n differs from the sealed manifest for {diff}")
-        if isinstance(result.get("n"), int) and result["n"] != sum(expected.values()):
-            raise SealedCountError(f"score view {view}: n={result['n']} but the manifest has {sum(expected.values())} rows")
+        recorded_n = result.get("n")
+        if isinstance(recorded_n, int) and not isinstance(recorded_n, bool) and recorded_n != sum(expected.values()):
+            raise SealedCountError(f"score view {view}: n={recorded_n} but the manifest has {sum(expected.values())} rows")
     return counts
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Sealed per-label counts from the sealed manifest (counts only)")
+    parser = argparse.ArgumentParser(description="Sealed per-label counts from the label manifest (counts only)")
     parser.add_argument("--root", type=Path, default=None)
     parser.add_argument("--sets", default=None, help="comma-separated set names; default all registered sets")
     parser.add_argument("--scores", type=Path, default=None, help="a sealed_scores.json; counts follow its scored sets")

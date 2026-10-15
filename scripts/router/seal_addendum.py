@@ -33,6 +33,7 @@ from router.seal_sealed import (
     _ticked,
     enforce_project_diversity,
     project_key,
+    write_label_manifest,
 )
 from router.sheet import UNSURE
 
@@ -132,7 +133,10 @@ def check_against_exhaustion(candidates: list[dict], record: list[dict]) -> list
 
 
 def write_addendum(output_dir: Path, sealed: list[dict], held: list[dict], extra: dict[str, object] | None = None) -> list[str]:
-    """Write sealed_labels.jsonl, held.jsonl and any extra JSON records, with per-file .sha256 and SHA256SUMS."""
+    """Write sealed_labels.jsonl, held.jsonl and any extra JSON records, with per-file .sha256 and SHA256SUMS.
+
+    Also writes the label-only manifest beside the sealed labels file. That manifest is sealed on its own and is not added to SHA256SUMS.
+    """
     output_dir.mkdir(parents=True, exist_ok=True)
     files: dict[str, str] = {
         "sealed_labels.jsonl": "".join(json.dumps(row, ensure_ascii=False) + "\n" for row in sealed),
@@ -147,6 +151,7 @@ def write_addendum(output_dir: Path, sealed: list[dict], held: list[dict], extra
         (output_dir / f"{name}.sha256").write_text(line, encoding="utf-8", newline="\n")
         lines.append(line)
     (output_dir / "SHA256SUMS").write_text("".join(lines), encoding="utf-8", newline="\n")
+    write_label_manifest(output_dir / "sealed_labels.jsonl")
     return list(files)
 
 

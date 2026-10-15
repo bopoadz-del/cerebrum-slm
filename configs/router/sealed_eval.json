@@ -76,7 +76,7 @@
       }
     ],
     "combined": {
-      "rule": "concatenation of the sets in this order; nothing swapped; per-label n is never stored here: it is counted from the sealed_labels files of the sets actually scored, by router.sealed_counts (sealed_counts / counts_for_scores)",
+      "rule": "concatenation of the sets in this order; nothing swapped; per-label n is never stored here: it is counted from the seal-time label manifests of the sets actually scored (label and neutral row id only; no excerpt), by router.sealed_counts (sealed_counts / counts_for_scores)",
       "rows": 319
     },
     "min_sealed_per_label": 12,

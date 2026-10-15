@@ -78,7 +78,11 @@ def seal_sheet(
     proposed: Path | None = None,
     meta: list[Path] | None = None,
 ) -> dict:
-    """Validate the sheets and write sealed labels. Raises without writing on a bad tick."""
+    """Validate the sheets and write sealed labels. Raises without writing on a bad tick.
+
+    Also writes a label-only manifest (neutral row id and label, plus a header
+    sidecar with the row count and the sha256 of the sealed labels file).
+    """
     paths = [sheet] if isinstance(sheet, Path) else list(sheet)
     if not paths:
         raise RouterWall("WALL: no sheet")
@@ -99,6 +103,7 @@ def seal_sheet(
             raise RouterWall("WALL: agreement rewrote a sealed label")
         written.append("agreement.json")
     _write_digests(output_dir, written)
+    write_label_manifest(labels_path)
     return {"sealed": len(sealed), "dropped": dropped, "files": written}
 
 
@@ -470,6 +475,81 @@ def _write_digests(directory: Path, names: list[str]) -> None:
         lines.append(line)
         (directory / f"{name}.sha256").write_text(line, encoding="utf-8", newline="\n")
     (directory / "SHA256SUMS").write_text("".join(lines), encoding="utf-8", newline="\n")
+
+
+# Label-only manifest written beside a sealed labels file at seal time.
+# Counters read these files and do not open the sealed labels file.
+LABEL_MANIFEST_NAME = "label_manifest.jsonl"
+LABEL_MANIFEST_HEADER_NAME = "label_manifest.header.json"
+_MANIFEST_RECORD_KEYS = frozenset({"id", "label"})
+_MANIFEST_HEADER_KEYS = frozenset({"rows", "sealed_labels_sha256"})
+
+
+def manifest_paths(sealed_labels: Path) -> tuple[Path, Path]:
+    """Record file and header sidecar beside ``sealed_labels``. Does not open it."""
+    directory = sealed_labels.parent
+    return directory / LABEL_MANIFEST_NAME, directory / LABEL_MANIFEST_HEADER_NAME
+
+
+def write_label_manifest(sealed_labels: Path) -> Path:
+    """Write a label-only manifest for one sealed set. Read-only on that file.
+
+    One record per sealed row: a neutral row id (1-based position, no source
+    identity) and the label. The header sidecar holds the row count and the
+    sha256 of the sealed labels file this manifest was derived from. No excerpt,
+    source text, name, or other row field is written. The sealed file bytes
+    are not changed.
+    """
+    if not sealed_labels.is_file():
+        raise RouterWall(f"WALL: sealed labels file is missing: {sealed_labels.name}")
+    raw = sealed_labels.read_bytes()
+    digest = hashlib.sha256(raw).hexdigest()
+    try:
+        text = raw.decode("utf-8")
+    except UnicodeError as exc:
+        raise RouterWall("WALL: sealed labels file is not UTF-8") from exc
+    labels: list[str] = []
+    for lineno, line in enumerate(text.splitlines(), 1):
+        if not line.strip():
+            continue
+        try:
+            obj = json.loads(line)
+        except json.JSONDecodeError:
+            raise RouterWall(f"WALL: sealed labels line {lineno} is not JSON") from None
+        label = obj.get("label") if isinstance(obj, dict) else None
+        obj = None
+        if not isinstance(label, str) or not label or label != label.strip():
+            raise RouterWall(f"WALL: sealed labels line {lineno} has no label")
+        labels.append(label)
+    records_path, header_path = manifest_paths(sealed_labels)
+    if records_path.resolve() == sealed_labels.resolve() or header_path.resolve() == sealed_labels.resolve():
+        raise RouterWall("WALL: label manifest path collides with the sealed labels file")
+    body = "".join(
+        json.dumps({"id": index, "label": label}, ensure_ascii=False, sort_keys=True) + "\n"
+        for index, label in enumerate(labels, start=1)
+    )
+    for line in body.splitlines():
+        record = json.loads(line)
+        if set(record) != _MANIFEST_RECORD_KEYS:
+            raise RouterWall("WALL: label manifest record is not id and label only")
+    header = {"rows": len(labels), "sealed_labels_sha256": digest}
+    if set(header) != _MANIFEST_HEADER_KEYS:
+        raise RouterWall("WALL: label manifest header is not row count and sealed-file sha256")
+    header_text = json.dumps(header, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+    records_path.write_text(body, encoding="utf-8", newline="\n")
+    header_path.write_text(header_text, encoding="utf-8", newline="\n")
+    _write_file_seal(records_path)
+    _write_file_seal(header_path)
+    if sealed_labels.read_bytes() != raw:
+        raise RouterWall("WALL: label manifest rewrote a sealed label file")
+    return records_path
+
+
+def _write_file_seal(path: Path) -> None:
+    """Seal one derived file. Does not touch SHA256SUMS or the sealed labels file."""
+    digest = hashlib.sha256(path.read_bytes()).hexdigest()
+    line = f"{digest}  {path.name}\n"
+    path.with_name(path.name + ".sha256").write_text(line, encoding="utf-8", newline="\n")
 
 
 def main(argv: list[str] | None = None) -> int:
