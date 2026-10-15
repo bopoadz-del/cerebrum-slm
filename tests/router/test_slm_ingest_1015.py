@@ -85,6 +85,15 @@ def test_rows_are_isolated_from_pending_sealed_candidates(repo_root: Path) -> No
         ]
 
 
+def test_ingest_excerpts_leave_no_written_or_exact_amounts(repo_root: Path) -> None:
+    """LANE2: amounts are magnitude tokens, not number-words or exact digit strings."""
+    from router.amount_buckets import bucket_amounts
+
+    for row in _rows(repo_root, ADDS):
+        rewritten, replacements = bucket_amounts(row["excerpt"])
+        assert replacements == 0 and rewritten == row["excerpt"], row["doc_id"]
+
+
 def test_rows_carry_no_contact_details_or_identifiers(repo_root: Path) -> None:
     residue = (
         re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+"),
