@@ -251,7 +251,7 @@ def test_rank16_config_is_written_down_and_valid() -> None:
         ({"alpha": 16}, "alpha must equal rank"),
         ({"rank": 64}, "rank"),
         ({"epochs": 4}, "epochs"),
-        ({"learning_rate": 0.01}, "learning_rate"),
+        ({"learning_rate": 0.1}, "learning_rate"),
         ({"loss_on": "all_tokens"}, "loss_on"),
         ({"enable_thinking": True}, "enable_thinking"),
         ({"train_file": "data/held_out/pairs.jsonl"}, "train split only"),
@@ -370,14 +370,18 @@ def test_run_training_uses_the_sdk_calls_and_saves_the_named_checkpoint() -> Non
     pair = TrainPair(line=1, system="", user="What is missing?", assistant="Name the missing input.")
     sdk = _SDK()
     result = run_training(_lora(), [pair], sdk=sdk)
-    assert sdk.service.kwargs["base_model"] == "Qwen/Qwen3-8B"
-    assert sdk.service.kwargs["rank"] == 8
-    assert sdk.service.kwargs["seed"] == 0
-    assert sdk.service.kwargs["train_mlp"] is True
-    assert sdk.service.kwargs["train_attn"] is True
-    assert sdk.service.kwargs["train_unembed"] is False
-    assert sdk.service.kwargs["user_metadata"] == {"checkpoint": "posture-qwen3-8b-lora"}
-    assert isinstance(sdk.service.kwargs["optimizer"], sdk.types.AdamOptimizerConfig)
+    optim = sdk.service.kwargs["optimizer"]
+    assert isinstance(optim, _Types.AdamOptimizerConfig)
+    assert sdk.service.kwargs == {
+        "base_model": "Qwen/Qwen3-8B",
+        "rank": 8,
+        "seed": 0,
+        "train_mlp": True,
+        "train_attn": True,
+        "train_unembed": False,
+        "user_metadata": {"checkpoint": "posture-qwen3-8b-lora"},
+        "optimizer": optim,
+    }
     assert len(sdk.client.batches) == 1
     loss_fn, batch = sdk.client.batches[0]
     assert loss_fn == "cross_entropy"

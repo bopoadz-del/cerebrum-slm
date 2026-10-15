@@ -5,7 +5,6 @@ from __future__ import annotations
 import ast
 import json
 import re
-import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -58,34 +57,7 @@ def training_code_files(root: Path) -> list[Path]:
         if folder.is_dir():
             files.extend(path for path in folder.rglob("*") if path.is_file())
     files.extend(path for path in root.glob("train*.py") if path.is_file())
-    ignored = git_ignored(root, files)
-    return sorted(path for path in set(files) if path not in ignored)
-
-
-def git_ignored(root: Path, paths: list[Path]) -> set[Path]:
-    """Paths git itself ignores (.gitignore rules), e.g. local build artefacts.
-
-    Ignored files can never be committed, so CI never sees them; scanning them
-    locally only reports artefacts of a local install. Tracked files are never
-    excluded (git check-ignore skips them) and untracked-but-not-ignored files
-    are still scanned. Outside a git work tree nothing is excluded.
-    """
-    if not paths:
-        return set()
-    payload = "\0".join(str(path.resolve()) for path in paths) + "\0"
-    try:
-        result = subprocess.run(
-            ["git", "-C", str(root), "check-ignore", "-z", "--stdin"],
-            input=payload.encode(),
-            capture_output=True,
-            check=False,
-        )
-    except OSError:
-        return set()
-    if result.returncode not in (0, 1):
-        return set()
-    hits = {Path(item).resolve() for item in result.stdout.decode().split("\0") if item}
-    return {path for path in paths if path.resolve() in hits}
+    return sorted(set(files))
 
 
 def _resolved(path: Path, root: Path) -> Path:

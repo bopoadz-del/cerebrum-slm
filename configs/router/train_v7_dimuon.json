@@ -1,6 +1,6 @@
 {
   "run": "v7",
-  "status": "dimuon A/B vs AdamW baseline; same v7 data/seed/steps; optimizer+LR only",
+  "status": "PARKED: Dimuon option remains for honesty; AdamW stays the router optimizer. Main Dimuon config uses grad_clip 1.0. Sealed A/B (n=312): AdamW 06e01fff macro 0.7843 kept; Dimuon clip0 0.7464; Dimuon clip1 0.7290. No further Dimuon arms.",
   "lora_config": "configs/lora/qwen3-4b-router-r16-dimuon.json",
   "overrides": {
     "base_model": "Qwen/Qwen3.5-4B",
@@ -9,7 +9,7 @@
     "checkpoint_name": "router-v7-dimuon-qwen3.5-4b-lora-r16",
     "optimizer": "dimuon",
     "learning_rate": 0.007095,
-    "grad_clip_norm": 0.0
+    "grad_clip_norm": 1.0
   },
   "class_weighting": {
     "method": "tempered_inverse_frequency_loss_weight",

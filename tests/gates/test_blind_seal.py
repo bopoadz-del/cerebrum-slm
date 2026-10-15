@@ -183,36 +183,3 @@ def test_unknown_path_requires_training_open_and_a_constant_outside_does_not(tmp
     )
     assert check_blind(tmp_path) == []
 
-
-def _git(root: Path, *args: str) -> None:
-    import subprocess
-
-    subprocess.run(["git", "-C", str(root), *args], check=True, capture_output=True)
-
-
-@pytest.mark.skipif(shutil.which("git") is None, reason="git not installed")
-def test_gitignored_build_artefact_is_not_scanned_but_tracked_and_untracked_are(
-    tmp_path: Path,
-) -> None:
-    _git(tmp_path, "init", "-q")
-    (tmp_path / ".gitignore").write_text("*.egg-info/\n", encoding="utf-8")
-    read_line = "path = 'data/eval/blind/x.jsonl'\n"
-    artefact = tmp_path / "src" / "pkg.egg-info" / "PKG-INFO"
-    artefact.parent.mkdir(parents=True)
-    artefact.write_text(read_line, encoding="utf-8")
-    assert check_blind(tmp_path) == []
-
-    untracked = tmp_path / "src" / "fit.py"
-    untracked.write_text(read_line, encoding="utf-8")
-    assert [f.path for f in check_blind(tmp_path)] == ["src/fit.py"]
-
-    _git(tmp_path, "add", "-f", "src/pkg.egg-info/PKG-INFO")
-    paths = sorted(f.path for f in check_blind(tmp_path))
-    assert paths == ["src/fit.py", "src/pkg.egg-info/PKG-INFO"]
-
-
-def test_without_git_work_tree_nothing_is_excluded(tmp_path: Path) -> None:
-    artefact = tmp_path / "src" / "pkg.egg-info" / "PKG-INFO"
-    artefact.parent.mkdir(parents=True)
-    artefact.write_text("path = 'data/eval/blind/x.jsonl'\n", encoding="utf-8")
-    assert [f.path for f in check_blind(tmp_path)] == ["src/pkg.egg-info/PKG-INFO"]
