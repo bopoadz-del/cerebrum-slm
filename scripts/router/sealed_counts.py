@@ -12,12 +12,16 @@ existing score, :func:`counts_for_scores`, which recounts the manifest for the
 scored sets and refuses a score whose per-label ``n`` disagrees.
 
 Reads only gold labels. Writes nothing. Never emits document text.
+The excerpt field is stripped from each raw line before JSON parse, so sealed
+excerpt text is never loaded on this training-side count path. An empty labels
+file fails loudly.
 """
 
 from __future__ import annotations
 
 import argparse
 import json
+import re
 from pathlib import Path
 
 from router.labels import load_labels, load_sealed_config, repo_root
@@ -47,18 +51,45 @@ def select_sets(v9: dict, names: list[str] | None = None) -> list[dict]:
     return [item for item in sets if item["name"] in wanted]
 
 
+# JSON string value for one key; used only to cut the excerpt field out of a raw line
+# before any parse, so excerpt text never reaches json.loads on the training-side count path.
+_EXCERPT_FIELD = re.compile(
+    r',?\s*"excerpt"\s*:\s*"(?:\\.|[^"\\])*"\s*',
+)
+
+
+def _line_without_excerpt(line: str) -> str:
+    """Return the line with any excerpt field removed, before JSON parse.
+
+    Sealed never studied: the training-side count path must not load excerpt text,
+    even to discard it. Stripping the field from the raw bytes/string first means
+    json.loads never sees it.
+    """
+    cleaned = _EXCERPT_FIELD.sub("", line)
+    # tidy a trailing comma before } left by removing a final excerpt field
+    cleaned = re.sub(r",\s*}", "}", cleaned)
+    return cleaned
+
+
 def _gold_rows(path: Path) -> list[str]:
+    """Labels only from a sealed_labels.jsonl. Never loads the excerpt field."""
     if not path.is_file():
         raise SealedCountError(f"sealed labels file is missing: {path}")
     labels: list[str] = []
     for line in path.read_text(encoding="utf-8").splitlines():
         if not line.strip():
             continue
-        row = json.loads(line)
-        label = row.get("label") if isinstance(row, dict) else None
+        row = json.loads(_line_without_excerpt(line))
+        if not isinstance(row, dict):
+            raise SealedCountError(f"sealed row is not an object in {path}")
+        if "excerpt" in row:
+            raise SealedCountError(f"excerpt field reached the parser in {path}")
+        label = row.get("label")
         if not isinstance(label, str) or not label:
             raise SealedCountError(f"sealed row without a label in {path}")
         labels.append(label)
+    if not labels:
+        raise SealedCountError(f"sealed labels file is empty (no labels): {path}")
     return labels
 
 

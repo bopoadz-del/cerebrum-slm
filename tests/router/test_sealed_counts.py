@@ -143,3 +143,38 @@ def test_cli_prints_counts_only(tiny, capsys) -> None:
     assert set(out) == {"sets", "rows", "per_label_n", "min_sealed_per_label", "below_min"}
     assert out["rows"] == len(first)
     assert main(["--root", str(root), "--sets", "nope"]) == 2
+
+
+def test_excerpt_field_is_never_passed_to_json_loads(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Sealed never studied: counting rows must not load excerpt text at all."""
+    import router.sealed_counts as sc
+
+    path = tmp_path / "sealed_labels.jsonl"
+    secret = "SECRET_EXCERPT_MUST_NOT_REACH_JSON_LOADS"
+    path.write_text(
+        json.dumps({"label": "drawing", "excerpt": secret, "file_sha256": "a" * 64}) + "\n"
+        + json.dumps({"label": "report", "excerpt": secret}) + "\n",
+        encoding="utf-8",
+    )
+    real_loads = sc.json.loads
+
+    def wrapped(s, *args, **kwargs):
+        if secret in s:
+            raise AssertionError("excerpt text was passed to json.loads")
+        return real_loads(s, *args, **kwargs)
+
+    monkeypatch.setattr(sc.json, "loads", wrapped)
+    assert sc._gold_rows(path) == ["drawing", "report"]
+
+
+def test_empty_sealed_labels_file_fails_loudly(tmp_path: Path) -> None:
+    """An empty per-label list must not be skipped silently."""
+    from router.sealed_counts import _gold_rows
+
+    path = tmp_path / "sealed_labels.jsonl"
+    path.write_text("", encoding="utf-8")
+    with pytest.raises(SealedCountError, match="empty"):
+        _gold_rows(path)
+    path.write_text("\n\n", encoding="utf-8")
+    with pytest.raises(SealedCountError, match="empty"):
+        _gold_rows(path)
