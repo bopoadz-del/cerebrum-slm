@@ -251,7 +251,7 @@ def test_rank16_config_is_written_down_and_valid() -> None:
         ({"alpha": 16}, "alpha must equal rank"),
         ({"rank": 64}, "rank"),
         ({"epochs": 4}, "epochs"),
-        ({"learning_rate": 0.1}, "learning_rate"),
+        ({"learning_rate": 0.01}, "learning_rate must be > 0 and <= 0.0005"),
         ({"loss_on": "all_tokens"}, "loss_on"),
         ({"enable_thinking": True}, "enable_thinking"),
         ({"train_file": "data/held_out/pairs.jsonl"}, "train split only"),

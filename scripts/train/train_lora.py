@@ -72,7 +72,7 @@ _CONFIG_KEYS = {
     "target_format",
 }
 _MODULE_KEYS = {"mlp", "attn", "unembed"}
-_MAX_LEARNING_RATE = 0.05  # sanity ceiling only; LR comes from config
+_MAX_LEARNING_RATE = 0.0005
 _MAX_EPOCHS = 3
 _MAX_BATCH = 32
 _MAX_RANK = 32
@@ -198,7 +198,7 @@ def validate_lora_config(config: dict[str, Any], model: dict[str, Any]) -> None:
     opt = str(config.get("optimizer", "adamw")).strip().lower()
     if opt not in {"adamw", "adam", "dimuon"}:
         raise TrainRefused("optimizer must be adamw or dimuon")
-    # Learning rate comes from config only (no optimizer-specific cap).
+    # Shared AdamW/Dimuon sanity ceiling. The rate still comes from config.
     _positive_float("learning_rate", config["learning_rate"], _MAX_LEARNING_RATE)
     _unit_interval("beta1", config["beta1"])
     _unit_interval("beta2", config["beta2"])
