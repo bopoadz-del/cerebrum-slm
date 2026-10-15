@@ -178,6 +178,18 @@ class _Types:
         def __init__(self, **kwargs) -> None:
             self.kwargs = kwargs
 
+    class DimuonParams:
+        def __init__(self, **kwargs) -> None:
+            self.kwargs = kwargs
+
+    class AdamOptimizerConfig:
+        def __init__(self, **kwargs) -> None:
+            self.kwargs = kwargs
+
+    class DimuonOptimizerConfig:
+        def __init__(self, **kwargs) -> None:
+            self.kwargs = kwargs
+
     class ModelInput:
         @staticmethod
         def from_ints(tokens):
@@ -239,7 +251,7 @@ def test_rank16_config_is_written_down_and_valid() -> None:
         ({"alpha": 16}, "alpha must equal rank"),
         ({"rank": 64}, "rank"),
         ({"epochs": 4}, "epochs"),
-        ({"learning_rate": 0.01}, "learning_rate"),
+        ({"learning_rate": 0.01}, "learning_rate must be > 0 and <= 0.0005"),
         ({"loss_on": "all_tokens"}, "loss_on"),
         ({"enable_thinking": True}, "enable_thinking"),
         ({"train_file": "data/held_out/pairs.jsonl"}, "train split only"),
@@ -358,6 +370,8 @@ def test_run_training_uses_the_sdk_calls_and_saves_the_named_checkpoint() -> Non
     pair = TrainPair(line=1, system="", user="What is missing?", assistant="Name the missing input.")
     sdk = _SDK()
     result = run_training(_lora(), [pair], sdk=sdk)
+    optim = sdk.service.kwargs["optimizer"]
+    assert isinstance(optim, _Types.AdamOptimizerConfig)
     assert sdk.service.kwargs == {
         "base_model": "Qwen/Qwen3-8B",
         "rank": 8,
@@ -366,6 +380,7 @@ def test_run_training_uses_the_sdk_calls_and_saves_the_named_checkpoint() -> Non
         "train_attn": True,
         "train_unembed": False,
         "user_metadata": {"checkpoint": "posture-qwen3-8b-lora"},
+        "optimizer": optim,
     }
     assert len(sdk.client.batches) == 1
     loss_fn, batch = sdk.client.batches[0]

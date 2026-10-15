@@ -182,3 +182,4 @@ def test_unknown_path_requires_training_open_and_a_constant_outside_does_not(tmp
         encoding="utf-8",
     )
     assert check_blind(tmp_path) == []
+

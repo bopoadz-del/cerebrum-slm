@@ -57,6 +57,7 @@ _CONFIG_KEYS = {
     "alpha",
     "target_modules",
     "learning_rate",
+    "optimizer",
     "beta1",
     "beta2",
     "eps",
@@ -194,6 +195,10 @@ def validate_lora_config(config: dict[str, Any], model: dict[str, Any]) -> None:
     if not modules["mlp"]:
         raise TrainRefused("target_modules.mlp must be true")
 
+    opt = str(config.get("optimizer", "adamw")).strip().lower()
+    if opt not in {"adamw", "adam", "dimuon"}:
+        raise TrainRefused("optimizer must be adamw or dimuon")
+    # Shared AdamW/Dimuon sanity ceiling. The rate still comes from config.
     _positive_float("learning_rate", config["learning_rate"], _MAX_LEARNING_RATE)
     _unit_interval("beta1", config["beta1"])
     _unit_interval("beta2", config["beta2"])
@@ -421,6 +426,7 @@ def run_training(config: dict[str, Any], pairs: list[TrainPair], *, sdk: Any = N
             train_mlp=bool(modules["mlp"]),
             train_attn=bool(modules["attn"]),
             train_unembed=bool(modules["unembed"]),
+            optimizer=_optimizer_config(sdk.types, config),
             user_metadata={"checkpoint": str(config["checkpoint_name"])},
         )
         result = _fit(client, sdk.types, config, pairs)
@@ -497,6 +503,38 @@ def _write_log(path: Path, config: dict[str, Any], pairs: list[TrainPair], resul
     path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
 
 
+
+def _optimizer_name(config: dict[str, Any]) -> str:
+    name = str(config.get("optimizer", "adamw")).strip().lower()
+    if name in {"adamw", "adam"}:
+        return "adamw"
+    if name == "dimuon":
+        return "dimuon"
+    raise TrainRefused("optimizer must be adamw or dimuon")
+
+
+def _optimizer_config(types: Any, config: dict[str, Any]) -> Any:
+    if _optimizer_name(config) == "dimuon":
+        return types.DimuonOptimizerConfig()
+    return types.AdamOptimizerConfig()
+
+
+def _optim_params(types: Any, config: dict[str, Any]) -> Any:
+    lr = float(config["learning_rate"])
+    beta1 = float(config["beta1"])
+    clip = float(config["grad_clip_norm"])
+    if _optimizer_name(config) == "dimuon":
+        return types.DimuonParams(learning_rate=lr, beta1=beta1, grad_clip_norm=clip)
+    return types.AdamParams(
+        learning_rate=lr,
+        beta1=beta1,
+        beta2=float(config["beta2"]),
+        eps=float(config["eps"]),
+        weight_decay=float(config["weight_decay"]),
+        grad_clip_norm=clip,
+    )
+
+
 def _fit(client: Any, types: Any, config: dict[str, Any], pairs: list[TrainPair]) -> TrainResult:
     tokenizer = client.get_tokenizer()
     prepared: list[tuple[list[int], list[int], list[float]]] = []
@@ -519,14 +557,7 @@ def _fit(client: Any, types: Any, config: dict[str, Any], pairs: list[TrainPair]
             )
         prepared.append((inputs, targets, weights))
 
-    adam = types.AdamParams(
-        learning_rate=float(config["learning_rate"]),
-        beta1=float(config["beta1"]),
-        beta2=float(config["beta2"]),
-        eps=float(config["eps"]),
-        weight_decay=float(config["weight_decay"]),
-        grad_clip_norm=float(config["grad_clip_norm"]),
-    )
+    adam = _optim_params(types, config)
     steps = 0
     batch_size = int(config["batch_size"])
     epochs = int(config["epochs"])

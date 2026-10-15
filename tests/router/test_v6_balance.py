@@ -216,6 +216,18 @@ class _Sdk:
                 def __init__(self, **kwargs):
                     pass
 
+            class DimuonParams:
+                def __init__(self, **kwargs):
+                    pass
+
+            class AdamOptimizerConfig:
+                def __init__(self, **kwargs):
+                    pass
+
+            class DimuonOptimizerConfig:
+                def __init__(self, **kwargs):
+                    pass
+
         self.types = Types
 
     def ServiceClient(self):

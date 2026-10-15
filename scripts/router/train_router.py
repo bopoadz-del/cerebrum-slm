@@ -208,6 +208,45 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
 
+
+def _optimizer_name(lora: dict) -> str:
+    """Optimizer family from config. Default adamw keeps every landed recipe unchanged."""
+    name = lora.get("optimizer", "adamw")
+    if not isinstance(name, str):
+        raise RouterWall("WALL: optimizer must be a string")
+    key = name.strip().lower()
+    if key in {"adamw", "adam"}:
+        return "adamw"
+    if key == "dimuon":
+        return "dimuon"
+    raise RouterWall("WALL: optimizer must be adamw or dimuon")
+
+
+def _optimizer_config(types, lora: dict):
+    """Tinker optimizer config object selected at training-client creation."""
+    name = _optimizer_name(lora)
+    if name == "dimuon":
+        return types.DimuonOptimizerConfig()
+    return types.AdamOptimizerConfig()
+
+
+def _optim_params(types, lora: dict):
+    """Per-step optimizer hyperparameters matching the selected family."""
+    lr = float(lora["learning_rate"])
+    beta1 = float(lora["beta1"])
+    clip = float(lora["grad_clip_norm"])
+    if _optimizer_name(lora) == "dimuon":
+        return types.DimuonParams(learning_rate=lr, beta1=beta1, grad_clip_norm=clip)
+    return types.AdamParams(
+        learning_rate=lr,
+        beta1=beta1,
+        beta2=float(lora["beta2"]),
+        eps=float(lora["eps"]),
+        weight_decay=float(lora["weight_decay"]),
+        grad_clip_norm=clip,
+    )
+
+
 def fit_router(lora: dict, train_rows: list[dict], *, sdk=None, class_weight: dict[str, float] | None = None, on_epoch=None) -> dict:
     """Fit the Qwen3-4B LoRA. sdk is a test double. The default import is tinker.
 
@@ -232,6 +271,7 @@ def fit_router(lora: dict, train_rows: list[dict], *, sdk=None, class_weight: di
             train_mlp=bool(modules["mlp"]),
             train_attn=bool(modules["attn"]),
             train_unembed=bool(modules["unembed"]),
+            optimizer=_optimizer_config(sdk.types, lora),
             user_metadata={"checkpoint": str(lora["checkpoint_name"])},
         )
         trained = _fit(client, sdk.types, lora, train_rows, class_weight=class_weight, on_epoch=on_epoch)
@@ -366,14 +406,7 @@ def _fit(client, types, lora: dict, train_rows: list[dict], *, class_weight: dic
         if len(inputs) + 1 > limit:
             raise RouterWall("WALL: a training row exceeds max_sequence_length")
         prepared.append((inputs, targets, weights))
-    adam = types.AdamParams(
-        learning_rate=float(lora["learning_rate"]),
-        beta1=float(lora["beta1"]),
-        beta2=float(lora["beta2"]),
-        eps=float(lora["eps"]),
-        weight_decay=float(lora["weight_decay"]),
-        grad_clip_norm=float(lora["grad_clip_norm"]),
-    )
+    params = _optim_params(types, lora)
     steps = 0
     batch_size = int(lora["batch_size"])
     epochs = int(lora["epochs"])
@@ -394,7 +427,7 @@ def _fit(client, types, lora: dict, train_rows: list[dict], *, class_weight: dic
                 for index in order[start : start + batch_size]
             ]
             forward = client.forward_backward(batch, lora["loss_fn"])
-            optim = client.optim_step(optim_params=adam)
+            optim = client.optim_step(optim_params=params)
             forward.result()
             optim.result()
             steps += 1
