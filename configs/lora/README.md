@@ -51,3 +51,8 @@ scripts/train/train_lora.py weights original confirmed parents at ORIGINAL_LOSS_
 ## Router run: `qwen3-4b-router-r16.json`
 
 Separate from the posture adapter. Entry point: `scripts/router/train_router.py`. The configured base was `Qwen/Qwen3-4B`. Tinker rejected that id, so the landed run used `Qwen/Qwen3.5-4B`. Rank 16, alpha 16, two epochs, 168 steps, batch 16, max sequence 3072, seed 0. Learning rate 0.000473, the same audited rate as the posture rank-16 run, under the 0.0005 cap. MLP and attention on, unembed off. The assistant target is the content label only. The sealed router file is not a training input and is not scored by this entry point. A run without `TINKER_API_KEY` stops before any client is constructed.
+
+
+## Optimizer (AdamW / Dimuon)
+
+`optimizer` in the LoRA config selects the Tinker family: `adamw` (default) or `dimuon`. The training client is created with the matching `*OptimizerConfig`, and each step uses the matching `*Params`. Dimuon learning rates are not interchangeable with AdamW; Tinker's guide puts the SFT starting point near 15× a tuned AdamW rate (roughly 10–100×). Keep `beta1=0.9` and leave gradient clipping off for Dimuon unless a later sweep says otherwise. The router Dimuon A/B config is `configs/lora/qwen3-4b-router-r16-dimuon.json` with `configs/router/train_v7_dimuon.json` (same v7 data and seed as the AdamW baseline).

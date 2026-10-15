@@ -259,6 +259,7 @@ class _Client:
     def __init__(self) -> None:
         self.saved: list[str] = []
         self.forward_calls = 0
+        self.optims: list[object] = []
 
     def get_tokenizer(self):
         return _Tokenizer()
@@ -268,6 +269,7 @@ class _Client:
         return _Saved("ok")
 
     def optim_step(self, optim_params):
+        self.optims.append(optim_params)
         return _Saved("ok")
 
     def save_weights_for_sampler(self, name):
@@ -313,6 +315,22 @@ class _Sdk:
             class AdamParams:
                 def __init__(self, **kwargs):
                     self.kwargs = kwargs
+                    self.family = "adamw"
+
+            class DimuonParams:
+                def __init__(self, **kwargs):
+                    self.kwargs = kwargs
+                    self.family = "dimuon"
+
+            class AdamOptimizerConfig:
+                def __init__(self, **kwargs):
+                    self.kwargs = kwargs
+                    self.family = "adamw"
+
+            class DimuonOptimizerConfig:
+                def __init__(self, **kwargs):
+                    self.kwargs = kwargs
+                    self.family = "dimuon"
 
         self.types = Types
 
@@ -439,3 +457,31 @@ def test_proposed_split_stays_isolated_and_still_rejects_sealed_keys(repo_root: 
                 [{"project_id": sample["project"], "excerpt": "probe"}],
                 exclusions,
             )
+
+
+def test_fit_uses_dimuon_when_configured(repo_root: Path) -> None:
+    lora = json.loads((repo_root / "configs" / "lora" / "qwen3-4b-router-r16-dimuon.json").read_text(encoding="utf-8"))
+    labels = load_labels(repo_root / "configs" / "router" / "labels.json")
+    rows = training_examples(
+        [{"label": labels[0], "excerpt": "body", "project_id": "p", "doc_id": "d"}],
+        labels,
+    )
+    sdk = _Sdk()
+    trained = fit_router(lora, rows, sdk=sdk)
+    assert sdk.service.kwargs["optimizer"].family == "dimuon"
+    assert sdk.client.optims[0].family == "dimuon"
+    assert sdk.client.optims[0].kwargs["learning_rate"] == pytest.approx(0.007095)
+    assert trained["steps"] >= 1
+
+
+def test_fit_defaults_to_adamw_optimizer(repo_root: Path) -> None:
+    lora = json.loads((repo_root / "configs" / "lora" / "qwen3-4b-router-r16.json").read_text(encoding="utf-8"))
+    labels = load_labels(repo_root / "configs" / "router" / "labels.json")
+    rows = training_examples(
+        [{"label": labels[0], "excerpt": "body", "project_id": "p", "doc_id": "d"}],
+        labels,
+    )
+    sdk = _Sdk()
+    fit_router(lora, rows, sdk=sdk)
+    assert sdk.service.kwargs["optimizer"].family == "adamw"
+    assert sdk.client.optims[0].family == "adamw"
