@@ -1,5 +1,5 @@
 {
-  "train_rows": 1719,
+  "train_rows": 1731,
   "content_gate_failed_by_label": {
     "BOQ": 4,
     "RFI": 9,
@@ -183,15 +183,15 @@
     "other": []
   },
   "contrastive": {
-    "rows": 797,
+    "rows": 802,
     "by_label": {
       "RFI": 27,
       "submittal": 30,
       "transmittal": 12,
       "VO/CO": 48,
       "change request": 47,
-      "claim": 25,
-      "payment application": 36,
+      "claim": 27,
+      "payment application": 38,
       "payment certificate": 12,
       "drawing": 48,
       "specification": 48,
@@ -205,7 +205,7 @@
       "NCR": 18,
       "inspection request": 46,
       "site instruction": 44,
-      "register/log": 42
+      "register/log": 43
     },
     "by_edge": {
       "BOQ | payment certificate": 16,
@@ -240,10 +240,10 @@
       "claim | RFI": 4,
       "claim | VO/CO": 4,
       "claim | change request": 4,
-      "claim | correspondence": 3,
+      "claim | correspondence": 4,
       "claim | payment application": 4,
       "claim | register/log": 3,
-      "claim | report": 3,
+      "claim | report": 4,
       "contract | VO/CO": 12,
       "contract | meeting minutes": 12,
       "contract | payment application": 12,
@@ -275,17 +275,17 @@
       "meeting minutes | transmittal": 8,
       "method statement | site instruction": 13,
       "method statement | specification": 13,
-      "payment application | claim": 9,
+      "payment application | claim": 10,
       "payment application | contract": 9,
       "payment application | correspondence": 9,
-      "payment application | report": 9,
+      "payment application | report": 10,
       "payment certificate | BOQ": 3,
       "payment certificate | VO/CO": 3,
       "payment certificate | register/log": 3,
       "payment certificate | report": 3,
       "register/log | BOQ": 3,
       "register/log | NCR": 3,
-      "register/log | RFI": 3,
+      "register/log | RFI": 4,
       "register/log | VO/CO": 3,
       "register/log | change request": 3,
       "register/log | claim": 3,
@@ -333,7 +333,7 @@
       "payment application": {
         "application": 13,
         "certificate": 1,
-        "indeterminate": 22
+        "indeterminate": 24
       },
       "payment certificate": {
         "application": 1,
@@ -369,17 +369,17 @@
       "site instruction"
     ],
     "qualifying": {
-      "correspondence": 65,
+      "correspondence": 66,
       "other": 231,
       "report": 109,
-      "register/log": 39
+      "register/log": 40
     },
-    "rows": 183,
+    "rows": 184,
     "by_label": {
       "correspondence": 48,
       "other": 48,
       "report": 48,
-      "register/log": 39
+      "register/log": 40
     }
   }
 }
