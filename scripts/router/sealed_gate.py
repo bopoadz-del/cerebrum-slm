@@ -91,6 +91,11 @@ def evaluate_sealed_gate(
 MIN_SEALED_PER_LABEL = 12
 
 
+def per_label_n(gold: list[str], labels: list[str]) -> dict[str, int]:
+    """Sealed gold rows per declared label. The one count used by every consumer."""
+    return {label: sum(1 for item in gold if item == label) for label in labels}
+
+
 def evaluate_sealed_gate_v8(
     gold: list[str],
     pred: list[str],
@@ -112,9 +117,10 @@ def evaluate_sealed_gate_v8(
     )
     aligned = bool(gold) and len(gold) == len(pred)
     recalls = per_label_recall(gold, pred, labels) if aligned else {}
+    counts = per_label_n(gold, labels)
     per_label: list[dict] = []
     for label in labels:
-        n = sum(1 for item in gold if item == label)
+        n = counts[label]
         recall = None if n == 0 or not aligned else recalls[label]
         passable = n >= MIN_SEALED_PER_LABEL
         row: dict = {

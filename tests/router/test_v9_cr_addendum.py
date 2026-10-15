@@ -10,6 +10,7 @@ from pathlib import Path
 
 from router.isolation import load_exclusions, rejected_rows
 from router.labels import load_labels, load_sealed_config
+from router.sealed_counts import sealed_counts
 from router.sealed_gate import MIN_SEALED_PER_LABEL, evaluate_sealed_gate_v8
 from router.train_router import rows_from_pool
 
@@ -93,7 +94,8 @@ def test_v9_config_lists_the_sets_and_counts_match_the_files(repo_root: Path) ->
         assert len(rows) == item["rows"]
         combined.update(row["label"] for row in rows)
     assert v9["combined"]["rows"] == sum(combined.values())
-    assert v9["combined"]["per_label_n"] == {label: combined.get(label, 0) for label in labels}
+    assert "per_label_n" not in v9["combined"]
+    assert sealed_counts(repo_root, v9, labels)["per_label_n"] == {label: combined.get(label, 0) for label in labels}
     assert v9["min_sealed_per_label"] == MIN_SEALED_PER_LABEL
     assert v9["score_once_per_adapter"] is True
 

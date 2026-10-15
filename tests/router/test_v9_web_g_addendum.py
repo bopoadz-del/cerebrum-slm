@@ -8,6 +8,7 @@ from pathlib import Path
 
 from router.labels import load_labels, load_sealed_config
 from router.seal_addendum import exhausted_pairs, pair_counts
+from router.sealed_counts import sealed_counts
 from router.sealed_gate import MIN_SEALED_PER_LABEL
 from router.strip_source_tags import row_has_path
 
@@ -150,8 +151,9 @@ def test_gap_table_matches_the_registered_sets(repo_root: Path) -> None:
     assert gap["combined_after"] == v9["combined"]["rows"] == sum(before.values()) + _mine(repo_root)["rows"]
     assert sum(item["rows"] for item in v9["sets"]) == v9["combined"]["rows"]
     assert [row["label"] for row in gap["per_label"]] == labels
+    after = sealed_counts(repo_root, v9, labels)["per_label_n"]
     for row in gap["per_label"]:
         assert row["before"] == before.get(row["label"], 0)
-        assert row["after"] == v9["combined"]["per_label_n"][row["label"]] == row["before"] + row["added"]
+        assert row["after"] == after[row["label"]] == row["before"] + row["added"]
         assert row["passable_before"] is (row["before"] >= MIN_SEALED_PER_LABEL)
         assert row["passable_after"] is (row["after"] >= MIN_SEALED_PER_LABEL)

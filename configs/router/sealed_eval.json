@@ -76,32 +76,8 @@
       }
     ],
     "combined": {
-      "rule": "concatenation of the sets in this order; nothing swapped; per-label n counts rows of every set",
-      "rows": 319,
-      "per_label_n": {
-        "RFI": 12,
-        "submittal": 18,
-        "transmittal": 13,
-        "VO/CO": 16,
-        "change request": 14,
-        "claim": 10,
-        "payment application": 10,
-        "payment certificate": 15,
-        "drawing": 18,
-        "specification": 18,
-        "schedule": 19,
-        "report": 23,
-        "correspondence": 19,
-        "BOQ": 12,
-        "contract": 12,
-        "method statement": 14,
-        "meeting minutes": 14,
-        "NCR": 12,
-        "inspection request": 3,
-        "site instruction": 11,
-        "register/log": 15,
-        "other": 21
-      }
+      "rule": "concatenation of the sets in this order; nothing swapped; per-label n is never stored here: it is counted from the sealed_labels files of the sets actually scored, by router.sealed_counts (sealed_counts / counts_for_scores)",
+      "rows": 319
     },
     "min_sealed_per_label": 12,
     "gate": "router.sealed_gate.evaluate_sealed_gate_v8 (gate v2 + MIN_SEALED_PER_LABEL), unchanged",
