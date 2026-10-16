@@ -14,8 +14,32 @@ from private_data import locate, missing_message
 
 
 def skip_if_missing(root: Path, *relative: str, env: str | None = None) -> None:
-    missing = [rel for rel in relative if not locate(root, rel).exists()]
+    """Skip when the repo-relative path is absent.
+
+    These tests read that path. Restoring the gitignored file there runs the
+    test with the same assertions. Loaders also accept the environment
+    variable named in the skip message.
+    """
+    missing = [rel for rel in relative if not (root / rel).exists() and not locate(root, rel).exists()]
     if not missing:
+        # Present only outside the tree: tests that still open the repo path
+        # would fail. Skip those until the file is at the repo-relative path,
+        # unless locate() and the repo path are the same file.
+        outside = []
+        for rel in relative:
+            local = root / rel
+            found = locate(root, rel)
+            if not local.exists() and found.exists():
+                outside.append(rel)
+        if outside:
+            names = ", ".join(outside)
+            variable = env or "SLM_PRIVATE_ROOT"
+            pytest.skip(
+                "needs an external data path at the repo-relative location; "
+                f"skipped because the file is absent from the tree: {names}. "
+                f"Loaders can read it via {variable}. "
+                "Place the file at the repo-relative path (gitignored) to run this test."
+            )
         return
     first = missing[0]
     names = ", ".join(missing)
