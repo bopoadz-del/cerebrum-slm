@@ -30,6 +30,7 @@ _CHECKPOINT = {
     ".h5",
     ".npz",
 }
+_BOX = "/" + "workspace" + "/"
 _JSONL_PREFIXES = (
     "data/held_out/",
     "data/train/",
@@ -63,7 +64,7 @@ def test_no_archive_or_checkpoint_blobs() -> None:
 def test_removed_data_locations_are_untracked() -> None:
     bad = []
     for rel in _tracked():
-        if "/workspace/" in rel:
+        if _BOX in rel:
             bad.append(rel)
         if rel.startswith("data/router/v5_snapshot/"):
             bad.append(rel)
@@ -87,7 +88,7 @@ def test_removed_data_locations_are_untracked() -> None:
             text = (ROOT / rel).read_text(encoding="utf-8")
         except (OSError, UnicodeError):
             continue
-        if "/workspace/" in text:
+        if _BOX in text:
             bad.append(rel)
     assert bad == []
 
