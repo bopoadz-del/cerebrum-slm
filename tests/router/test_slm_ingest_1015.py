@@ -15,7 +15,11 @@ from router.labels import confidence_floor, load_labels, load_sealed_config
 from router.strip_source_tags import row_has_path
 
 ADDS = "data/router/additions_slm_ingest_1015.jsonl"
+RESIDUE = "data/router/slm_ingest_1015_box_side_residue.json"
 PENDING_GLOB = "*sealed_candidates_isolation.json"
+_RESIDUE_FORBIDDEN = frozenset(
+    {"excerpt", "text", "body", "content", "raw", "document", "quote", "name"}
+)
 
 
 def _rows(root: Path, rel: str) -> list[dict]:
@@ -181,6 +185,63 @@ def test_added_rows_respect_the_ten_percent_project_cap(repo_root: Path) -> None
     for row in _rows(repo_root, ADDS):
         key = (row["project_id"], row["label"])
         assert per_project[key] <= math.floor(0.10 * per_label[row["label"]]), key
+
+
+def _reject_residue_text(obj: object) -> None:
+    if isinstance(obj, dict):
+        for key, value in obj.items():
+            assert key.casefold() not in _RESIDUE_FORBIDDEN
+            _reject_residue_text(value)
+    elif isinstance(obj, list):
+        for item in obj:
+            _reject_residue_text(item)
+    elif isinstance(obj, str):
+        assert len(obj) <= 160
+        assert "\n" not in obj
+
+
+def test_box_side_residue_table_covers_eleven_rows_without_excerpts(
+    repo_root: Path,
+) -> None:
+    """The 11 box-side rows are not stored. The table is ids, counts, and labels."""
+    table = json.loads((repo_root / RESIDUE).read_text(encoding="utf-8"))
+    _reject_residue_text(table)
+    counts = json.loads(
+        (repo_root / "data" / "router" / "split_counts.json").read_text(
+            encoding="utf-8"
+        )
+    )["slm_ingest_1015"]
+    assert table["spec_rows"] == counts["rows"] == 23
+    assert table["repo_rows"] == counts["rows_in_train"] == len(_rows(repo_root, ADDS))
+    assert table["box_side_rows"] == counts["rows_to_dev_box_side"] == 11
+    assert table["rows_in_val"] == 0
+    assert table["excerpt_stored"] is False
+    assert table["amount_rerun"] == "deferred"
+    rows = table["rows"]
+    assert len(rows) == 11
+    assert all(row["rows"] == 1 and row["doc_id"] is None for row in rows)
+    by_label = Counter(row["label"] for row in rows)
+    assert dict(by_label) == {
+        label: rec["dev"] for label, rec in counts["by_label"].items() if rec["dev"]
+    }
+    assert dict(by_label) == table["by_label"]
+    by_tag = Counter(row["dev_tag"] for row in rows)
+    assert dict(by_tag) == counts["dev_tags"] == table["dev_tags"]
+    by_source = Counter(row["source_id"] for row in rows)
+    dev_sources = {
+        source
+        for source, rec in counts["by_source"].items()
+        if rec["rows_dev"]
+    }
+    assert set(by_source) == dev_sources
+    for source, produced in by_source.items():
+        rec = counts["by_source"][source]
+        assert produced == rec["rows_dev"]
+        assert {row["label"] for row in rows if row["source_id"] == source} <= set(
+            rec["labels"]
+        )
+    assert sum(by_label.values()) == 11
+    assert sum(by_tag.values()) == 11
 
 
 def test_split_counts_record_matches(repo_root: Path) -> None:

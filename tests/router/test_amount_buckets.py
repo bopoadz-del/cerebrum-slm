@@ -112,20 +112,30 @@ def test_dot_grouped_amounts_exact() -> None:
     _exact("14.3", "14.3", 0)
 
 
-def test_mixed_separators_stay_exact() -> None:
-    samples = (
-        "1,234 567",
-        "1 234,567",
-        "1,234 567,890",
-        "1,234 567.89",
-        "123 456,789",
-        "1, 234,567",
-        "AED 1,234 567",
-        "8 765\u00a0432",
-        "1,250\u00a0000",
-        "1\u00a0234 567",
+def test_mixed_separators_exact() -> None:
+    _exact("1,234 567", "<AMT:~1e6>", 1)
+    _exact("1 234,567", "<AMT:~1e6>", 1)
+    _exact("1,234 567,890", "<AMT:~1e9>", 1)
+    _exact("1,234 567.89", "<AMT:~1e6>", 1)
+    _exact("123 456,789", "<AMT:~1e8>", 1)
+    _exact("1, 234,567", "<AMT:~1e6>", 1)
+    _exact("AED 1,234 567", "AED <AMT:~1e6>", 1)
+    _exact("AED 1,234 567.89 75 only", "AED <AMT:~1e6> only", 1)
+    _exact("8 765\u00a0432", "<AMT:~1e6>", 1)
+    _exact("1,250\u00a0000", "<AMT:~1e6>", 1)
+    _exact("1\u00a0234 567", "<AMT:~1e6>", 1)
+    # A short group, a slash, a unit, a schedule word, a phone cue, or a leading zero stays.
+    stayed = (
+        "1,23 456",
+        "12,34 567",
+        "1,234/567",
+        "1,234 567 kg",
+        "item 1,234 567",
+        "schedule 8 765\u00a0432",
+        "tel 123,456 789",
+        "01,234 567",
     )
-    for raw in samples:
+    for raw in stayed:
         _exact(raw, raw, 0)
 
 
@@ -208,9 +218,29 @@ def test_minor_unit_and_hundredths_tails_exact() -> None:
     _exact("balance <AMT:~1e7> 99 payable", "balance <AMT:~1e7> payable", 1)
     _exact("net <AMT:~1e5> and 99/100 fils due", "net <AMT:~1e5> due", 1)
     _exact("AED 8,765,432 75 only", "AED <AMT:~1e6> only", 1)
+    _exact("AED 1,250.00 75 only", "AED <AMT:~1e3> only", 1)
     _exact("USD 3,250.00 and 05/100 cents flat", "USD <AMT:~1e3> flat", 1)
     _exact("fee <AMT:~1e4> and 25/100 halalas net", "fee <AMT:~1e4> net", 1)
     _exact("part <AMT:~1e2> 9/12", "part <AMT:~1e2> 9/12", 0)
+
+
+def test_minor_column_and_hundredths_together_exact() -> None:
+    cases = (
+        ("AED 8,765,432 75 and 50/100 only", "AED <AMT:~1e6> only", 1),
+        ("USD 3,250.00 05 and 50/100 cents flat", "USD <AMT:~1e3> flat", 1),
+        (
+            "balance <AMT:~1e7> 99 and 25/100 fils payable",
+            "balance <AMT:~1e7> payable",
+            1,
+        ),
+        ("AED 1,234 567 75 and fils 50/100 only", "AED <AMT:~1e6> only", 1),
+    )
+    for raw, expected, count in cases:
+        _exact(raw, expected, count)
+        once, n_once = bucket_amounts(raw)
+        twice, n_twice = bucket_amounts(once)
+        assert twice == once == expected
+        assert n_once == count and n_twice == 0
 
 
 def test_redacting_already_redacted_text_changes_nothing() -> None:
@@ -220,11 +250,15 @@ def test_redacting_already_redacted_text_changes_nothing() -> None:
         "bill 4 <AMT:~1e6> 99"
     )
     expected = (
-        "pay <AMT:~1e3> and <AMT:~1e6> and <AMT:~1e6> and 1,234 567 "
+        "pay <AMT:~1e3> and <AMT:~1e6> and <AMT:~1e6> and <AMT:~1e6> "
         "and 01,250 kg on 05/07/2023 ref <REF> "
         "bill <ROW> <AMT:~1e6>"
     )
-    _exact(raw, expected, 6)
+    _exact(raw, expected, 7)
     twice, second = bucket_amounts(expected)
     assert twice == expected
     assert second == 0
+    again, third = bucket_amounts(raw)
+    stable, fourth = bucket_amounts(again)
+    assert stable == again == expected
+    assert third == 7 and fourth == 0

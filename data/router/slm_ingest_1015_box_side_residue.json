@@ -1,0 +1,100 @@
+{
+  "order": "ORDERS_1838Z_SLM",
+  "spec_rows": 23,
+  "repo_rows": 12,
+  "box_side_rows": 11,
+  "rows_in_val": 0,
+  "excerpt_stored": false,
+  "amount_rerun": "deferred",
+  "grade": "12 repo ingest rows plus this table",
+  "doc_id_note": "box-side doc ids are not in the repo; source_id is the stored id",
+  "dev_tags": {
+    "other_train_cap_300": 4,
+    "project_cap_10pct": 7
+  },
+  "by_label": {
+    "payment application": 2,
+    "schedule": 1,
+    "other": 4,
+    "payment certificate": 4
+  },
+  "rows": [
+    {
+      "source_id": "slm_src_c588b2cb8ade",
+      "label": "schedule",
+      "dev_tag": "project_cap_10pct",
+      "rows": 1,
+      "doc_id": null
+    },
+    {
+      "source_id": "slm_src_ac6e38cd7b6f",
+      "label": "other",
+      "dev_tag": "other_train_cap_300",
+      "rows": 1,
+      "doc_id": null
+    },
+    {
+      "source_id": "slm_src_1b61fba31fd7",
+      "label": "other",
+      "dev_tag": "other_train_cap_300",
+      "rows": 1,
+      "doc_id": null
+    },
+    {
+      "source_id": "slm_src_e248324420ca",
+      "label": "other",
+      "dev_tag": "other_train_cap_300",
+      "rows": 1,
+      "doc_id": null
+    },
+    {
+      "source_id": "slm_src_e248324420ca",
+      "label": "payment certificate",
+      "dev_tag": "project_cap_10pct",
+      "rows": 1,
+      "doc_id": null
+    },
+    {
+      "source_id": "slm_src_18b8f648c02a",
+      "label": "payment certificate",
+      "dev_tag": "project_cap_10pct",
+      "rows": 1,
+      "doc_id": null
+    },
+    {
+      "source_id": "slm_src_e943b1e7181e",
+      "label": "payment certificate",
+      "dev_tag": "project_cap_10pct",
+      "rows": 1,
+      "doc_id": null
+    },
+    {
+      "source_id": "slm_src_ffd8f547482c",
+      "label": "other",
+      "dev_tag": "other_train_cap_300",
+      "rows": 1,
+      "doc_id": null
+    },
+    {
+      "source_id": "slm_src_ffd8f547482c",
+      "label": "payment certificate",
+      "dev_tag": "project_cap_10pct",
+      "rows": 1,
+      "doc_id": null
+    },
+    {
+      "source_id": "slm_src_0114f08fad68",
+      "label": "payment application",
+      "dev_tag": "project_cap_10pct",
+      "rows": 1,
+      "doc_id": null
+    },
+    {
+      "source_id": "slm_src_88522b915a3f",
+      "label": "payment application",
+      "dev_tag": "project_cap_10pct",
+      "rows": 1,
+      "doc_id": null
+    }
+  ]
+}

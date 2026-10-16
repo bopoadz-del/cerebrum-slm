@@ -2,10 +2,13 @@
 
 One tokenizer pass. The text is split on whitespace and punctuation. Ordinary
 space, NBSP (U+00A0), thin space (U+2009) and narrow NBSP (U+202F) are
-separator variants. Digit groups join a single candidate only when every
-joiner in the run is the same string (comma-comma, space-space, NBSP-NBSP,
-dot-dot). A mixed run (comma then space, or two space variants) stays whole.
-It is not split into an amount plus a leftover prefix.
+separator variants. Digit groups join one candidate across comma, dot, and
+space-variant separators. A uniform run uses a single joiner string. A mixed
+run (comma then space, or two space variants) is an amount when every group
+after the first is exactly three digits, plus an optional ``.dd``, and no
+date, phone, unit, or schedule guard fires. Magnitude is the digits with
+every separator removed. Any other mixed run stays whole. It is not split
+into an amount plus a leftover prefix.
 
 Each candidate is classified once: amount, date, phone, unit quantity,
 schedule or BOQ row, or code. Amounts become ``<AMT:~1eN>`` with
@@ -444,20 +447,52 @@ def _word_spans(tokens: list[Tok]) -> list[tuple[int, int, str]]:
     return spans
 
 
+def _grouping_joiner(text: str) -> bool:
+    return _joiner_kind(text) in {"comma", "space", "dot"}
+
+
+def _peel_decimal(
+    groups: list[str], joiners: list[str]
+) -> tuple[list[str], list[str], str | None]:
+    """Split a trailing ``.dd`` off a run. Other dots stay grouping separators."""
+    if (
+        joiners
+        and joiners[-1] == "."
+        and len(groups[-1]) == 2
+        and (len(joiners) == 1 or all(item != "." for item in joiners[:-1]))
+    ):
+        return groups[:-1], joiners[:-1], groups[-1]
+    return groups, joiners, None
+
+
+def _mixed_thousands(groups: list[str], joiners: list[str]) -> bool:
+    """True when a mixed run is still one thousands-grouped amount."""
+    if len(joiners) < 2 or len(set(joiners)) == 1:
+        return False
+    if not all(_grouping_joiner(item) for item in joiners):
+        return False
+    return _thousands(groups, short_final=False) and not _padded(groups)
+
+
 def _head_is_amount(groups: list[str], joiners: list[str]) -> bool:
     """True when the groups so far are already one amount, before a minor-unit tail."""
-    if not joiners or len(set(joiners)) != 1:
+    if not joiners:
         return False
-    kind = _joiner_kind(joiners[0])
-    if kind == "dot" and len(joiners) == 1 and len(groups[-1]) == 2:
+    if len(joiners) == 1 and joiners[0] == "." and len(groups[-1]) == 2:
         return not _padded([groups[0]])
-    if kind == "dot" and len(joiners) >= 2 and _thousands(groups, False) and not _padded(groups):
+    g, j, _decimal = _peel_decimal(groups, joiners)
+    if not j:
+        return False
+    if len(set(j)) != 1:
+        return _mixed_thousands(g, j)
+    kind = _joiner_kind(j[0])
+    if kind == "dot" and len(j) >= 2 and _thousands(g, False) and not _padded(g):
         return True
     if (
         kind in {"comma", "space"}
-        and _thousands(groups, False)
-        and not _padded(groups)
-        and not _is_year(groups, None)
+        and _thousands(g, False)
+        and not _padded(g)
+        and not _is_year(g, None)
     ):
         return True
     return False
@@ -673,28 +708,29 @@ def _classify_chain(
             return "amount"
         return "bare"
 
-    decimal: str | None = None
-    g = groups
-    j = joiners
+    g, j, decimal = _peel_decimal(groups, joiners)
     if (
-        j[-1] == "."
-        and len(g[-1]) == 2
-        and (len(j) == 1 or all(item != "." for item in j[:-1]))
+        decimal is not None
+        and len(joiners) == 1
     ):
-        if len(j) == 1:
-            if _structural(tokens, first) or _unit_after(tokens, last) or _month_after(tokens, last):
-                return "leave"
-            if _padded([g[0]]):
-                return "leading-zero"
-            if _phone_cue(text, tokens, first):
-                return "phone"
-            return "amount"
-        decimal = g[-1]
-        g = g[:-1]
-        j = j[:-1]
+        if _structural(tokens, first) or _unit_after(tokens, last) or _month_after(tokens, last):
+            return "leave"
+        if _padded([g[0]]):
+            return "leading-zero"
+        if _phone_cue(text, tokens, first):
+            return "phone"
+        return "amount"
 
     if len(set(j)) != 1:
-        return "mixed"
+        if not _mixed_thousands(g, j):
+            return "mixed"
+        if _is_date_groups(g) or _is_year(g, decimal) or _month_after(tokens, last):
+            return "date"
+        if _phone_cue(text, tokens, first):
+            return "phone"
+        if _unit_after(tokens, last) or _structural(tokens, first):
+            return "leave"
+        return "amount"
 
     kind = _joiner_kind(j[0])
     if kind == "slash":
@@ -798,14 +834,25 @@ def _match_hundredths(tokens: list[Tok], k: int) -> int | None:
 
 
 def _tail_end(tokens: list[Tok], index: int) -> int:
-    base = tokens[index].end
-    hundredths = _match_hundredths(tokens, index + 1)
-    if hundredths is not None:
-        return hundredths
-    minor = _match_minor(tokens, index + 1)
-    if minor is not None:
-        return minor
-    return base
+    """Fold a minor-unit column and a following ``NN/100`` tail until fixpoint."""
+    end = tokens[index].end
+    k = index + 1
+    n = len(tokens)
+    while k < n:
+        if tokens[k].start > end:
+            break
+        if tokens[k].start < end:
+            k += 1
+            continue
+        nxt = _match_hundredths(tokens, k)
+        if nxt is None:
+            nxt = _match_minor(tokens, k)
+        if nxt is None or nxt <= end:
+            break
+        end = nxt
+        while k < n and tokens[k].start < end:
+            k += 1
+    return end
 
 
 def _digit_spans(text: str, tokens: list[Tok]) -> list[tuple[int, int, str]]:
