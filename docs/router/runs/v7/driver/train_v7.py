@@ -1,6 +1,6 @@
 """Router run v7 driver (v9, 22 labels). Mechanism: configs/router/train_v7.json via router.train_router.fit_router_v7.
 
-Tree: the staged PR-A tree (main 729a358 + bundle A), read-only at /workspace/router-v7/train_tree_A; its git tree hash must equal
+Tree: the staged PR-A tree (main 729a358 + bundle A), read-only at SLM_DATA_ROOT its git tree hash must equal
 STAGED_TREE, which is what the squash-merge of PR A must produce. Data: data/router/train.jsonl (1719) and val.jsonl (901) exactly as on
 729a358, plus the committed v7 pair refs materialised by router.v7_pairs.v7_training_examples (980). Train rows are rebuilt with
 train_router.training_examples and must equal the merged rows. Class weights: read from data/router/v7/class_weights.json by

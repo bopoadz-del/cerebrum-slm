@@ -8,6 +8,8 @@ import json
 from collections import Counter
 from pathlib import Path
 
+import pytest
+
 from router.isolation import load_exclusions, rejected_rows
 from router.labels import load_labels, load_sealed_config
 from router.sealed_gate import MIN_SEALED_PER_LABEL, evaluate_sealed_gate_v8
@@ -74,6 +76,8 @@ def test_addendum_swaps_nothing_in_other_sealed_sets(repo_root: Path) -> None:
 
 def test_every_sealed_set_is_isolated_from_training_pools(repo_root: Path) -> None:
     """Generic: every sealed file under router_unseen against train, val and every pool file."""
+    if not (repo_root / "data" / "router" / "train.jsonl").is_file():
+        pytest.skip("off-repo data absent")
     base = repo_root / "data" / "eval" / "router_unseen"
     pools = sorted((repo_root / "data" / "router").glob("*.jsonl"))
     assert any(path.name == "train.jsonl" for path in pools) and any(path.name == "val.jsonl" for path in pools)

@@ -115,6 +115,9 @@ class TrainResult:
 
 
 def repo_root() -> Path:
+    override = os.environ.get("SLM_DATA_ROOT", "").strip()
+    if override:
+        return Path(override)
     return Path(__file__).resolve().parents[2]
 
 

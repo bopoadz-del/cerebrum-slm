@@ -1,11 +1,23 @@
 """Shared helpers for the router run driver. Never prints secret values."""
+
 from __future__ import annotations
 
 import os
 import sys
 from pathlib import Path
 
-REPO = Path("/workspace/router-v7/train_tree_A")  # read-only copy of the staged PR-A tree (729a358 + bundle A), git tree verified by the driver
+def _data_root() -> Path:
+    override = __import__("os").environ.get("SLM_DATA_ROOT", "").strip()
+    if override:
+        return Path(override)
+    here = Path(__file__).resolve()
+    for parent in here.parents:
+        if (parent / "pyproject.toml").is_file():
+            return parent
+    return here.parent
+
+
+REPO = _data_root() / "router-v7/train_tree_A"  # read-only copy of the staged PR-A tree (729a358 + bundle A), git tree verified by the driver
 for entry in (REPO / "scripts", REPO / "src", REPO):
     text = str(entry)
     if text not in sys.path:

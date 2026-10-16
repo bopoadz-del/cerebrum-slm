@@ -140,7 +140,7 @@ def main():
     else:
         say(f'RESUME {a.phase}: marker present, no final output; sampling only rows missing from {partial.name}')
     from common import load_env_file
-    names = load_env_file(Path('/workspace/slm-secrets/tinker.env'))
+    names = load_env_file(Path(__import__("os").environ["TINKER_ENV_FILE"]))
     say(f'env names loaded: {len(names)}; phase={a.phase}')
     import tinker
     service = tinker.ServiceClient()

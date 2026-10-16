@@ -4,21 +4,33 @@ phase "score": normal text, scored once (marker refuses a second run).
 phase "blind": the same rows with title-block/party fields blanked by router.name_blind, same settings.
 Never prints secrets.
 """
+
 from __future__ import annotations
 import argparse, hashlib, json, sys, time
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-ROOT = Path('/workspace/router-relabel-v8')
+def _data_root() -> Path:
+    override = __import__("os").environ.get("SLM_DATA_ROOT", "").strip()
+    if override:
+        return Path(override)
+    here = Path(__file__).resolve()
+    for parent in here.parents:
+        if (parent / "pyproject.toml").is_file():
+            return parent
+    return here.parent
+
+
+ROOT = _data_root() / "router-relabel-v8"
 REPO = ROOT / 'main'                     # byte-exact main 868e5af (git LF blobs verified)
 BLIND_SRC = ROOT / 'pr5/repo/scripts/router/name_blind.py'
 OUT = ROOT / 'score_v9/out'
 CKPT = 'tinker://34e98763-665a-534a-906f-651cc7e8c6f3:train:0/sampler_weights/router-v3-qwen3.5-4b-lora-r16-epoch1'
 MAIN_SHA = '868e5aff8dbee6e7d0ef65b3f7f598a01ce248a4'
 SETS = {
-    'v5': ('data/eval/router_unseen/v9_retick/v5', [Path('/workspace/router-sealed/seal_inputs/candidates_v5.jsonl'), Path('/workspace/router-sealed/seal_inputs/candidates_addendum.jsonl')], 'sheet_id', 'content_sha256'),
-    'v8': ('data/eval/router_unseen/v9_retick/v8', [Path('/workspace/router-sealed/v8/candidates_v8.jsonl'), Path('/workspace/router-sealed/v8/candidates_v8_addendum.jsonl')], 'id', 'sha256'),
+    'v5': ('data/eval/router_unseen/v9_retick/v5', [_data_root() / "router-sealed/seal_inputs/candidates_v5.jsonl", _data_root() / "router-sealed/seal_inputs/candidates_addendum.jsonl"], 'sheet_id', 'content_sha256'),
+    'v8': ('data/eval/router_unseen/v9_retick/v8', [_data_root() / "router-sealed/v8/candidates_v8.jsonl", _data_root() / "router-sealed/v8/candidates_v8_addendum.jsonl"], 'id', 'sha256'),
 }
 
 
@@ -96,7 +108,7 @@ def main():
         say('WALL: no pre-run note')
         return 3
     sys.path.insert(0, str(REPO / 'scripts'))
-    sys.path.insert(0, '/workspace/router-train/driver')
+    sys.path.insert(0, 'router-train/driver')
     from router.labels import load_labels, load_sealed_config
     from router.teacher_label import prompt_for
     from router.content import content_text
@@ -119,7 +131,7 @@ def main():
     rows = load_rows(content_text, blank)
     marker.write_text(json.dumps({'started': time.strftime('%Y-%m-%dT%H:%M:%S%z'), 'checkpoint': CKPT, 'n': {k: len(v) for k, v in rows.items()},
                                   'system_sha256': sha(system.encode()), 'name_blind_sha256': sha(BLIND_SRC.read_bytes())}) + '\n')
-    names = load_env_file(Path('/workspace/slm-secrets/tinker.env'))
+    names = load_env_file(Path(__import__("os").environ["TINKER_ENV_FILE"]))
     say(f'env names loaded: {len(names)}; checkpoint={CKPT}; phase={a.phase}')
     import tinker
     service = tinker.ServiceClient()

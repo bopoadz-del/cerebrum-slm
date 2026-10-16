@@ -18,11 +18,24 @@ and every model.
 from __future__ import annotations
 
 import json
+import os
 import re
 from functools import lru_cache
 from pathlib import Path
 
-TABLE = Path(__file__).resolve().parent / "data" / "hds5_symbols.json"
+_RELATIVE = Path("eval/graders/data/hds5_symbols.json")
+
+
+def table_path() -> Path:
+    override = os.environ.get("SLM_SYMBOL_TABLE", "").strip()
+    if override:
+        return Path(override)
+    root = os.environ.get("SLM_DATA_ROOT", "").strip()
+    base = Path(root) if root else Path(__file__).resolve().parents[2]
+    return base / _RELATIVE
+
+
+TABLE = table_path()
 _SEPARATORS = re.compile(r"[\s\-_]+")
 _WORD = re.compile(r"[a-z0-9]+")
 _MIN_WORD = 4
@@ -36,10 +49,17 @@ def _words(text: str) -> frozenset[str]:
     return frozenset(_WORD.findall(str(text).casefold()))
 
 
-@lru_cache(maxsize=1)
-def _definitions() -> tuple[tuple[str, frozenset[str]], ...]:
-    table = json.loads(TABLE.read_text(encoding="utf-8"))
+@lru_cache(maxsize=4)
+def _definitions_at(path_text: str) -> tuple[tuple[str, frozenset[str]], ...]:
+    path = Path(path_text)
+    if not path.is_file():
+        return ()
+    table = json.loads(path.read_text(encoding="utf-8"))
     return tuple((fold(row["symbol"]), _words(row["definition"])) for row in table["symbols"])
+
+
+def _definitions() -> tuple[tuple[str, frozenset[str]], ...]:
+    return _definitions_at(str(table_path()))
 
 
 def symbol_for(name: str) -> str | None:

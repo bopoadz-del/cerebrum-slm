@@ -609,7 +609,9 @@ def _refuse_router_sealed(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
         sys.path.insert(0, str(scripts))
     from router.isolation import load_exclusions, require_isolated
 
-    sealed = Path(__file__).resolve().parents[2] / "data" / "eval" / "router_unseen" / "sealed_labels.jsonl"
+    override = __import__("os").environ.get("SLM_DATA_ROOT", "").strip()
+    base = Path(override) if override else Path(__file__).resolve().parents[2]
+    sealed = base / "data" / "eval" / "router_unseen" / "sealed_labels.jsonl"
     return require_isolated(rows, load_exclusions(sealed))
 
 

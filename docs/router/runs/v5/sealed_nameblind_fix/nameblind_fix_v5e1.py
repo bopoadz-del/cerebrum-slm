@@ -6,13 +6,25 @@ re-classified, with the fixed scripts/router/name_blind.py. Same adapter, prompt
 Refuses a second run. Never prints secrets.
 Usage: nameblind_fix_v5e1.py --repo <main 64b1df9 + fix> --tree <tree json of 64b1df9>
 """
+
 from __future__ import annotations
 import argparse, hashlib, json, sys, time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-OUT = Path('/workspace/router-relabel-v8/score_v5/out_nameblind_fix')
-STORED = Path('/workspace/router-relabel-v8/score_v5/out')
+def _data_root() -> Path:
+    override = __import__("os").environ.get("SLM_DATA_ROOT", "").strip()
+    if override:
+        return Path(override)
+    here = Path(__file__).resolve()
+    for parent in here.parents:
+        if (parent / "pyproject.toml").is_file():
+            return parent
+    return here.parent
+
+
+OUT = _data_root() / "router-relabel-v8/score_v5/out_nameblind_fix"
+STORED = _data_root() / "router-relabel-v8/score_v5/out"
 FIXED_FILES = {'scripts/router/name_blind.py', 'tests/router/test_name_blind.py'}
 
 
@@ -36,7 +48,7 @@ def main():
     bad = [p for p, s in tree.items() if p not in FIXED_FILES and (not (REPO / p).is_file() or blob((REPO / p).read_bytes()) != s)]
     if bad:
         say(f'WALL: repo differs from {tree_doc["sha"][:7]} outside the fix at {len(bad)} files'); return 3
-    sys.path.insert(0, str(REPO / 'scripts')); sys.path.insert(0, '/workspace/router-train/driver'); sys.path.insert(0, '/workspace/router-relabel-v8/score_v5')
+    sys.path.insert(0, str(REPO / 'scripts')); sys.path.insert(0, 'router-train/driver'); sys.path.insert(0, 'router-relabel-v8/score_v5')
     import score_v5e1_v9 as base
     from router.labels import load_labels, load_sealed_config
     from router.teacher_label import prompt_for
@@ -72,7 +84,7 @@ def main():
     marker.write_text(json.dumps({'started': time.strftime('%Y-%m-%dT%H:%M:%S%z'), 'kind': 'name-blind check fix, blanked side only', 'checkpoint': ckpt,
                                   'base_commit': tree_doc['sha'], 'blanker_sha256': blanker_sha, 'system_sha256': started_score['system_sha256'],
                                   'unblanked_side': 'stored docs/router/runs/v5/sealed/sealed_predictions.jsonl (not re-sampled)', 'n': len(items)}) + '\n')
-    names = load_env_file(Path('/workspace/slm-secrets/tinker.env'))
+    names = load_env_file(Path(__import__("os").environ["TINKER_ENV_FILE"]))
     say(f'env names loaded: {len(names)}; checkpoint={ckpt}; blanker={blanker_sha[:12]}')
     import tinker
     service = tinker.ServiceClient(); client = service.create_sampling_client(model_path=ckpt); tok = client.get_tokenizer()

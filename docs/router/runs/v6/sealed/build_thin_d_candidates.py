@@ -4,9 +4,20 @@ Same text rule as router-cr/build.py (the CR addendum candidates): pdftotext, wh
 OCR (pdftoppm 200 dpi + tesseract) only if the text layer is < 200 chars, then the first 6000 chars.
 Each PDF is matched to a sealed row by its sha256 (== sealed file_sha256); no name decides anything.
 """
+
+def _data_root() -> Path:
+    override = __import__("os").environ.get("SLM_DATA_ROOT", "").strip()
+    if override:
+        return Path(override)
+    here = Path(__file__).resolve()
+    for parent in here.parents:
+        if (parent / "pyproject.toml").is_file():
+            return parent
+    return here.parent
+
 import hashlib, json, subprocess, tempfile, sys
 from pathlib import Path
-SRC = Path('/workspace/router-relabel-v8/score_v6/thin_d_src')
+SRC = _data_root() / "router-relabel-v8/score_v6/thin_d_src"
 SEALED = Path(sys.argv[1])
 OUT = Path(sys.argv[2])
 def text_of(pdf):

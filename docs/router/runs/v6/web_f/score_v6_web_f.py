@@ -87,7 +87,7 @@ def main():
     if differ:
         say(f'WALL: work tree differs from main outside the addendum change at {len(differ)} files'); return 3
     sys.path.insert(0, str(REPO / 'scripts'))
-    sys.path.insert(0, '/workspace/router-train/driver')
+    sys.path.insert(0, 'router-train/driver')
     from router.labels import load_labels, load_sealed_config
     from router.teacher_label import prompt_for
     from router.content import content_text
@@ -141,7 +141,7 @@ def main():
     else:
         say(f'RESUME {a.phase}: marker present, no final output; sampling only rows missing from {partial.name}')
     from common import load_env_file
-    names = load_env_file(Path('/workspace/slm-secrets/tinker.env'))
+    names = load_env_file(Path(__import__("os").environ["TINKER_ENV_FILE"]))
     say(f'env names loaded: {len(names)}; checkpoint={CKPT}; phase={a.phase}')
     import tinker
     service = tinker.ServiceClient()

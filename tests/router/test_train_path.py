@@ -46,6 +46,8 @@ def test_prepare_pool_refuses_a_sealed_sha() -> None:
 
 
 def test_raw_pool_prep_counts_and_no_sealed_overlap(repo_root: Path) -> None:
+    if not (repo_root / "data" / "raw" / "router" / "labels.jsonl").is_file():
+        pytest.skip("off-repo data absent")
     report = pool_report(repo_root)
     assert report == {
         "input_rows": 6580,
@@ -154,6 +156,8 @@ def test_train_entry_walls_without_labels_and_hides_a_key(
     monkeypatch: pytest.MonkeyPatch,
     repo_root: Path,
 ) -> None:
+    if not (repo_root / "data" / "raw" / "router" / "labels.jsonl").is_file():
+        pytest.skip("off-repo data absent")
     monkeypatch.setenv("TINKER_API_KEY", "super-secret-value")
     assert main(["--root", str(repo_root)]) == 2
     out = capsys.readouterr().out

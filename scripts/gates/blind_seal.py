@@ -9,6 +9,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from gates.findings import Finding
+from gates.offrepo import entry_for
 from gates.records import RAW_ZIP, iter_training_files, relpath, sha256_file
 
 _DIGEST = re.compile(r"^[0-9a-fA-F]{64}$")
@@ -208,6 +209,10 @@ def _bind_artifact(
     where = relpath(artifact, root)
     named.add(where)
     if not artifact.is_file():
+        item = entry_for(root, where)
+        listed = item.get("sha256") if item else None
+        if isinstance(listed, str) and listed.lower() == digest.lower():
+            return True
         findings.append(Finding("blind-seal", where, "sealed artifact is missing"))
         return False
     actual = sha256_file(artifact)
@@ -227,6 +232,12 @@ def _check_count(artifact: Path, count: object, root: Path) -> list[Finding]:
     where = relpath(artifact, root)
     if isinstance(count, bool) or not isinstance(count, int):
         return [Finding("blind-seal", where, "seal count is not an integer")]
+    if not artifact.is_file():
+        item = entry_for(root, where)
+        listed = item.get("rows") if item else None
+        if listed == count:
+            return []
+        return [Finding("blind-seal", where, "sealed artifact is missing")]
     try:
         text = artifact.read_text(encoding="utf-8")
     except UnicodeError:
@@ -249,6 +260,10 @@ def _check_source_zip(seal_path: Path, digest: object, root: Path) -> list[Findi
         return [Finding("blind-seal", where, "source_zip_sha256 is not a digest")]
     zip_path = root / RAW_ZIP
     if not zip_path.is_file():
+        item = entry_for(root, RAW_ZIP.as_posix())
+        listed = item.get("sha256") if item else None
+        if isinstance(listed, str) and listed.lower() == digest.lower():
+            return []
         return [Finding("blind-seal", where, "source_zip_sha256 archive is missing")]
     actual = sha256_file(zip_path)
     if actual.lower() != digest.lower():

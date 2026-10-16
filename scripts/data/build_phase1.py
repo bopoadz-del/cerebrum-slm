@@ -37,7 +37,14 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
-ROOT = Path(__file__).resolve().parents[2]
+def _data_root() -> Path:
+    override = __import__("os").environ.get("SLM_DATA_ROOT", "").strip()
+    if override:
+        return Path(override)
+    return Path(__file__).resolve().parents[2]
+
+
+ROOT = _data_root()
 for _entry in (ROOT / "scripts", ROOT / "src", ROOT):
     if str(_entry) not in sys.path:
         sys.path.insert(0, str(_entry))

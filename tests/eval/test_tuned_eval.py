@@ -244,6 +244,8 @@ def test_baselines_label_and_still_do_not_sample(monkeypatch):
 
 
 def test_cli_dry_run_and_missing_key(tmp_path: Path, monkeypatch, capsys):
+    if not (repo_root() / "data" / "held_out" / "pairs.jsonl").is_file():
+        pytest.skip("off-repo data absent")
     monkeypatch.delenv(API_KEY_ENV, raising=False)
     script = _load_script("run_tuned_eval.py")
     assert script.main(["--checkpoint", "tinker://example/weights/checkpoint", "--dry-run"]) == 0

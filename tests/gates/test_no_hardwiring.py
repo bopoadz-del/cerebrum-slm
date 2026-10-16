@@ -5,6 +5,8 @@ import shutil
 import zipfile
 from pathlib import Path
 
+import pytest
+
 from gates.catalog import build_catalog
 from gates.no_hardwiring import check_hardwiring
 from gates.records import content_hash, pair_view, record_hash
@@ -30,6 +32,8 @@ def _first_jsonl(repo_root: Path, suffix: str) -> dict:
 
 
 def test_catalog_seals_eval_and_leaves_posture_unsealed(repo_root: Path) -> None:
+    if not (repo_root / "data" / "raw" / "slm-datasets.zip").is_file():
+        pytest.skip("off-repo data absent")
     catalog = build_catalog(repo_root)
     probes = {probe.casefold() for probe in catalog.probe_ids}
     domains = {domain.casefold() for domain in catalog.domains}

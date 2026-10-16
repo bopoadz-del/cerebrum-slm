@@ -8,7 +8,7 @@ Hydraulic Design of Highway Culverts, Hydraulic Design Series Number 5, Third Ed
 
 - Publication: FHWA-HIF-12-026
 - Publisher: Federal Highway Administration, U.S. Department of Transportation
-- Public URL: https://www.fhwa.dot.gov/engineering/hydraulics/pubs/12026/hif12026.pdf
+- Public URL: sha256:c00adf34c35b32d2
 
 This is a U.S. government work. Pilot documents were not used. Formula ids below are the equation numbers printed in that edition.
 

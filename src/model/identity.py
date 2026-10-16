@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 from functools import lru_cache
 from pathlib import Path
 
@@ -12,6 +13,9 @@ _CONFIG_NAME = Path("configs") / "model" / "qwen3-8b.json"
 
 
 def repo_root() -> Path:
+    override = os.environ.get("SLM_DATA_ROOT", "").strip()
+    if override:
+        return Path(override)
     here = Path(__file__).resolve()
     for parent in here.parents:
         if (parent / _CONFIG_NAME).is_file():

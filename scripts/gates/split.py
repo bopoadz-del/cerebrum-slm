@@ -130,12 +130,26 @@ def leak_kinds(text: str, terms: RetrievalTerms) -> list[str]:
     return kinds
 
 
+_SPLIT_PAYLOADS = (
+    "data/train/pairs.jsonl",
+    "data/router/train.jsonl",
+    "data/retrieval/rates/rates.jsonl",
+    "data/retrieval/facilities/records.jsonl",
+    "data/retrieval/fact_pairs.jsonl",
+    "data/raw/slm-datasets.zip",
+)
+
+
 def check_split(root: Path) -> list[Finding]:
+    from gates.offrepo import checkout_absent
+
+    findings: list[Finding] = []
+    for payload in _SPLIT_PAYLOADS:
+        findings.extend(checkout_absent(root, payload, "split"))
     try:
         terms = load_retrieval_terms(root)
     except TermsError as exc:
-        return [Finding("split", exc.path, str(exc))]
-    findings: list[Finding] = []
+        return findings + [Finding("split", exc.path, str(exc))]
     for path in iter_training_files(root):
         where = relpath(path, root)
         try:

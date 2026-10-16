@@ -9,7 +9,14 @@ import argparse
 import sys
 from pathlib import Path
 
-_ROOT = Path(__file__).resolve().parents[2]
+def _data_root() -> Path:
+    override = __import__("os").environ.get("SLM_DATA_ROOT", "").strip()
+    if override:
+        return Path(override)
+    return Path(__file__).resolve().parents[2]
+
+
+_ROOT = _data_root()
 for _entry in (_ROOT / "scripts", _ROOT / "src", _ROOT):
     _text = str(_entry)
     if _text not in sys.path:

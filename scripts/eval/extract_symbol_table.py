@@ -23,7 +23,14 @@ import subprocess
 from collections import Counter
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
+def _data_root() -> Path:
+    override = __import__("os").environ.get("SLM_DATA_ROOT", "").strip()
+    if override:
+        return Path(override)
+    return Path(__file__).resolve().parents[2]
+
+
+ROOT = _data_root()
 OUT = ROOT / "eval" / "graders" / "data" / "hds5_symbols.json"
 SOURCE = {
     "title": "Hydraulic Design of Highway Culverts, Hydraulic Design Series Number 5, Third Edition (April 2012)",

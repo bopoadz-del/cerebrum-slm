@@ -31,6 +31,7 @@ from pathlib import Path
 
 from gates.catalog import _member_is_eval_file, _record_is_eval
 from gates.findings import Finding
+from gates.offrepo import checkout_absent
 from gates.records import RAW_ZIP, canonical_json, sha256_bytes
 
 TRAIN = Path("data/train/pairs.jsonl")
@@ -165,8 +166,10 @@ def _held_shards(root: Path) -> list[tuple[str, list[tuple[int, dict]]]]:
 
 def check_augmentation(root: Path) -> list[Finding]:
     findings: list[Finding] = []
-    train = _rows(root / TRAIN)
     train_rel = TRAIN.as_posix()
+    findings.extend(checkout_absent(root, train_rel, "augment"))
+    findings.extend(checkout_absent(root, HELD_OUT.as_posix(), "augment"))
+    train = _rows(root / TRAIN)
 
     def fail(path: str, lineno: int, message: str) -> None:
         findings.append(Finding("augment", path, f"line {lineno}: {message}"))

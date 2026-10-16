@@ -8,6 +8,7 @@ The only driver change to fit_router_v6 is that router.train_router.predict_labe
 sampling params, _complete and _as_label, which also writes the per-epoch val predictions. The sealed sets are never read.
 Never prints secret values.
 """
+
 from __future__ import annotations
 
 import argparse, hashlib, json, time
@@ -22,8 +23,19 @@ from router.balance import SELECTION_METRIC, class_weights, load_v6_config, macr
 from router.labels import load_labels, load_sealed_config
 from router.teacher_label import prompt_for
 
+def _data_root() -> Path:
+    override = __import__("os").environ.get("SLM_DATA_ROOT", "").strip()
+    if override:
+        return Path(override)
+    here = Path(__file__).resolve()
+    for parent in here.parents:
+        if (parent / "pyproject.toml").is_file():
+            return parent
+    return here.parent
+
+
 MAIN_SHA = "3f72300806cf43eb7efcfd1bd9093d0eaccd4dcb"
-TREE = Path("/workspace/router-relabel-v8/tree_3f72300.json")
+TREE = _data_root() / "router-relabel-v8/tree_3f72300.json"
 
 
 def blob(b):

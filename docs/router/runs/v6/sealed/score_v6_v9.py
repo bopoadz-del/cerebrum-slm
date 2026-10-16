@@ -8,22 +8,34 @@ Phase `score`: user text = router.content.content_text(candidate). Phase `blind`
 blanked by router.name_blind (repo copy), same settings. Each phase refuses a second run. Never prints secrets.
 Usage: score_v6_v9.py {score|blind} --repo <byte-exact main copy> --tree <github tree json>
 """
+
 from __future__ import annotations
 import argparse, hashlib, json, sys, time
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-OUT = Path('/workspace/router-relabel-v8/score_v6/out')
-CHOICE = json.loads(Path('/workspace/router-train/run_v6/epoch_choice.json').read_text(encoding='utf-8'))
+def _data_root() -> Path:
+    override = __import__("os").environ.get("SLM_DATA_ROOT", "").strip()
+    if override:
+        return Path(override)
+    here = Path(__file__).resolve()
+    for parent in here.parents:
+        if (parent / "pyproject.toml").is_file():
+            return parent
+    return here.parent
+
+
+OUT = _data_root() / "router-relabel-v8/score_v6/out"
+CHOICE = json.loads(_data_root() / "router-train/run_v6/epoch_choice.json".read_text(encoding='utf-8'))
 assert CHOICE['run'] == 'v6' and CHOICE['sealed_scored'] is False
 CKPT = CHOICE['chosen_checkpoint']
 SETS = {
-    'v5_retick': ([Path('/workspace/router-sealed/seal_inputs/candidates_v5.jsonl'), Path('/workspace/router-sealed/seal_inputs/candidates_addendum.jsonl')], 'sheet_id', 'content_sha256'),
-    'v8_retick': ([Path('/workspace/router-sealed/v8/candidates_v8.jsonl'), Path('/workspace/router-sealed/v8/candidates_v8_addendum.jsonl')], 'id', 'sha256'),
-    'cr_addendum': ([Path('/workspace/router-cr/cand/candidates_sealed.jsonl')], 'id', 'sha256'),
-    'thin_c_addendum': ([Path('/workspace/router-rows-v9b/cand_sealed_c/candidates_sealed.jsonl')], 'id', 'sha256'),
-    'thin_d_addendum': ([Path('/workspace/router-relabel-v8/score_v6/candidates_thin_d.jsonl')], 'id', 'sha256'),
+    'v5_retick': ([_data_root() / "router-sealed/seal_inputs/candidates_v5.jsonl", _data_root() / "router-sealed/seal_inputs/candidates_addendum.jsonl"], 'sheet_id', 'content_sha256'),
+    'v8_retick': ([_data_root() / "router-sealed/v8/candidates_v8.jsonl", _data_root() / "router-sealed/v8/candidates_v8_addendum.jsonl"], 'id', 'sha256'),
+    'cr_addendum': ([_data_root() / "router-cr/cand/candidates_sealed.jsonl"], 'id', 'sha256'),
+    'thin_c_addendum': ([_data_root() / "router-rows-v9b/cand_sealed_c/candidates_sealed.jsonl"], 'id', 'sha256'),
+    'thin_d_addendum': ([_data_root() / "router-relabel-v8/score_v6/candidates_thin_d.jsonl"], 'id', 'sha256'),
 }
 TRAIN_SYSTEM_SHA256 = 'b1ac9472219a4bea8b0447c2418854a85d60bcb7f154eff2252c7ef8718e3879'  # run_v6 RUN_STARTED_train.json
 
@@ -80,7 +92,7 @@ def main():
         say(f'WALL: local main differs from {MAIN_SHA[:7]} at {len(bad)} files')
         return 3
     sys.path.insert(0, str(REPO / 'scripts'))
-    sys.path.insert(0, '/workspace/router-train/driver')
+    sys.path.insert(0, 'router-train/driver')
     from router.labels import load_labels, load_sealed_config
     from router.teacher_label import prompt_for
     from router.content import content_text
@@ -132,7 +144,7 @@ def main():
                                   'system_sha256': sha(system.encode()), 'name_blind_sha256': sha(blind_src.read_bytes())}) + '\n')
     else:
         say(f'RESUME {a.phase}: marker present, no final output; sampling only rows missing from {partial.name}')
-    names = load_env_file(Path('/workspace/slm-secrets/tinker.env'))
+    names = load_env_file(Path(__import__("os").environ["TINKER_ENV_FILE"]))
     say(f'env names loaded: {len(names)}; checkpoint={CKPT}; phase={a.phase}')
     import tinker
     service = tinker.ServiceClient()

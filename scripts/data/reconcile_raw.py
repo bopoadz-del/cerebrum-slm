@@ -18,7 +18,14 @@ import sys
 from collections import Counter, defaultdict
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
+def _data_root() -> Path:
+    override = __import__("os").environ.get("SLM_DATA_ROOT", "").strip()
+    if override:
+        return Path(override)
+    return Path(__file__).resolve().parents[2]
+
+
+ROOT = _data_root()
 sys.path.insert(0, str(ROOT / "scripts" / "data"))
 
 import apply_split as A  # noqa: E402

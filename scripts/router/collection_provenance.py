@@ -120,11 +120,59 @@ def validate_paths(paths: list[Path]) -> list[FileResult]:
     return [validate_file(p) for p in paths]
 
 
+# Paths the CI provenance step checks. Present files are validated; absent
+# files must be listed in the off-repo hash manifest.
+CI_PATHS: tuple[str, ...] = (
+    "data/router/additions_thin_v9.jsonl",
+    "data/router/additions_thin_v9b.jsonl",
+    "data/router/additions_thin_v9c.jsonl",
+    "data/router/additions_thin_v9f.jsonl",
+    "data/router/additions_thin_d.jsonl",
+    "data/router/additions_change_request_v9.jsonl",
+    "data/router/additions_owner_sources_pr2.jsonl",
+    "data/router/additions_owner_laptop.jsonl",
+)
+
+
+def gate(root: Path) -> int:
+    """Validate present addition files; require a hash-manifest entry when absent."""
+    import sys as _sys
+
+    scripts = Path(__file__).resolve().parents[1]
+    if str(scripts) not in _sys.path:
+        _sys.path.insert(0, str(scripts))
+    from gates.offrepo import require_entry
+
+    failed = False
+    present: list[Path] = []
+    for rel in CI_PATHS:
+        path = root / rel
+        if path.is_file():
+            present.append(path)
+            continue
+        findings = require_entry(root, rel, "provenance")
+        if findings:
+            failed = True
+            for finding in findings:
+                print(finding.format(), file=_sys.stderr)
+        else:
+            print(f"{rel}: absent, off-repo hash manifest ok")
+    if present:
+        results = validate_paths(present)
+        for res in results:
+            print(f"{res.path}: {res.rows} rows, {res.legacy_rows} no-provenance")
+            for violation in res.violations:
+                failed = True
+                print(f"  row {violation.row_index}: missing/invalid {', '.join(violation.missing)}")
+    return 1 if failed else 0
+
+
 def main(argv: list[str] | None = None) -> int:
     argv = list(sys.argv[1:] if argv is None else argv)
     if not argv:
-        print("usage: python -m router.collection_provenance <additions.jsonl> [...]", file=sys.stderr)
-        return 2
+        from data_root import data_root
+
+        return gate(data_root())
     results = validate_paths([Path(p) for p in argv])
     failed = False
     for res in results:

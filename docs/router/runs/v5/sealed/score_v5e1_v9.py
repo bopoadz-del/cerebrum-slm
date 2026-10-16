@@ -4,18 +4,30 @@ Phase `score`: user text = router.content.content_text(candidate). Phase `blind`
 blanked by router.name_blind (repo copy), same settings. Each phase refuses a second run. Never prints secrets.
 Usage: score_v5e1_v9.py {score|blind} --repo <byte-exact main copy> --tree <github tree json>
 """
+
 from __future__ import annotations
 import argparse, hashlib, json, sys, time
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-OUT = Path('/workspace/router-relabel-v8/score_v5/out')
+def _data_root() -> Path:
+    override = __import__("os").environ.get("SLM_DATA_ROOT", "").strip()
+    if override:
+        return Path(override)
+    here = Path(__file__).resolve()
+    for parent in here.parents:
+        if (parent / "pyproject.toml").is_file():
+            return parent
+    return here.parent
+
+
+OUT = _data_root() / "router-relabel-v8/score_v5/out"
 CKPT = 'tinker://4ec9bca9-f838-5d1a-ad89-7157820a3f09:train:0/sampler_weights/router-v5-qwen3.5-4b-lora-r16-epoch1'
 SETS = {
-    'v5_retick': ([Path('/workspace/router-sealed/seal_inputs/candidates_v5.jsonl'), Path('/workspace/router-sealed/seal_inputs/candidates_addendum.jsonl')], 'sheet_id', 'content_sha256'),
-    'v8_retick': ([Path('/workspace/router-sealed/v8/candidates_v8.jsonl'), Path('/workspace/router-sealed/v8/candidates_v8_addendum.jsonl')], 'id', 'sha256'),
-    'cr_addendum': ([Path('/workspace/router-cr/cand/candidates_sealed.jsonl')], 'id', 'sha256'),
+    'v5_retick': ([_data_root() / "router-sealed/seal_inputs/candidates_v5.jsonl", _data_root() / "router-sealed/seal_inputs/candidates_addendum.jsonl"], 'sheet_id', 'content_sha256'),
+    'v8_retick': ([_data_root() / "router-sealed/v8/candidates_v8.jsonl", _data_root() / "router-sealed/v8/candidates_v8_addendum.jsonl"], 'id', 'sha256'),
+    'cr_addendum': ([_data_root() / "router-cr/cand/candidates_sealed.jsonl"], 'id', 'sha256'),
 }
 
 
@@ -66,7 +78,7 @@ def main():
         say(f'WALL: local main differs from {MAIN_SHA[:7]} at {len(bad)} files')
         return 3
     sys.path.insert(0, str(REPO / 'scripts'))
-    sys.path.insert(0, '/workspace/router-train/driver')
+    sys.path.insert(0, 'router-train/driver')
     from router.labels import load_labels, load_sealed_config
     from router.teacher_label import prompt_for
     from router.content import content_text
@@ -112,7 +124,7 @@ def main():
         rows[name] = items
     marker.write_text(json.dumps({'started': time.strftime('%Y-%m-%dT%H:%M:%S%z'), 'checkpoint': CKPT, 'repo_commit': MAIN_SHA, 'n': {k: len(v) for k, v in rows.items()},
                                   'system_sha256': sha(system.encode()), 'name_blind_sha256': sha(blind_src.read_bytes())}) + '\n')
-    names = load_env_file(Path('/workspace/slm-secrets/tinker.env'))
+    names = load_env_file(Path(__import__("os").environ["TINKER_ENV_FILE"]))
     say(f'env names loaded: {len(names)}; checkpoint={CKPT}; phase={a.phase}')
     import tinker
     service = tinker.ServiceClient()

@@ -12,27 +12,27 @@
         "knowledge_files_skipped": 0,
         "packs": [
           {
-            "path": "/workspace/slm-datasets/rates/diriyah-gate-phase-ii-2023.jsonl",
+            "path": "b2c12f9576d5bd9d7a05b9d0525c561e6ace44f8a9f45a836d628c4f086383b9",
             "rows": 73
           },
           {
-            "path": "/workspace/slm-datasets/rates/doha-2024.jsonl",
+            "path": "ae2e49a2aca963a0055a312ad1a92078dbd1d739f76b439ee1bfe907fd01e4a0",
             "rows": 7
           },
           {
-            "path": "/workspace/slm-datasets/rates/dubai-2024.jsonl",
+            "path": "0c402c42179d3d310af1eef6c6a54bcb247415c6141b88f7d8a1d17da6993bf6",
             "rows": 7
           },
           {
-            "path": "/workspace/slm-datasets/rates/riyadh-2024.jsonl",
+            "path": "6988a4558d69d48f1ba617bbee77555e32eef4a2247b05e7f69ad2d141acefdb",
             "rows": 7
           },
           {
-            "path": "/workspace/slm-datasets/rates/saudi-arabia-2024.jsonl",
+            "path": "2119a9e9b2be731da44253f88363cde080b470258ced33f30e7a7e8908b57658",
             "rows": 87
           },
           {
-            "path": "/workspace/slm-datasets/rates/saudi-arabia-2025.jsonl",
+            "path": "25dc67aea1e9fa4ec3580c7c37c778de9fa58e3c66af2e7687c5f2b1617fabb2",
             "rows": 135
           }
         ],
@@ -52,46 +52,46 @@
         "skip_counts": [
           {
             "count": 8,
-            "reason": "approximate (leading tilde)"
+            "reason": "636796fb52527ba98d13f6039b0ef36b3fac190a991fc22dd21132f543a3eb12"
           },
           {
             "count": 2,
-            "reason": "missing rate"
+            "reason": "e1db329848718c974b03b1daf11fec72868b9818812472048360a1387ff7e5e7"
           },
           {
             "count": 5,
-            "reason": "not a unit price (lead time)"
+            "reason": "47ac0747fa6f3764f9a971959d7eff9af4bfcb094d01e2e8524c280cd40a1b66"
           },
           {
             "count": 12,
-            "reason": "not a unit price (market indicator)"
+            "reason": "8810a085198d0a07d77d706fd516750f1c09fa3539f10e328bca162ce71abc79"
           },
           {
             "count": 28,
-            "reason": "not a unit price (part or grand summary)"
+            "reason": "89ae8bc542a622a052dd16f11b38ee6b12cdc6ee63c24e7df101e9ba45b4a180"
           }
         ],
         "source_paths": [
-          "/workspace/corpus-handoff/knowledge/construction_catalog_rates_ksa_2025.md",
-          "/workspace/corpus-handoff/knowledge/construction_rates_gulf_ksa_2025.md",
-          "/workspace/corpus-handoff/dg2/DGII - Infra-1 - Demolition BOQ.pdf"
+          "b3327a6d963c948c7999ae44a83e4d99abd0e7d34922827eb3e0902930026519",
+          "91fe60874feab25ca7bebcebc391e1c5c1d90f0c709457bfe9cc5a9566a89441",
+          "5fa28da3d96c28fbc9eb4d0f18c2ee00a28a31d4aa60cfc4596497c1a2b886e7"
         ],
         "total_rows": 316
       },
-      "source_relpath": "rates/manifest.json"
+      "source_relpath": "314a0d5256031470406f6347441cb83552dc10aaa9d2e8452b55bda32a7b0250"
     }
   ],
   "source_zip_sha256": "1dfd42e871d6fa4228566b408a2e0b30ef1388121980867bef4e8ed68aeb2665",
   "sources": [
-    "AECOM Middle East Handbook 2024",
-    "AECOM Middle East Property & Construction Handbook 2024.",
-    "RFP No DD-2023-118",
-    "RFP No. DD-2023-118",
-    "SCA Jan 2025 / msamer.com",
-    "Saudi Equipment Rental Market 2025",
-    "Turner & Townsend KSAMI 2025",
-    "Turner & Townsend KSAMI 2025.",
-    "Turner & Townsend KSAMI 2025; Saudi Contractors Authority (Jan 2025); msamer.com.",
-    "raghdan.sa 2025 guide."
+    "507d55d7bbc3d1474fcf14f4fe0d4494b804ca0cd96dd44c06f833aba7e43068",
+    "5a7e41a56721e3363624160482060c7436736b9d2a46e1c1387c80e101ff8bc4",
+    "62ba22a6fae751e7b09c4251fc16c9655fcdbb6160c77522f07c657f95c8b372",
+    "30c7eaf1bb2b533a3b50de5e65babe9cf45bddf29d84e9215af3edc0682ff362",
+    "6afd0a2ed6762c1e06b8c86e37ea41c0b3d38681606ad58a608aa683f3d97b2c",
+    "af92dab59965b0724f25af8a60dfb149b75bfe120e6ac71da258e60c6e0cdaa7",
+    "9b5df514d04cc30bfdf7480be8fe650f26231542f0fc4420dde00eeacbb2648a",
+    "1f050a8fcd630a445b5f586963dbfbb3bb6a4aeaf83e00dff86e60d35770ed9a",
+    "4553e7720462473e58b94a260c35ad54f9e0b3b5fec8fe85a2d579261665cf38",
+    "caae53a24ee3a25a4c9e653ba2163eec5323369c7a8bc6fbfbf61b600b0af858"
   ]
 }

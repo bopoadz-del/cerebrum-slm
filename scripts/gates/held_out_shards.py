@@ -30,6 +30,7 @@ from pathlib import Path
 
 from gates.augment import OVERLAP_LIMIT, jaccard, pair_content_hash, sealed_users, token_set
 from gates.findings import Finding
+from gates.offrepo import entry_for
 from gates.records import RecordParseError, iter_training_files, load_records, pair_view, relpath
 
 SHARDS = Path("data/held_out/shards.json")
@@ -66,7 +67,16 @@ def shard_rows(root: Path) -> tuple[list, dict[str, list[tuple[int, dict]]], lis
     for shard in shards:
         target = root / shard.path
         if not target.is_file():
-            findings.append(Finding("held-out-shards", shard.path, "listed shard file is missing"))
+            item = entry_for(root, shard.path)
+            listed = item.get("sha256") if item else None
+            if isinstance(listed, str) and listed == shard.sha256:
+                continue
+            if item is not None:
+                findings.append(
+                    Finding("held-out-shards", shard.path, "off-repo manifest sha256 does not match the shard list")
+                )
+            else:
+                findings.append(Finding("held-out-shards", shard.path, "listed shard file is missing"))
             continue
         data = target.read_bytes()
         digest = hashlib.sha256(data).hexdigest()

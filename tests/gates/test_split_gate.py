@@ -140,6 +140,9 @@ def test_messages_schema_checks_each_assistant_turn(tmp_path: Path) -> None:
 
 
 def test_archived_posture_passes_and_standard_names_fail(repo_root: Path) -> None:
+    archive = repo_root / "data" / "raw" / "slm-datasets.zip"
+    if not archive.is_file():
+        pytest.skip("off-repo archive absent")
     terms = load_retrieval_terms(repo_root)
     assert "aecom" in {brand.casefold() for brand in terms.brands}
     assert "turner & townsend" in {brand.casefold() for brand in terms.brands}

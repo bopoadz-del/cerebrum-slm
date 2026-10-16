@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 from pathlib import Path
 
@@ -32,7 +33,11 @@ def evaluate(root: Path) -> list[Finding]:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Lane 1 repo gates")
-    parser.add_argument("--root", type=Path, default=Path.cwd())
+    parser.add_argument(
+        "--root",
+        type=Path,
+        default=Path(os.environ["SLM_DATA_ROOT"]) if os.environ.get("SLM_DATA_ROOT", "").strip() else Path.cwd(),
+    )
     parser.add_argument(
         "--skip-proof",
         action="store_true",

@@ -6,6 +6,8 @@ import hashlib
 import json
 from pathlib import Path
 
+import pytest
+
 from gates.augment import check_augmentation, pair_content_hash
 from gates.held_out_shards import SHARDS, check_held_out_shards, near_dup_counts
 from gates.run import evaluate
@@ -154,6 +156,8 @@ def test_gate_runs_in_the_ci_entrypoint(tmp_path: Path) -> None:
 def test_real_repo_shards_are_green_and_match_freeze(repo_root: Path) -> None:
     assert check_held_out_shards(repo_root) == []
     listed = json.loads((repo_root / SHARDS).read_text(encoding="utf-8"))["shards"]
+    if any(not (repo_root / entry["path"]).is_file() for entry in listed):
+        pytest.skip("off-repo data absent")
     assert near_dup_counts(repo_root) == {entry["name"]: entry["near_dup_at_freeze"] for entry in listed}
     for entry in listed:
         assert entry["frozen"] is True

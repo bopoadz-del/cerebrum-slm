@@ -7,7 +7,7 @@ wrote the owner's tick unedited.
 - Rows: 1 (V9TH-S078). Owner tick: `meeting minutes`. Unsure: 0. Excluded: 0.
 - The other 8 thin_c rows stay WITHDRAW on provenance (no source URL recoverable) and are NOT sealed;
   they enter the internal additions pool flagged `provenance_status=no-provenance` (data/router/additions_thin_v9c.jsonl).
-- Provenance (collection rule 2026-10-08): source_url = https://ogunquit.gov/DocumentCenter/View/4358/OAC-8-Binder
+- Provenance (collection rule 2026-10-08): source_url = sha256:b851067d8eadbcf7
   (Town of Ogunquit DocumentCenter). Verified by exact page-text match (window ratio 1.0) of the Drive PDF against the
   fetched binder.
 - Fields: sheet_id, label, file_sha256 (sha256 of the candidate PDF), project=web_public,

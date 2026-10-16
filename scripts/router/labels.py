@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 
 
@@ -11,6 +12,9 @@ class LabelConfigError(Exception):
 
 
 def repo_root() -> Path:
+    override = os.environ.get("SLM_DATA_ROOT", "").strip()
+    if override:
+        return Path(override)
     return Path(__file__).resolve().parents[2]
 
 

@@ -1,7 +1,7 @@
 """Router run v7b driver (v9, 22 labels; repair attempt 1 of 2). Mechanism: configs/router/train_v7b.json via
 router.train_router.fit_router_v7(config_file=...). Same driver as v7 except for the config, rules, weights file and tree.
 
-Tree: main f7b6ff3 + bundle B (docs/router/runs/v7 only) + bundle C (v7b), read-only at /workspace/router-v7/train_tree_C; its git tree
+Tree: main f7b6ff3 + bundle B (docs/router/runs/v7 only) + bundle C (v7b), read-only at SLM_DATA_ROOT its git tree
 hash must equal STAGED_TREE. If C merges before B the merged tree is ALT_TREE (differs only by docs/router/runs/v7/, which training
 never reads). Data: data/router/train.jsonl (1719) and val.jsonl (901) unchanged, plus the committed v7b pair refs materialised by
 router.v7_pairs.v7_training_examples(root, configs/router/pairs_v7b.json) (1163). Train rows are rebuilt with

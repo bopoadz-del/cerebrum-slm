@@ -26,5 +26,5 @@ Name-blind check (phase 2, run only after the score is written). Same adapter, p
   Blanker: scripts/router/name_blind.py, sha256 ddab8598152fcb17f2da072b756954f154a24bd60fb578d9a1569e9b47bdeabf, frozen before any sealed prediction.
   It blanks values after From/To/Attn/Attention/Prepared by/Reviewed by/Approved by/Project/Contractor/Client/Consultant/Employer/Site, and signature-block fields (Signature/Signed/Sign/By/Name). Fields are found by "Label:" position; there are no word lists.
   Gate: a flip is a changed prediction. Any flip on a passable class (gold n>=12 in that set) is a FAIL. The fix for a FAIL is more rows from other projects, never a patch.
-Driver: /workspace/router-relabel-v8/score_v9/score_v3e1_v9.py, sha256 7ab70c3ea569d6b3d35b3d4ecf4749e65baa3ef2c5fd7fd8898ba240e8cd727c. Each phase refuses a second run.
+Driver: SLM_DATA_ROOT sha256 7ab70c3ea569d6b3d35b3d4ecf4749e65baa3ef2c5fd7fd8898ba240e8cd727c. Each phase refuses a second run.
 Sealed rows and labels never enter training.

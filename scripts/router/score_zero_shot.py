@@ -36,7 +36,14 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parents[2]
+def _data_root() -> Path:
+    override = __import__("os").environ.get("SLM_DATA_ROOT", "").strip()
+    if override:
+        return Path(override)
+    return Path(__file__).resolve().parents[2]
+
+
+REPO = _data_root()
 
 
 class BudgetExceeded(RuntimeError):
