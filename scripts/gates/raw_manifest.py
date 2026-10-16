@@ -8,6 +8,7 @@ from pathlib import Path
 
 from gates.findings import Finding
 from gates.records import RAW_ZIP, sha256_file
+from private_data import locate, missing_message
 
 MANIFEST = Path("data/raw/SHA256SUMS")
 ZIP_NAME = "slm-datasets.zip"
@@ -27,14 +28,14 @@ def parse_manifest(text: str) -> dict[str, str]:
 
 def check_raw(root: Path) -> list[Finding]:
     findings: list[Finding] = []
-    zip_path = root / RAW_ZIP
+    zip_path = locate(root, RAW_ZIP.as_posix(), "SLM_DATASETS_ZIP")
     manifest_path = root / MANIFEST
     if not manifest_path.is_file():
         findings.append(
             Finding("raw", MANIFEST.as_posix(), "sha256 manifest is missing")
         )
         if not zip_path.is_file():
-            findings.append(Finding("raw", RAW_ZIP.as_posix(), "raw archive is missing"))
+            findings.append(Finding("raw", RAW_ZIP.as_posix(), missing_message(RAW_ZIP.as_posix(), "SLM_DATASETS_ZIP")))
         return findings
 
     try:
@@ -57,7 +58,7 @@ def check_raw(root: Path) -> list[Finding]:
         return findings
 
     if not zip_path.is_file():
-        findings.append(Finding("raw", RAW_ZIP.as_posix(), "raw archive is missing"))
+        findings.append(Finding("raw", RAW_ZIP.as_posix(), missing_message(RAW_ZIP.as_posix(), "SLM_DATASETS_ZIP")))
         return findings
 
     actual = sha256_file(zip_path)

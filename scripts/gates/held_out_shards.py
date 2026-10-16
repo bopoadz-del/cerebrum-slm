@@ -31,6 +31,7 @@ from pathlib import Path
 from gates.augment import OVERLAP_LIMIT, jaccard, pair_content_hash, sealed_users, token_set
 from gates.findings import Finding
 from gates.records import RecordParseError, iter_training_files, load_records, pair_view, relpath
+from private_data import locate, missing_message
 
 SHARDS = Path("data/held_out/shards.json")
 HELD_DIR = Path("data/held_out")
@@ -64,9 +65,9 @@ def shard_rows(root: Path) -> tuple[list, dict[str, list[tuple[int, dict]]], lis
         return [], {}, [Finding("held-out-shards", where, str(exc))]
     rows: dict[str, list[tuple[int, dict]]] = {}
     for shard in shards:
-        target = root / shard.path
+        target = locate(root, shard.path)
         if not target.is_file():
-            findings.append(Finding("held-out-shards", shard.path, "listed shard file is missing"))
+            findings.append(Finding("held-out-shards", shard.path, missing_message(shard.path)))
             continue
         data = target.read_bytes()
         digest = hashlib.sha256(data).hexdigest()
@@ -99,7 +100,7 @@ def shard_rows(root: Path) -> tuple[list, dict[str, list[tuple[int, dict]]], lis
 
 
 def _sidecar(root: Path, shard, digest: str) -> list[Finding]:
-    seal = root / (shard.path + ".sha256")
+    seal = locate(root, shard.path + ".sha256")
     if not seal.is_file():
         if shard.original:
             return []
@@ -160,19 +161,28 @@ def _train_side(root: Path, shard_paths: set[str]) -> list[tuple[str, int, str, 
 
 
 def check_held_out_shards(root: Path) -> list[Finding]:
-    held_dir = root / HELD_DIR
+    held_dir = locate(root, HELD_DIR.as_posix(), "SLM_HELD_OUT_DIR")
     if not held_dir.is_dir():
-        return []
-    if not (root / SHARDS).is_file():
+        return [Finding("held-out-shards", HELD_DIR.as_posix(), missing_message(HELD_DIR.as_posix(), "SLM_HELD_OUT_DIR"))]
+    if not locate(root, SHARDS.as_posix(), "SLM_HELD_OUT_SHARDS").is_file():
         if any(held_dir.glob("*.jsonl")):
-            return [Finding("held-out-shards", SHARDS.as_posix(), "held-out shard list is missing")]
+            return [
+                Finding(
+                    "held-out-shards",
+                    SHARDS.as_posix(),
+                    "held-out shard list is missing. " + missing_message(SHARDS.as_posix(), "SLM_HELD_OUT_SHARDS"),
+                )
+            ]
         return []
     shards, rows, findings = shard_rows(root)
     if not shards:
         return findings
     listed = {shard.path for shard in shards}
     for path in sorted(held_dir.rglob("*.jsonl")):
-        where = relpath(path, root)
+        try:
+            where = (HELD_DIR / path.resolve().relative_to(held_dir.resolve())).as_posix()
+        except ValueError:
+            where = relpath(path, root)
         if where not in listed:
             findings.append(Finding("held-out-shards", where, "held-out .jsonl is not a listed shard"))
     module = _eval_shards()

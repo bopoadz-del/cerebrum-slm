@@ -32,6 +32,7 @@ from pathlib import Path
 from gates.catalog import _member_is_eval_file, _record_is_eval
 from gates.findings import Finding
 from gates.records import RAW_ZIP, canonical_json, sha256_bytes
+from private_data import locate
 
 TRAIN = Path("data/train/pairs.jsonl")
 HELD_OUT = Path("data/held_out/pairs.jsonl")
@@ -99,7 +100,7 @@ def sealed_users(root: Path) -> list[frozenset[str]]:
                     obj = json.loads(line)
                     if isinstance(obj, dict):
                         texts.append(_user_side(obj))
-    zip_path = root / RAW_ZIP
+    zip_path = locate(root, RAW_ZIP.as_posix(), "SLM_DATASETS_ZIP")
     if zip_path.is_file():
         with zipfile.ZipFile(zip_path) as zf:
             for name in zf.namelist():
@@ -132,8 +133,8 @@ def _held_shards(root: Path) -> list[tuple[str, list[tuple[int, dict]]]]:
     gates.held_out_shards); otherwise the original held-out split alone. A
     shard row without a content_hash gets the hash of its chat-schema text.
     """
-    if not (root / SHARDS).is_file():
-        return [(HELD_OUT.as_posix(), _rows(root / HELD_OUT))]
+    if not locate(root, SHARDS.as_posix(), "SLM_HELD_OUT_SHARDS").is_file():
+        return [(HELD_OUT.as_posix(), _rows(locate(root, HELD_OUT.as_posix(), "SLM_HELD_OUT_PAIRS")))]
     repo = Path(__file__).resolve().parents[2]
     for entry in (repo, repo / "src"):
         if str(entry) not in sys.path:
@@ -144,11 +145,11 @@ def _held_shards(root: Path) -> list[tuple[str, list[tuple[int, dict]]]]:
         shards = load_shards(root, verify=False)
     except ShardError:
         # gates.held_out_shards reports a broken shard list.
-        return [(HELD_OUT.as_posix(), _rows(root / HELD_OUT))]
+        return [(HELD_OUT.as_posix(), _rows(locate(root, HELD_OUT.as_posix(), "SLM_HELD_OUT_PAIRS")))]
     found: list[tuple[str, list[tuple[int, dict]]]] = []
     for shard in shards:
         rows = []
-        for lineno, row in _rows(root / shard.path):
+        for lineno, row in _rows(locate(root, shard.path)):
             meta = row.get("meta") if isinstance(row.get("meta"), dict) else {}
             if not meta.get("content_hash"):
                 try:

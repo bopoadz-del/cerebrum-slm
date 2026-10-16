@@ -10,6 +10,7 @@ from pathlib import Path
 
 from gates.findings import Finding
 from gates.records import RAW_ZIP, iter_training_files, relpath, sha256_file
+from private_data import locate, missing_message
 
 _DIGEST = re.compile(r"^[0-9a-fA-F]{64}$")
 
@@ -247,9 +248,9 @@ def _check_source_zip(seal_path: Path, digest: object, root: Path) -> list[Findi
     where = relpath(seal_path, root)
     if not isinstance(digest, str) or _DIGEST.fullmatch(digest) is None:
         return [Finding("blind-seal", where, "source_zip_sha256 is not a digest")]
-    zip_path = root / RAW_ZIP
+    zip_path = locate(root, RAW_ZIP.as_posix(), "SLM_DATASETS_ZIP")
     if not zip_path.is_file():
-        return [Finding("blind-seal", where, "source_zip_sha256 archive is missing")]
+        return [Finding("blind-seal", where, missing_message(RAW_ZIP.as_posix(), "SLM_DATASETS_ZIP"))]
     actual = sha256_file(zip_path)
     if actual.lower() != digest.lower():
         return [

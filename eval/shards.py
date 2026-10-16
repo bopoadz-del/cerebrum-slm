@@ -20,6 +20,7 @@ from eval.labels import EvalLabel, EvalLabelError, label_eval_sets, label_held_o
 from eval.readers import EvalReadError, read_records
 from eval.registry import load_registry_inputs
 from model.identity import repo_root
+from private_data import locate, missing_message
 
 SHARDS_RELATIVE = "data/held_out/shards.json"
 SHARDS_SCHEMA = "held_out_shards/v1"
@@ -59,17 +60,19 @@ class HeldOutShard:
 
 def shards_listed(root: Path | None = None) -> bool:
     base = repo_root() if root is None else root
-    return (base / SHARDS_RELATIVE).is_file()
+    return locate(base, SHARDS_RELATIVE).is_file()
 
 
 def load_shards(root: Path | None = None, *, verify: bool = True) -> tuple[HeldOutShard, ...]:
     """Read the shard list. With ``verify`` every frozen shard must match its sha256 and count."""
     base = repo_root() if root is None else root
-    path = base / SHARDS_RELATIVE
+    path = locate(base, SHARDS_RELATIVE)
+    if not path.is_file():
+        raise ShardError(missing_message(SHARDS_RELATIVE))
     try:
         payload = json.loads(path.read_text(encoding="utf-8"))
     except OSError as exc:
-        raise ShardError(f"shard list is missing: {SHARDS_RELATIVE}") from exc
+        raise ShardError(missing_message(SHARDS_RELATIVE)) from exc
     except (UnicodeError, json.JSONDecodeError) as exc:
         raise ShardError("shard list is not JSON") from exc
     if not isinstance(payload, dict) or payload.get("schema") != SHARDS_SCHEMA:
@@ -110,9 +113,9 @@ def select_shards(shards: tuple[HeldOutShard, ...], names) -> tuple[HeldOutShard
 
 
 def verify_shard(root: Path, shard: HeldOutShard) -> None:
-    target = root / shard.path
+    target = locate(root, shard.path)
     if not target.is_file():
-        raise ShardError(f"shard file is missing: {shard.path}")
+        raise ShardError(missing_message(shard.path))
     data = target.read_bytes()
     if shard.frozen and hashlib.sha256(data).hexdigest() != shard.sha256.lower():
         raise ShardError(f"frozen shard does not match its sha256: {shard.name}")

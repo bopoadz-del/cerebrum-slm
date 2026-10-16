@@ -193,7 +193,13 @@ def cmd_rows(a) -> int:
     (work / "img").mkdir(parents=True, exist_ok=True)
     out = []
     for s in sealed["sets"]:
-        for g in read_jsonl(a.repo / s["sealed_labels"]):
+        from private_data import locate, missing_message
+
+        sealed_path = locate(a.repo, s["sealed_labels"])
+        if not sealed_path.is_file():
+            print(missing_message(s["sealed_labels"]), file=sys.stderr)
+            return 2
+        for g in read_jsonl(sealed_path):
             text, source, img = None, "none", None
             pdf_ok = False
             if g.get("source_url"):

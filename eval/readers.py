@@ -6,6 +6,7 @@ from pathlib import Path
 
 from gates.blind_seal import check_committed_seals, path_is_sealed
 from gates.records import RecordParseError, load_records
+from private_data import locate, missing_message
 
 
 class EvalReadError(RuntimeError):
@@ -18,14 +19,20 @@ def read_records(root: Path, relative: str) -> list[tuple[int, dict]]:
     A path under data/eval is sealed. This function checks that seal, then
     reads with load_records. It does not call the training opener.
     """
-    path = (root / relative).resolve()
-    sealed = path_is_sealed(path, root)
+    path = locate(root, relative)
+    if not path.is_file():
+        raise EvalReadError(missing_message(relative))
+    try:
+        path.resolve().relative_to(root.resolve())
+        in_repo = True
+    except ValueError:
+        in_repo = False
+    sealed_target = path if in_repo else (root / relative)
+    sealed = path_is_sealed(sealed_target, root)
     if not sealed and _looks_sealed(relative):
         raise EvalReadError("sealed eval path was not accepted")
-    if sealed:
+    if sealed and in_repo:
         _require_seal(root, relative)
-    if not path.is_file():
-        raise EvalReadError(f"eval artifact is missing: {relative}")
     try:
         return load_records(path)
     except RecordParseError as exc:

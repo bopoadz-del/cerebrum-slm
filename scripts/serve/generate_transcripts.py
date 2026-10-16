@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -124,7 +125,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--output",
         type=Path,
-        default=_ROOT / "docs" / "serve" / "transcripts-epoch2.jsonl",
+        default=None,
+        help="Transcript jsonl path. Defaults to SLM_TRANSCRIPTS_JSONL. The in-repo path is not written.",
     )
     parser.add_argument(
         "--markdown",
@@ -132,6 +134,17 @@ def main(argv: list[str] | None = None) -> int:
         default=_ROOT / "docs" / "serve" / "transcripts-epoch2.md",
     )
     args = parser.parse_args(argv)
+    if args.output is None:
+        override = os.environ.get("SLM_TRANSCRIPTS_JSONL", "").strip()
+        if not override:
+            print(
+                "private data is absent: docs/serve/transcripts-epoch2.jsonl. "
+                "Set SLM_TRANSCRIPTS_JSONL or pass --output. "
+                "Refusing to write transcripts into the tree.",
+                file=sys.stderr,
+            )
+            return 2
+        args.output = Path(override)
     artifact = load_serve_artifact()
     rows: list[dict[str, object]] = []
     for scenario in SCENARIOS:

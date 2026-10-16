@@ -29,9 +29,11 @@ TRAINING_FILES = (
 
 @pytest.mark.parametrize("relpath", TRAINING_FILES)
 def test_committed_training_rows_hold_no_path(repo_root: Path, relpath: str) -> None:
-    path = repo_root / relpath
-    if not path.is_file():
-        pytest.skip(f"{relpath} not present")
+    from private_data import locate
+    from private_paths import skip_if_missing
+
+    skip_if_missing(repo_root, relpath)
+    path = locate(repo_root, relpath)
     bad = [
         index
         for index, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1)
@@ -41,9 +43,11 @@ def test_committed_training_rows_hold_no_path(repo_root: Path, relpath: str) -> 
 
 
 def test_raw_pool_excerpts_hold_no_path(repo_root: Path) -> None:
-    path = repo_root / "data" / "raw" / "router" / "labels.jsonl"
-    if not path.is_file():
-        pytest.skip("raw pool not present")
+    from private_data import locate
+    from private_paths import skip_if_missing
+
+    skip_if_missing(repo_root, "data/raw/router/labels.jsonl")
+    path = locate(repo_root, "data/raw/router/labels.jsonl")
     bad = 0
     for line in path.read_text(encoding="utf-8").splitlines():
         if line.strip():

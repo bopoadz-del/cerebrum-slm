@@ -53,6 +53,10 @@ def test_injection_is_red_then_removed_then_green(repo_root: Path) -> None:
     assert text.endswith("PROOF sequence complete")
     assert _tracked_paths(repo_root) == before
     if (repo_root / "data" / "eval").is_dir():
+        # The blind seal checks the raw archive. Proofs above do not.
+        from private_paths import skip_if_missing
+
+        skip_if_missing(repo_root, "data/raw/slm-datasets.zip", env="SLM_DATASETS_ZIP")
         assert check_blind(repo_root) == []
 
 

@@ -154,7 +154,11 @@ def _existing_sealed(root: Path) -> list[dict]:
     config = json.loads((root / "configs" / "router" / "sealed_eval.json").read_text(encoding="utf-8"))
     rows: list[dict] = []
     for item in config["v9_sealed"]["sets"]:
-        path = root / item["sealed_labels"]
+        from private_data import locate, missing_message
+
+        path = locate(root, item["sealed_labels"])
+        if not path.is_file():
+            raise RouterWall(missing_message(item["sealed_labels"]))
         rows.extend(json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip())
     return rows
 

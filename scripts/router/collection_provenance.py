@@ -100,6 +100,9 @@ def validate_row(row: dict, index: int) -> RowResult:
 
 def validate_file(path: Path) -> FileResult:
     result = FileResult(path=str(path))
+    if not path.is_file():
+        result.violations.append(RowResult(row_index=0, missing=("file is absent",)))
+        return result
     for index, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
         if not line.strip():
             continue
@@ -128,6 +131,14 @@ def main(argv: list[str] | None = None) -> int:
     results = validate_paths([Path(p) for p in argv])
     failed = False
     for res in results:
+        if res.rows == 0 and any(v.missing == ("file is absent",) for v in res.violations):
+            print(
+                f"{res.path}: private data file is absent. "
+                "Pass an external path. Refusing to continue without the file.",
+                file=sys.stderr,
+            )
+            failed = True
+            continue
         print(f"{res.path}: {res.rows} rows, {res.legacy_rows} no-provenance")
         for v in res.violations:
             failed = True
