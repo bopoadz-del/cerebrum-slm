@@ -5,9 +5,11 @@ pending sealed candidates; generic residue checks for contact details and identi
 hashed project groups; placement once in train, never val; 10% per-class project cap for the added rows.
 """
 
+import hashlib
 import json
 import math
 import re
+import subprocess
 from collections import Counter
 from pathlib import Path
 
@@ -216,7 +218,7 @@ def test_box_side_residue_table_covers_eleven_rows_without_excerpts(
     assert table["box_side_rows"] == counts["rows_to_dev_box_side"] == 11
     assert table["rows_in_val"] == 0
     assert table["excerpt_stored"] is False
-    assert table["amount_rerun"] == "deferred"
+    assert table["amount_rerun"] == "rerun_done"
     rows = table["rows"]
     assert len(rows) == 11
     assert all(row["rows"] == 1 and row["doc_id"] is None for row in rows)
@@ -242,6 +244,86 @@ def test_box_side_residue_table_covers_eleven_rows_without_excerpts(
         )
     assert sum(by_label.values()) == 11
     assert sum(by_tag.values()) == 11
+
+
+def _git_blob(root: Path, rel: str) -> str:
+    return subprocess.check_output(
+        ["git", "hash-object", "--", rel],
+        cwd=root,
+        text=True,
+    ).strip()
+
+
+def test_box_side_amount_rerun_matches_redactor_and_row_sums(
+    repo_root: Path,
+) -> None:
+    """Box-side rerun totals are sums over the rows. The redactor blob is this tree."""
+    table = json.loads((repo_root / RESIDUE).read_text(encoding="utf-8"))
+    _reject_residue_text(table)
+    rows = table["rows"]
+    pairs = [(row["source_id"], row["label"]) for row in rows]
+    assert table["amount_rerun"] == "rerun_done"
+    assert table["excerpt_stored"] is False
+    assert len(rows) == table["box_side_rows"] == table["rows_rerun"]
+    assert len(pairs) == len(set(pairs))
+    redactor = table["redactor"]
+    rel = redactor["path"]
+    assert rel == "scripts/router/amount_buckets.py"
+    blob = _git_blob(repo_root, rel)
+    assert redactor["git_blob"] == blob
+    assert re.fullmatch(r"[0-9a-f]{40}", redactor["ref"])
+    recorded = subprocess.check_output(
+        ["git", "rev-parse", f"{redactor['ref']}:{rel}"],
+        cwd=repo_root,
+        text=True,
+    ).strip()
+    assert recorded == blob
+    file_sha = hashlib.sha256((repo_root / rel).read_bytes()).hexdigest()
+    assert redactor["file_sha256"] == file_sha
+    assert re.fullmatch(r"[0-9a-f]{64}", redactor["file_sha256"])
+    changed = 0
+    replacements = 0
+    residue_before = 0
+    residue_after = 0
+    for row in rows:
+        for field in ("doc_sha256", "row_sha256_before", "row_sha256_after"):
+            assert re.fullmatch(r"[0-9a-f]{64}", row[field])
+        assert row["residue_after_total"] == 0
+        assert row["idempotent"] is True
+        assert isinstance(row["residue_before"], dict)
+        assert row["residue_before_total"] == sum(row["residue_before"].values())
+        assert all(
+            isinstance(name, str) and isinstance(count, int) and count >= 0
+            for name, count in row["residue_before"].items()
+        )
+        replacements += row["replacements"]
+        residue_before += row["residue_before_total"]
+        residue_after += row["residue_after_total"]
+        if row["replacements"]:
+            changed += 1
+            assert row["row_sha256_before"] != row["row_sha256_after"]
+        else:
+            assert row["replacements"] == 0
+            assert row["row_sha256_before"] == row["row_sha256_after"]
+    assert table["rows_changed"] == changed
+    assert table["replacements"] == replacements
+    assert table["residue_before_total"] == residue_before
+    assert table["residue_after_total"] == residue_after
+    assert table["second_pass_replacements"] == 0
+    assert table["idempotent"] is True
+    assert table["covered"] == (
+        f"{table['repo_rows'] + table['box_side_rows']}/{table['spec_rows']}"
+    )
+    assert table["repo_rows"] + table["box_side_rows"] == table["spec_rows"]
+    repo_ids = {row["source_id"] for row in _rows(repo_root, ADDS)}
+    ambiguous = table["ambiguous"]
+    assert isinstance(ambiguous, list) and ambiguous
+    for item in ambiguous:
+        assert item["where"] == "repo"
+        assert item["source_id"] in repo_ids
+        assert isinstance(item["count"], int) and item["count"] > 0
+        assert isinstance(item["kind"], str) and item["kind"]
+        assert item["source_id"] not in {row["source_id"] for row in rows}
 
 
 def test_split_counts_record_matches(repo_root: Path) -> None:
