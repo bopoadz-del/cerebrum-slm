@@ -151,6 +151,84 @@ def test_spaced_thousands_groups_are_idempotent() -> None:
     assert second == 0
 
 
+def test_unlabelled_comma_thousands_fold() -> None:
+    """One comma group of three is an amount. No second group and no label."""
+    cases = (
+        ("1,250", "<AMT:~1e3>"),
+        ("12,500", "<AMT:~1e4>"),
+        ("see 1,250 today", "see <AMT:~1e3> today"),
+        ("pay 12,500 now", "pay <AMT:~1e4> now"),
+        ("amount 1,250", "amount <AMT:~1e3>"),
+        ("total: 12,500", "total: <AMT:~1e4>"),
+        ("1,250 AED", "<AMT:~1e3> AED"),
+        ("AED 12,500", "AED <AMT:~1e4>"),
+        ("1,250.00", "<AMT:~1e3>"),
+        ("12,500.50", "<AMT:~1e4>"),
+        ("1,234,567.89", "<AMT:~1e6>"),
+    )
+    for raw, token in cases:
+        out, count = bucket_amounts(raw)
+        assert out == token, raw
+        assert count == 1, raw
+
+
+def test_mixed_separators_stay_untokenised() -> None:
+    samples = (
+        "1,234 567",
+        "1 234,567",
+        "1, 234,567",
+        "1,234, 567",
+        "123,456 789",
+        "123 456,789",
+        "1,234 567,890",
+        "1 234,567,890",
+        "AED 1,234 567",
+        "1,234 567 AED",
+        "12,500 000",
+        "1,234 567.89",
+        "1 234,567.89",
+    )
+    for raw in samples:
+        out, count = bucket_amounts(raw)
+        assert out == raw, raw
+        assert count == 0, raw
+
+
+def test_comma_groups_keep_exclusions_and_space_groups() -> None:
+    stayed = (
+        "1 250",
+        "12 500",
+        "1,250 kg",
+        "12,500 m2",
+        "1,250%",
+        "1,250 days",
+        "+971 50 123 4567",
+    )
+    for raw in stayed:
+        out, count = bucket_amounts(raw)
+        assert out == raw, raw
+        assert count == 0, raw
+    spaced, n = bucket_amounts("8 765 432 then 1 250 000.00 then 12 500.50")
+    assert spaced == "<AMT:~1e6> then <AMT:~1e6> then <AMT:~1e4>"
+    assert n == 3
+
+
+def test_comma_and_mixed_groups_second_pass_is_idempotent() -> None:
+    text = (
+        "1,250 then 12,500 then 1,234,567.89 then amount 12,500 "
+        "then 8 765 432 then 1,234 567 then 123 456,789"
+    )
+    once, first = bucket_amounts(text)
+    twice, second = bucket_amounts(once)
+    assert once == (
+        "<AMT:~1e3> then <AMT:~1e4> then <AMT:~1e6> then amount <AMT:~1e4> "
+        "then <AMT:~1e6> then 1,234 567 then 123 456,789"
+    )
+    assert first == 5
+    assert twice == once
+    assert second == 0
+
+
 def test_bucket_amounts_second_pass_is_idempotent() -> None:
     text = "pay <AMT:~1e6> 99 and 45/100 fils under ZX/10/2030/44/1 today"
     once, first = bucket_amounts(text)

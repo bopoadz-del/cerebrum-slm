@@ -3,10 +3,13 @@
 The generic redactor turns comma-grouped digits into ``<AMT:~1eN>`` and leaves
 the same amount written in words. This pass replaces written amounts and exact
 digit amounts with the same magnitude token. Thousands groups count only when
-every separator is the same character, repeated via a backreference: comma
-(with the same surrounding spaces), space, nbsp, thin space, or narrow nbsp.
-``N`` is ``floor(log10(abs(value)))`` of the separator-stripped value; a zero
-amount is ``<AMT:~1e0>``.
+every separator is the same, repeated via a backreference: comma (with the
+same surrounding spaces), space, nbsp, thin space, or narrow nbsp. A pure
+comma amount needs one group of three (``1,250``, ``12,500``). A space or
+nbsp amount still needs two groups of three, an adjacent currency or amount
+label, or a cents tail. A run that mixes separator kinds, or spaces commas
+inconsistently, stays unchanged. ``N`` is ``floor(log10(abs(value)))`` of the
+separator-stripped value; a zero amount is ``<AMT:~1e0>``.
 
 A one- or two-digit minor-unit column printed immediately after an amount
 token folds into that token. An ``and NN/100`` tail, with an optional
@@ -86,14 +89,23 @@ _FRAC_TAIL = re.compile(
     rf"|\s+\d{{1,3}}\s*/\s*100"
 )
 
-# One separator for the whole amount. The comma alternative keeps the same
-# surrounding spaces; a space separator is exactly one character, so a wider
-# column gap does not join cells.
+# One separator for the whole amount. The two alternatives are different
+# kinds: a comma (with the same surrounding spaces) or exactly one space
+# character. A wider column gap does not join cells. The backreference
+# refuses to repeat a different kind, and the tail lookahead refuses a
+# further group (comma or space) so a mixed run is not taken as a prefix.
+_SEP_CHARS = frozenset(" \t,\u00a0\u2009\u202f")
 _SEP = r"(?P<sep>(?:[ \t]*,[ \t]*)|[ \u00a0\u2009\u202f])"
+_NOT_MIXED_TAIL = (
+    r"(?!(?:[ \t]*,[ \t]*|[ \u00a0\u2009\u202f])\d{3})"
+    r"(?![ \t]*,[ \t]*\d)"
+)
 _GROUPED_NUM = (
     r"(?!0)\d{1,3}"
     + _SEP
     + r"\d{3}(?:(?P=sep)\d{3})*(?:(?P=sep)\d{1,2}(?=\.\d{2}))?(?:\.\d{2})?"
+    + r"(?![\d%])(?!\.\d)"
+    + _NOT_MIXED_TAIL
 )
 _GROUPED = re.compile(rf"(?<![\d./<>\-])(?P<num>{_GROUPED_NUM})(?![\d%])")
 # A plain two-decimal amount. Fixed-width lookbehinds keep this off the tail
@@ -318,14 +330,50 @@ def _label_adjacent(text: str, start: int, end: int) -> bool:
     return _LABEL_BEFORE.search(pre) is not None or _LABEL_AFTER.match(post) is not None
 
 
-def _accept_grouped(text: str, start: int, end: int, raw: str) -> bool:
-    """Two groups of three digits, a currency or amount label, or a cents tail.
+def _glued_to_earlier_group(text: str, start: int) -> bool:
+    """True when ``start`` continues a digit run through a separator."""
+    i = start - 1
+    if i < 0 or text[i] not in _SEP_CHARS:
+        return False
+    while i >= 0 and text[i] in _SEP_CHARS:
+        i -= 1
+    return i >= 0 and text[i].isdigit()
 
-    A single thousands group with no label and no cents tail is a count.
+
+def _mixed_tail(text: str, end: int) -> bool:
+    """True when another thousands group, or a comma group, follows."""
+    return (
+        re.match(
+            r"(?:[ \t]*,[ \t]*|[ \u00a0\u2009\u202f])\d{3}|[ \t]*,[ \t]*\d",
+            text[end:],
+        )
+        is not None
+    )
+
+
+def _comma_grouped(raw: str) -> bool:
+    head = raw.split(".", 1)[0]
+    seps = re.findall(
+        r"(?<=\d)(?:[ \t]*,[ \t]*|[ \u00a0\u2009\u202f])(?=\d)",
+        head,
+    )
+    return bool(seps) and all("," in sep for sep in seps)
+
+
+def _accept_grouped(text: str, start: int, end: int, raw: str) -> bool:
+    """Pure comma thousands need one group of three (``1,250``, ``12,500``).
+
+    A space or nbsp group still needs two groups of three, a currency or
+    amount label, or a cents tail. A single spaced group with none of those
+    is a count. Mixed separators are rejected before this choice.
     """
     if _blocked_amount(text, start, end, raw):
         return False
+    if _glued_to_earlier_group(text, start) or _mixed_tail(text, end):
+        return False
     threes = _groups_of_three(raw)
+    if _comma_grouped(raw) and threes >= 1:
+        return True
     if threes >= 2:
         return True
     if _label_adjacent(text, start, end):
@@ -358,6 +406,8 @@ def _digit_spans(text: str) -> list[tuple[int, int, str]]:
             start, end = match.start(group), match.end(group)
             raw = match.group(group)
             if _in_angle(text, start, end) or _blocked_amount(text, start, end, raw):
+                continue
+            if _glued_to_earlier_group(text, start) or _mixed_tail(text, end):
                 continue
             if re.search(r"[, \u00a0\u2009\u202f]", raw) and not _accept_grouped(text, start, end, raw):
                 continue
