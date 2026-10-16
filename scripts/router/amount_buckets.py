@@ -1,9 +1,12 @@
 """Bucket exact amounts to magnitude tokens.
 
-The generic redactor turns grouped digits into ``<AMT:~1eN>`` and leaves the
-same amount written in words, plus spaced thousands-groups and two-decimal
-leftovers. This pass replaces those with the same magnitude token.
-``N`` is ``floor(log10(abs(value)))``; a zero amount is ``<AMT:~1e0>``.
+The generic redactor turns comma-grouped digits into ``<AMT:~1eN>`` and leaves
+the same amount written in words. This pass replaces written amounts and exact
+digit amounts with the same magnitude token. Thousands groups count only when
+every separator is the same character, repeated via a backreference: comma
+(with the same surrounding spaces), space, nbsp, thin space, or narrow nbsp.
+``N`` is ``floor(log10(abs(value)))`` of the separator-stripped value; a zero
+amount is ``<AMT:~1e0>``.
 
 A one- or two-digit minor-unit column printed immediately after an amount
 token folds into that token. An ``and NN/100`` tail, with an optional
@@ -83,23 +86,57 @@ _FRAC_TAIL = re.compile(
     rf"|\s+\d{{1,3}}\s*/\s*100"
 )
 
-# Grouped thousands (spaces allowed), including a short final group before
-# a two-decimal tail. Then a plain two-decimal amount.
-_EXACT_DIGITS = re.compile(
-    r"(?<![\d./<>\-])\d{1,3}(?:\s*,\s*\d{3})+(?:\s*,\s*\d{1,3})?(?:\.\d{2})?(?![\d%])"
-    r"|(?<![\d./<>\-])\d+\.\d{2}(?!\s*%)(?![\d.])"
+# One separator for the whole amount. The comma alternative keeps the same
+# surrounding spaces; a space separator is exactly one character, so a wider
+# column gap does not join cells.
+_SEP = r"(?P<sep>(?:[ \t]*,[ \t]*)|[ \u00a0\u2009\u202f])"
+_GROUPED_NUM = (
+    r"(?!0)\d{1,3}"
+    + _SEP
+    + r"\d{3}(?:(?P=sep)\d{3})*(?:(?P=sep)\d{1,2}(?=\.\d{2}))?(?:\.\d{2})?"
+)
+_GROUPED = re.compile(rf"(?<![\d./<>\-])(?P<num>{_GROUPED_NUM})(?![\d%])")
+# A plain two-decimal amount. Fixed-width lookbehinds keep this off the tail
+# of a grouped number (that tail would keep the leading groups and a wrong magnitude).
+_PLAIN_DECIMAL = re.compile(
+    r"(?<![\d./<>\-])"
+    r"(?<!\d )"
+    r"(?<!\d\u00a0)"
+    r"(?<!\d\u2009)"
+    r"(?<!\d\u202f)"
+    r"(?<!\d,)"
+    r"(?<!\d, )"
+    r"\d+\.\d{2}(?!\s*%)(?![\d.])"
 )
 _FILS_FRAC = re.compile(
     r"(?i)\b(?:fils|fills|cents?)\s+(\d{1,3}\s*/\s*100)\b"
 )
+_CUR_WORD = r"aed|usd|eur|gbp|sar|qar|dirhams?|dollars?|fils|fills|riyals?"
+_AMOUNT_LABEL = rf"{_CUR_WORD}|amount|sum|total"
 _CUR_BEFORE = re.compile(
-    r"(?i)\b(aed|usd|eur|gbp|sar|qar|dirhams?|dollars?|fils|fills|riyals?)\b"
-    r"(\s*[:.]?\s*)(\d{2,}(?:\.\d+)?)(?!\s*%)"
+    rf"(?i)\b({_CUR_WORD})\b"
+    rf"(\s*[:.]?\s*)({_GROUPED_NUM}|\d{{2,}}(?:\.\d+)?)(?!\s*%)"
 )
 _CUR_AFTER = re.compile(
-    r"(?i)(?<![\d./<>\-])(\d{2,}(?:\.\d+)?)(\s+)"
-    r"(aed|dirhams?|dollars?|fils|fills|riyals?)\b"
+    rf"(?i)(?<![\d./<>\-])({_GROUPED_NUM}|\d{{2,}}(?:\.\d+)?)(\s+)"
+    rf"({_CUR_WORD})\b"
 )
+_LABEL_BEFORE = re.compile(rf"(?i)\b(?:{_AMOUNT_LABEL})\b\s*[:.]?\s*$")
+_LABEL_AFTER = re.compile(rf"(?i)^\s*[:.]?\s*(?:{_AMOUNT_LABEL})\b")
+_UNIT_AFTER = re.compile(
+    r"(?i)[ \t\u00a0\u2009\u202f]*(?:m2|m3|m²|m³|kg|pcs|nos|days|m|t)\b"
+)
+_DATE_SHAPE = re.compile(
+    r"(?i)^(?:"
+    r"\d{1,2}[./\-]\d{1,2}[./\-]\d{2,4}"
+    r"|\d{4}[./\-]\d{1,2}[./\-]\d{1,2}"
+    r"|\d{1,2}[ \u00a0\u2009\u202f]\d{1,2}[ \u00a0\u2009\u202f]\d{2,4}"
+    r")$"
+)
+_LEADING_ZERO_RUN = re.compile(
+    r"(?<!\d)0+(?:[ \t]*,[ \t]*|[ \u00a0\u2009\u202f])$"
+)
+_PHONE_BEFORE = re.compile(r"(?:\+|(?<!\d)00|\()\s*$")
 _MONTH_AFTER = re.compile(
     r"(?i)\s*[-/]?\s*(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\b"
 )
@@ -244,12 +281,70 @@ def _word_spans(text: str) -> list[tuple[int, int, str]]:
     return spans
 
 
+def _groups_of_three(raw: str) -> int:
+    head = raw.split(".", 1)[0]
+    return sum(len(part) == 3 for part in re.split(r"[, \u00a0\u2009\u202f]+", head) if part)
+
+
+def _is_schedule_or_table_row(raw: str) -> bool:
+    """Separate cells, a hyphenated index, or a dotted item index (1.2.3).
+
+    A two-decimal amount is not an index: the cents tail is exactly two digits
+    and there is only one dot.
+    """
+    if re.search(r"[ \t\u00a0]{2,}", raw):
+        return True
+    if re.fullmatch(r"\d{1,3}(?:-\d{1,3})+", raw):
+        return True
+    return re.fullmatch(r"\d{1,3}(?:\.\d{1,3}){2,}", raw) is not None
+
+
+def _blocked_amount(text: str, start: int, end: int, raw: str) -> bool:
+    if _UNIT_AFTER.match(text, end):
+        return True
+    if _DATE_SHAPE.fullmatch(raw) or _is_schedule_or_table_row(raw):
+        return True
+    if _structural(text, start, raw):
+        return True
+    pre = text[max(0, start - 8) : start]
+    if _LEADING_ZERO_RUN.search(pre) or _PHONE_BEFORE.search(pre):
+        return True
+    return False
+
+
+def _label_adjacent(text: str, start: int, end: int) -> bool:
+    pre = text[max(0, start - 24) : start]
+    post = text[end : end + 24]
+    return _LABEL_BEFORE.search(pre) is not None or _LABEL_AFTER.match(post) is not None
+
+
+def _accept_grouped(text: str, start: int, end: int, raw: str) -> bool:
+    """Two groups of three digits, a currency or amount label, or a cents tail.
+
+    A single thousands group with no label and no cents tail is a count.
+    """
+    if _blocked_amount(text, start, end, raw):
+        return False
+    threes = _groups_of_three(raw)
+    if threes >= 2:
+        return True
+    if _label_adjacent(text, start, end):
+        return True
+    return bool(re.search(r"\.\d{2}$", raw) and threes >= 1)
+
+
 def _digit_spans(text: str) -> list[tuple[int, int, str]]:
     spans: list[tuple[int, int, str]] = []
-    for match in _EXACT_DIGITS.finditer(text):
+    for match in _GROUPED.finditer(text):
+        start, end = match.start("num"), match.end("num")
+        raw = match.group("num")
+        if _in_angle(text, start, end) or not _accept_grouped(text, start, end, raw):
+            continue
+        spans.append((start, end, magnitude_token(_parse_digits(raw))))
+    for match in _PLAIN_DECIMAL.finditer(text):
         if _in_angle(text, match.start(), match.end()):
             continue
-        if _structural(text, match.start(), match.group()):
+        if _blocked_amount(text, match.start(), match.end(), match.group()):
             continue
         spans.append((match.start(), match.end(), magnitude_token(_parse_digits(match.group()))))
     for match in _FILS_FRAC.finditer(text):
@@ -258,18 +353,15 @@ def _digit_spans(text: str) -> list[tuple[int, int, str]]:
         spans.append(
             (match.start(1), match.end(1), magnitude_token(_parse_digits(match.group(1))))
         )
-    for match in _CUR_BEFORE.finditer(text):
-        if _in_angle(text, match.start(3), match.end(3)):
-            continue
-        if _structural(text, match.start(3), match.group(3)):
-            continue
-        spans.append((match.start(3), match.end(3), magnitude_token(_parse_digits(match.group(3)))))
-    for match in _CUR_AFTER.finditer(text):
-        if _in_angle(text, match.start(1), match.end(1)):
-            continue
-        if _structural(text, match.start(1), match.group(1)):
-            continue
-        spans.append((match.start(1), match.end(1), magnitude_token(_parse_digits(match.group(1)))))
+    for pattern, group in ((_CUR_BEFORE, 3), (_CUR_AFTER, 1)):
+        for match in pattern.finditer(text):
+            start, end = match.start(group), match.end(group)
+            raw = match.group(group)
+            if _in_angle(text, start, end) or _blocked_amount(text, start, end, raw):
+                continue
+            if re.search(r"[, \u00a0\u2009\u202f]", raw) and not _accept_grouped(text, start, end, raw):
+                continue
+            spans.append((start, end, magnitude_token(_parse_digits(raw))))
     return spans
 
 

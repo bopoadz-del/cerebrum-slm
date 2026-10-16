@@ -123,6 +123,34 @@ def test_dates_percentages_fractions_and_existing_tokens_stay() -> None:
     assert count == 1
 
 
+def test_spaced_thousands_groups_become_magnitude_tokens() -> None:
+    cases = (
+        ("8 765 432", "<AMT:~1e6>"),
+        ("AED 8 765 432", "AED <AMT:~1e6>"),
+        ("1\u00a0250\u00a0000", "<AMT:~1e6>"),
+        ("1\u2009250\u2009000", "<AMT:~1e6>"),
+        ("1\u202f250\u202f000", "<AMT:~1e6>"),
+        ("1 250 000.00", "<AMT:~1e6>"),
+        ("12 500.50", "<AMT:~1e4>"),
+    )
+    for raw, token in cases:
+        out, count = bucket_amounts(raw)
+        assert out == token, raw
+        assert count == 1, raw
+
+
+def test_spaced_thousands_groups_are_idempotent() -> None:
+    text = "8 765 432 then AED 8 765 432 then 1\u00a0250\u00a0000 then 1 250 000.00 then 12 500.50"
+    once, first = bucket_amounts(text)
+    twice, second = bucket_amounts(once)
+    assert once == (
+        "<AMT:~1e6> then AED <AMT:~1e6> then <AMT:~1e6> then <AMT:~1e6> then <AMT:~1e4>"
+    )
+    assert first == 5
+    assert twice == once
+    assert second == 0
+
+
 def test_bucket_amounts_second_pass_is_idempotent() -> None:
     text = "pay <AMT:~1e6> 99 and 45/100 fils under ZX/10/2030/44/1 today"
     once, first = bucket_amounts(text)
